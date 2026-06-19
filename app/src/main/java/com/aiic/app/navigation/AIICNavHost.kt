@@ -14,6 +14,8 @@ import com.aiic.app.presentation.feature_auth.login.LoginScreen
 import com.aiic.app.presentation.feature_auth.register.RegisterScreen
 import com.aiic.app.presentation.feature_home.HomeScreen
 import com.aiic.app.presentation.feature_onboarding.OnboardingScreen
+import com.aiic.app.presentation.feature_profile.ProfileScreen
+import com.aiic.app.presentation.feature_settings.SettingsScreen
 import com.aiic.app.presentation.feature_splash.SplashScreen
 
 private const val ANIM_DURATION = 400
@@ -108,6 +110,14 @@ fun AIICNavHost(navController: NavHostController = rememberNavController()) {
 
         composable(AppRoutes.Home.route) {
             HomeScreen()
+        }
+
+        composable(AppRoutes.Profile.route) {
+            ProfileScreen()
+        }
+
+        composable(AppRoutes.Settings.route) {
+            SettingsScreen()
         }
     }
 }
