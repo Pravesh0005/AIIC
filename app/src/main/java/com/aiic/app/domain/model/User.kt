@@ -9,5 +9,5 @@ data class User(
     val interviewsCompleted: Int = 0,
     val readinessScore: Float = 0f,
     val streakDays: Int = 0,
-    val joinedAt: Long = System.currentTimeMillis(),
+    val joinedAt: Long = 0L,
 )

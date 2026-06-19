@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 abstract class BaseViewModel<S, E>(initialState: S) : ViewModel() {
@@ -20,7 +21,7 @@ abstract class BaseViewModel<S, E>(initialState: S) : ViewModel() {
     protected val currentState: S get() = _state.value
 
     protected fun updateState(reducer: S.() -> S) {
-        _state.value = _state.value.reducer()
+        _state.update { it.reducer() }
     }
 
     protected fun sendEvent(event: UiEvent) {
@@ -29,3 +30,4 @@ abstract class BaseViewModel<S, E>(initialState: S) : ViewModel() {
 
     abstract fun onAction(action: E)
 }
+

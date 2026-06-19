@@ -1,6 +1,12 @@
 package com.aiic.app.di
 
 import android.content.Context
+import com.aiic.app.core.analytics.AnalyticsTracker
+import com.aiic.app.core.analytics.NoOpAnalyticsTracker
+import com.aiic.app.core.base.DefaultDispatcherProvider
+import com.aiic.app.core.base.DispatcherProvider
+import com.aiic.app.core.network.ConnectivityNetworkMonitor
+import com.aiic.app.core.network.NetworkMonitor
 import com.aiic.app.data.local.PreferencesManager
 import com.aiic.app.data.repository.AuthRepositoryImpl
 import com.aiic.app.data.repository.UserPreferencesRepositoryImpl
@@ -31,4 +37,17 @@ object AppModule {
     @Provides
     @Singleton
     fun provideAuthRepository(): AuthRepository = AuthRepositoryImpl()
+
+    @Provides
+    @Singleton
+    fun provideDispatcherProvider(): DispatcherProvider = DefaultDispatcherProvider()
+
+    @Provides
+    @Singleton
+    fun provideNetworkMonitor(@ApplicationContext context: Context): NetworkMonitor =
+        ConnectivityNetworkMonitor(context)
+
+    @Provides
+    @Singleton
+    fun provideAnalyticsTracker(): AnalyticsTracker = NoOpAnalyticsTracker()
 }
