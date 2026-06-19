@@ -31,7 +31,7 @@
 
 <!-- ANIMATED TYPING -->
 <p>
-  <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&size=24&pause=1200&color=7C5CFC&center=true&vCenter=true&multiline=true&width=900&height=100&lines=AI-Powered+Interview+Coaching+🎯;Built+to+Help+You+Land+Your+Dream+Job+🚀" alt="Typing SVG"/>
+  <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&size=24&pause=1200&color=7C5CFC&center=true&vCenter=true&multiline=true&width=900&height=100&lines=AI-Powered+Interview+Coaching;Built+to+Help+You+Land+Your+Dream+Job" alt="Typing SVG"/>
 </p>
 
 <br/>
