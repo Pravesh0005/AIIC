@@ -1,8 +1,17 @@
+# Gradle
 .gradle/
 build/
+!gradle/wrapper/gradle-wrapper.jar
+
+# Android Studio
 *.iml
 .idea/
 local.properties
+captures/
+.externalNativeBuild/
+.cxx/
+
+# Binaries
 *.apk
 *.aab
 *.ap_
@@ -11,8 +20,23 @@ local.properties
 bin/
 gen/
 out/
+
+# OS files
 .DS_Store
 Thumbs.db
-captures/
-.externalNativeBuild/
-.cxx/
+*.swp
+*~
+
+# Secrets & Keys (SECURITY)
+*.jks
+*.keystore
+google-services.json
+*.env
+*.secret
+key.properties
+signing.properties
+firebase-*.json
+
+# Logs
+*.log
+crash-reports/
