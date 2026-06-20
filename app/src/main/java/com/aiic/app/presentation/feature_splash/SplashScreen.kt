@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -30,6 +29,7 @@ import com.aiic.app.core.theme.AIICTheme
 @Composable
 fun SplashScreen(
     onNavigateToOnboarding: () -> Unit,
+    onNavigateToLogin: () -> Unit,
     onNavigateToHome: () -> Unit,
     viewModel: SplashViewModel = hiltViewModel(),
 ) {
@@ -51,7 +51,13 @@ fun SplashScreen(
         taglineAlpha.animateTo(1f, tween(500))
     }
     LaunchedEffect(Unit) {
-        viewModel.checkDestination(onNavigateToOnboarding, onNavigateToHome)
+        viewModel.resolveDestination { destination ->
+            when (destination) {
+                SplashDestination.Onboarding -> onNavigateToOnboarding()
+                SplashDestination.Login -> onNavigateToLogin()
+                SplashDestination.Home -> onNavigateToHome()
+            }
+        }
     }
 
     Box(

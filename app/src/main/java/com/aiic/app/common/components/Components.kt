@@ -44,6 +44,7 @@ fun PremiumButton(
     enabled: Boolean = true,
     isLoading: Boolean = false,
     gradientColors: List<Color>? = null,
+    content: @Composable (() -> Unit)? = null,
 ) {
     val colors = gradientColors ?: listOf(
         AIICTheme.colors.gradientPrimaryStart,
@@ -74,14 +75,14 @@ fun PremiumButton(
                 ),
             contentAlignment = Alignment.Center,
         ) {
-            if (isLoading) {
-                CircularProgressIndicator(
+            when {
+                content != null -> content()
+                isLoading -> CircularProgressIndicator(
                     modifier = Modifier.size(24.dp),
                     color = AIICTheme.colors.textOnPrimary,
                     strokeWidth = 2.5.dp,
                 )
-            } else {
-                Text(
+                else -> Text(
                     text = text,
                     style = AIICTheme.typography.button,
                     color = AIICTheme.colors.textOnPrimary,

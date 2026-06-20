@@ -14,6 +14,7 @@ import com.aiic.app.presentation.feature_auth.login.LoginScreen
 import com.aiic.app.presentation.feature_auth.register.RegisterScreen
 import com.aiic.app.presentation.feature_home.HomeScreen
 import com.aiic.app.presentation.feature_onboarding.OnboardingScreen
+import com.aiic.app.presentation.feature_profile.AccountSetupScreen
 import com.aiic.app.presentation.feature_profile.ProfileScreen
 import com.aiic.app.presentation.feature_settings.SettingsScreen
 import com.aiic.app.presentation.feature_splash.SplashScreen
@@ -57,6 +58,11 @@ fun AIICNavHost(navController: NavHostController = rememberNavController()) {
                         popUpTo(AppRoutes.Splash.route) { inclusive = true }
                     }
                 },
+                onNavigateToLogin = {
+                    navController.navigate(AppRoutes.Login.route) {
+                        popUpTo(AppRoutes.Splash.route) { inclusive = true }
+                    }
+                },
                 onNavigateToHome = {
                     navController.navigate(AppRoutes.Home.route) {
                         popUpTo(AppRoutes.Splash.route) { inclusive = true }
@@ -94,9 +100,9 @@ fun AIICNavHost(navController: NavHostController = rememberNavController()) {
         composable(AppRoutes.Register.route) {
             RegisterScreen(
                 onNavigateToLogin = { navController.popBackStack() },
-                onNavigateToHome = {
-                    navController.navigate(AppRoutes.Home.route) {
-                        popUpTo(AppRoutes.Login.route) { inclusive = true }
+                onNavigateToAccountSetup = {
+                    navController.navigate(AppRoutes.AccountSetup.route) {
+                        popUpTo(AppRoutes.Register.route) { inclusive = true }
                     }
                 }
             )
@@ -105,6 +111,16 @@ fun AIICNavHost(navController: NavHostController = rememberNavController()) {
         composable(AppRoutes.ForgotPassword.route) {
             ForgotPasswordScreen(
                 onNavigateBack = { navController.popBackStack() }
+            )
+        }
+
+        composable(AppRoutes.AccountSetup.route) {
+            AccountSetupScreen(
+                onNavigateToHome = {
+                    navController.navigate(AppRoutes.Home.route) {
+                        popUpTo(AppRoutes.AccountSetup.route) { inclusive = true }
+                    }
+                }
             )
         }
 
