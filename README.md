@@ -22,10 +22,18 @@
 <br/><br/>
 
 <!-- BADGES ROW 3 -->
-<a href="#"><img src="https://img.shields.io/badge/Status-Day%201%20Complete-10b981?style=for-the-badge&logo=checkmarx&logoColor=white"/></a>
-<a href="#"><img src="https://img.shields.io/badge/Screens-6%20Premium%20UIs-f59e0b?style=for-the-badge&logo=figma&logoColor=white"/></a>
-<a href="#"><img src="https://img.shields.io/badge/Components-10%2B%20Reusable-8b5cf6?style=for-the-badge&logo=react&logoColor=white"/></a>
+<a href="#"><img src="https://img.shields.io/badge/Status-Day%202%20Complete-10b981?style=for-the-badge&logo=checkmarx&logoColor=white"/></a>
+<a href="#"><img src="https://img.shields.io/badge/Screens-9%20Premium%20UIs-f59e0b?style=for-the-badge&logo=figma&logoColor=white"/></a>
+<a href="#"><img src="https://img.shields.io/badge/Components-12%2B%20Reusable-8b5cf6?style=for-the-badge&logo=react&logoColor=white"/></a>
 <a href="#"><img src="https://img.shields.io/badge/License-Proprietary-ef4444?style=for-the-badge&logo=shield&logoColor=white"/></a>
+
+<br/><br/>
+
+<!-- BADGES ROW 4 - Firebase -->
+<a href="#"><img src="https://img.shields.io/badge/Auth-Firebase%20Auth-FFCA28?style=for-the-badge&logo=firebase&logoColor=black"/></a>
+<a href="#"><img src="https://img.shields.io/badge/Database-Cloud%20Firestore-FFCA28?style=for-the-badge&logo=firebase&logoColor=black"/></a>
+<a href="#"><img src="https://img.shields.io/badge/Sign--In-Google%20OAuth-4285F4?style=for-the-badge&logo=google&logoColor=white"/></a>
+<a href="#"><img src="https://img.shields.io/badge/Session-DataStore-03A9F4?style=for-the-badge&logo=android&logoColor=white"/></a>
 
 <br/><br/>
 
@@ -62,6 +70,7 @@
 - [⚡ Quick Start](#-quick-start)
 - [🗺️ Navigation Flow](#️-navigation-flow)
 - [📊 Day 1 Progress](#-day-1-progress)
+- [🔥 Day 2 Progress](#-day-2-progress)
 - [🔮 Roadmap](#-roadmap)
 - [📄 License](#-license)
 
@@ -278,8 +287,11 @@ The app is designed to feel like:
 | **System UI** | Accompanist | Status/nav bar theming |
 | **Images** | Coil | Image loading (ready) |
 | **Animations** | Lottie | Complex animations (ready) |
-| **Database** | Room | Local DB (structure ready) |
-| **Backend** | Firebase | Auth/Firestore (structure ready) |
+| **Auth** | Firebase Auth | Email/Password + Google OAuth |
+| **Database** | Cloud Firestore | User profiles + real-time sync |
+| **Storage** | Firebase Storage | Profile photos (ready) |
+| **Analytics** | Firebase Analytics | Event tracking (ready) |
+| **Credentials** | CredentialManager | Google Sign-In infrastructure |
 
 ---
 
@@ -393,7 +405,7 @@ The app is designed to feel like:
                 └── 📄 AppModule.kt          # Hilt bindings
 ```
 
-> 💡 **35+ Kotlin files** comprising a complete production-grade Android foundation.
+> 💡 **45+ Kotlin files** comprising a complete production-grade Android foundation with Firebase backend.
 
 ---
 
@@ -429,14 +441,22 @@ git clone https://github.com/Pravesh0005/AIIC.git
 ┌──────────┐     ┌──────────────┐     ┌──────────┐     ┌──────────┐
 │  Splash  │────▶│  Onboarding  │────▶│  Login   │────▶│   Home   │
 │  Screen  │     │  (3 pages)   │     │  Screen  │     │Dashboard │
-└──────────┘     └──────────────┘     └────┬─────┘     └──────────┘
-                                           │
-                                    ┌──────┴──────┐
-                                    ▼             ▼
-                              ┌──────────┐  ┌──────────┐
-                              │ Register │  │ Forgot   │
-                              │  Screen  │  │ Password │
-                              └──────────┘  └──────────┘
+└──┬───────┘     └──────────────┘     └────┬─────┘     └──────────┘
+   │  (returning user skips to login/home)  │
+   │                                 ┌──────┴──────┐
+   │                                 ▼             ▼
+   │                           ┌──────────┐  ┌──────────┐
+   │                           │ Register │  │ Forgot   │
+   │                           │  Screen  │  │ Password │
+   │                           └────┬─────┘  └──────────┘
+   │                                │
+   │                                ▼
+   │                          ┌───────────┐
+   │                          │  Account  │
+   │                          │   Setup   │──────▶ Home
+   │                          └───────────┘
+   │
+   └──▶ (logged in) ──────────────────────▶ Home
 ```
 
 ---
@@ -471,11 +491,48 @@ git clone https://github.com/Pravesh0005/AIIC.git
 
 ---
 
+## 🔥 Day 2 Progress
+
+```diff
++ ✅ Firebase BOM + Auth + Firestore + Storage + Analytics
++ ✅ Google Sign-In + CredentialManager dependencies
++ ✅ NetworkResult sealed class for type-safe API responses
++ ✅ DispatcherProvider for testable coroutines
++ ✅ NetworkMonitor with ConnectivityManager callbacks
++ ✅ AnalyticsTracker abstraction (vendor-agnostic)
++ ✅ Validator engine (email, password strength, confirm, name)
++ ✅ FirebaseErrorMapper — user-friendly error messages
++ ✅ FirebaseAuthRepository (login, register, Google, reset, observe)
++ ✅ FirestoreUserRepository (CRUD, real-time listener, merge writes)
++ ✅ SessionRepositoryImpl (DataStore-backed persistence)
++ ✅ UserProfile domain model (career goals, skills, preferences)
++ ✅ AuthSession + AuthCredentials domain models
++ ✅ 8 Use Cases (Login, Register, Reset, Logout, Google, etc.)
++ ✅ LoginViewModel with validation + Firebase auth
++ ✅ RegisterViewModel with 4-field validation + Firestore profile
++ ✅ ForgotPasswordViewModel with reset sent state
++ ✅ SplashViewModel with 3-way routing (onboarding/login/home)
++ ✅ AccountSetupViewModel with Firestore profile update
++ ✅ Rebuilt LoginScreen — password toggle, loading, Google button
++ ✅ Rebuilt RegisterScreen — terms checkbox, confirm password
++ ✅ Rebuilt ForgotPasswordScreen — success state with confirmation
++ ✅ New AccountSetupScreen — career goals, skills, skip option
++ ✅ AIICTextField upgraded — ImageVector icons, trailing slots
++ ✅ PremiumButton upgraded — custom content slot
++ ✅ SplashScreen 3-way routing (onboarding → login → home)
++ ✅ NavHost with AccountSetup route + proper popUpTo logic
++ ✅ Complete Hilt DI module with Firebase singletons
++ ✅ Thread-safe BaseViewModel with atomic state updates
++ ✅ PreferencesManager hardened as session singleton
+```
+
+---
+
 ## 🔮 Roadmap
 
 ```
 Day 1  ██████████████████████████████ 100% — Foundation ✅
-Day 2  ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   0% — Firebase Auth + Room DB
+Day 2  ██████████████████████████████ 100% — Firebase Auth + Firestore + Session ✅
 Day 3  ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   0% — AI Mock Interview Engine
 Day 4  ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   0% — Question Bank + Categories
 Day 5  ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   0% — Analytics & Performance
