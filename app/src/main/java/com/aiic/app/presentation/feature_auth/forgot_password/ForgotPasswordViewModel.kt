@@ -1,10 +1,11 @@
 package com.aiic.app.presentation.feature_auth.forgot_password
 
 import androidx.lifecycle.viewModelScope
-import com.aiic.app.common.extensions.isValidEmail
 import com.aiic.app.core.base.BaseViewModel
+import com.aiic.app.core.base.NetworkResult
 import com.aiic.app.core.base.UiEvent
-import com.aiic.app.domain.repository.AuthRepository
+import com.aiic.app.core.validation.Validator
+import com.aiic.app.domain.usecase.ResetPasswordUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -13,17 +14,17 @@ data class ForgotPasswordState(
     val email: String = "",
     val isLoading: Boolean = false,
     val emailError: String? = null,
-    val isSuccess: Boolean = false,
+    val isResetSent: Boolean = false,
 )
 
 sealed interface ForgotPasswordAction {
     data class UpdateEmail(val email: String) : ForgotPasswordAction
-    data object SendReset : ForgotPasswordAction
+    data object ResetPassword : ForgotPasswordAction
 }
 
 @HiltViewModel
 class ForgotPasswordViewModel @Inject constructor(
-    private val authRepository: AuthRepository,
+    private val resetPasswordUseCase: ResetPasswordUseCase,
 ) : BaseViewModel<ForgotPasswordState, ForgotPasswordAction>(ForgotPasswordState()) {
 
     override fun onAction(action: ForgotPasswordAction) {
@@ -31,26 +32,28 @@ class ForgotPasswordViewModel @Inject constructor(
             is ForgotPasswordAction.UpdateEmail -> updateState {
                 copy(email = action.email, emailError = null)
             }
-            ForgotPasswordAction.SendReset -> sendReset()
+            ForgotPasswordAction.ResetPassword -> resetPassword()
         }
     }
 
-    private fun sendReset() {
-        val email = currentState.email.trim()
-        if (!email.isValidEmail()) {
-            updateState { copy(emailError = "Please enter a valid email") }
+    private fun resetPassword() {
+        val emailResult = Validator.validateEmail(currentState.email.trim())
+        if (!emailResult.isValid) {
+            updateState { copy(emailError = emailResult.errorMessage) }
             return
         }
 
         viewModelScope.launch {
             updateState { copy(isLoading = true) }
-            authRepository.sendPasswordReset(email)
-                .onSuccess {
-                    updateState { copy(isSuccess = true) }
+            when (val result = resetPasswordUseCase(currentState.email.trim())) {
+                is NetworkResult.Success -> {
+                    updateState { copy(isResetSent = true) }
+                    sendEvent(UiEvent.ShowSnackbar("Password reset email sent"))
                 }
-                .onFailure {
-                    sendEvent(UiEvent.ShowSnackbar(it.message ?: "Failed to send reset email"))
+                is NetworkResult.Error -> {
+                    sendEvent(UiEvent.ShowSnackbar(result.message))
                 }
+            }
             updateState { copy(isLoading = false) }
         }
     }

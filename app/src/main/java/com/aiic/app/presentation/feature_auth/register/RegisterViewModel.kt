@@ -1,12 +1,11 @@
 package com.aiic.app.presentation.feature_auth.register
 
 import androidx.lifecycle.viewModelScope
-import com.aiic.app.common.extensions.isValidEmail
-import com.aiic.app.common.extensions.isValidPassword
 import com.aiic.app.core.base.BaseViewModel
+import com.aiic.app.core.base.NetworkResult
 import com.aiic.app.core.base.UiEvent
-import com.aiic.app.domain.repository.AuthRepository
-import com.aiic.app.domain.repository.UserPreferencesRepository
+import com.aiic.app.core.validation.Validator
+import com.aiic.app.domain.usecase.RegisterUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -21,6 +20,8 @@ data class RegisterState(
     val emailError: String? = null,
     val passwordError: String? = null,
     val confirmPasswordError: String? = null,
+    val isPasswordVisible: Boolean = false,
+    val agreedToTerms: Boolean = false,
 )
 
 sealed interface RegisterAction {
@@ -28,13 +29,14 @@ sealed interface RegisterAction {
     data class UpdateEmail(val email: String) : RegisterAction
     data class UpdatePassword(val password: String) : RegisterAction
     data class UpdateConfirmPassword(val confirmPassword: String) : RegisterAction
+    data object TogglePasswordVisibility : RegisterAction
+    data class ToggleTerms(val agreed: Boolean) : RegisterAction
     data object Register : RegisterAction
 }
 
 @HiltViewModel
 class RegisterViewModel @Inject constructor(
-    private val authRepository: AuthRepository,
-    private val userPreferencesRepository: UserPreferencesRepository,
+    private val registerUseCase: RegisterUseCase,
 ) : BaseViewModel<RegisterState, RegisterAction>(RegisterState()) {
 
     override fun onAction(action: RegisterAction) {
@@ -43,45 +45,44 @@ class RegisterViewModel @Inject constructor(
             is RegisterAction.UpdateEmail -> updateState { copy(email = action.email, emailError = null) }
             is RegisterAction.UpdatePassword -> updateState { copy(password = action.password, passwordError = null) }
             is RegisterAction.UpdateConfirmPassword -> updateState { copy(confirmPassword = action.confirmPassword, confirmPasswordError = null) }
+            RegisterAction.TogglePasswordVisibility -> updateState { copy(isPasswordVisible = !isPasswordVisible) }
+            is RegisterAction.ToggleTerms -> updateState { copy(agreedToTerms = action.agreed) }
             RegisterAction.Register -> register()
         }
     }
 
     private fun register() {
-        val name = currentState.name.trim()
-        val email = currentState.email.trim()
-        val password = currentState.password
-        val confirmPassword = currentState.confirmPassword
+        val nameResult = Validator.validateName(currentState.name.trim())
+        val emailResult = Validator.validateEmail(currentState.email.trim())
+        val passwordResult = Validator.validatePassword(currentState.password)
+        val confirmResult = Validator.validateConfirmPassword(currentState.password, currentState.confirmPassword)
 
-        var hasError = false
-        if (name.length < 2) {
-            updateState { copy(nameError = "Name must be at least 2 characters") }
-            hasError = true
+        if (!nameResult.isValid || !emailResult.isValid || !passwordResult.isValid || !confirmResult.isValid) {
+            updateState {
+                copy(
+                    nameError = nameResult.errorMessage,
+                    emailError = emailResult.errorMessage,
+                    passwordError = passwordResult.errorMessage,
+                    confirmPasswordError = confirmResult.errorMessage,
+                )
+            }
+            return
         }
-        if (!email.isValidEmail()) {
-            updateState { copy(emailError = "Please enter a valid email") }
-            hasError = true
-        }
-        if (!password.isValidPassword()) {
-            updateState { copy(passwordError = "Password must be at least 8 characters") }
-            hasError = true
-        }
-        if (password != confirmPassword) {
-            updateState { copy(confirmPasswordError = "Passwords do not match") }
-            hasError = true
-        }
-        if (hasError) return
 
         viewModelScope.launch {
             updateState { copy(isLoading = true) }
-            authRepository.register(name, email, password)
-                .onSuccess {
-                    userPreferencesRepository.setLoggedIn(true)
-                    sendEvent(UiEvent.Navigate("home"))
+            when (val result = registerUseCase(
+                currentState.name.trim(),
+                currentState.email.trim(),
+                currentState.password,
+            )) {
+                is NetworkResult.Success -> {
+                    sendEvent(UiEvent.Navigate("account_setup"))
                 }
-                .onFailure {
-                    sendEvent(UiEvent.ShowSnackbar(it.message ?: "Registration failed"))
+                is NetworkResult.Error -> {
+                    sendEvent(UiEvent.ShowSnackbar(result.message))
                 }
+            }
             updateState { copy(isLoading = false) }
         }
     }

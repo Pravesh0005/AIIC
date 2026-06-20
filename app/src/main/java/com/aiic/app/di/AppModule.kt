@@ -8,10 +8,15 @@ import com.aiic.app.core.base.DispatcherProvider
 import com.aiic.app.core.network.ConnectivityNetworkMonitor
 import com.aiic.app.core.network.NetworkMonitor
 import com.aiic.app.data.local.PreferencesManager
-import com.aiic.app.data.repository.AuthRepositoryImpl
-import com.aiic.app.data.repository.UserPreferencesRepositoryImpl
+import com.aiic.app.data.repository.FirebaseAuthRepository
+import com.aiic.app.data.repository.FirestoreUserRepository
+import com.aiic.app.data.repository.SessionRepositoryImpl
 import com.aiic.app.domain.repository.AuthRepository
-import com.aiic.app.domain.repository.UserPreferencesRepository
+import com.aiic.app.domain.repository.SessionRepository
+import com.aiic.app.domain.repository.UserRepository
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.storage.FirebaseStorage
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -23,31 +28,42 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object AppModule {
 
-    @Provides
-    @Singleton
+    // Firebase
+    @Provides @Singleton
+    fun provideFirebaseAuth(): FirebaseAuth = FirebaseAuth.getInstance()
+
+    @Provides @Singleton
+    fun provideFirebaseFirestore(): FirebaseFirestore = FirebaseFirestore.getInstance()
+
+    @Provides @Singleton
+    fun provideFirebaseStorage(): FirebaseStorage = FirebaseStorage.getInstance()
+
+    // Local
+    @Provides @Singleton
     fun providePreferencesManager(@ApplicationContext context: Context): PreferencesManager =
         PreferencesManager(context)
 
-    @Provides
-    @Singleton
-    fun provideUserPreferencesRepository(
-        preferencesManager: PreferencesManager
-    ): UserPreferencesRepository = UserPreferencesRepositoryImpl(preferencesManager)
+    // Repositories
+    @Provides @Singleton
+    fun provideAuthRepository(auth: FirebaseAuth): AuthRepository =
+        FirebaseAuthRepository(auth)
 
-    @Provides
-    @Singleton
-    fun provideAuthRepository(): AuthRepository = AuthRepositoryImpl()
+    @Provides @Singleton
+    fun provideUserRepository(firestore: FirebaseFirestore): UserRepository =
+        FirestoreUserRepository(firestore)
 
-    @Provides
-    @Singleton
+    @Provides @Singleton
+    fun provideSessionRepository(prefs: PreferencesManager): SessionRepository =
+        SessionRepositoryImpl(prefs)
+
+    // Infrastructure
+    @Provides @Singleton
     fun provideDispatcherProvider(): DispatcherProvider = DefaultDispatcherProvider()
 
-    @Provides
-    @Singleton
+    @Provides @Singleton
     fun provideNetworkMonitor(@ApplicationContext context: Context): NetworkMonitor =
         ConnectivityNetworkMonitor(context)
 
-    @Provides
-    @Singleton
+    @Provides @Singleton
     fun provideAnalyticsTracker(): AnalyticsTracker = NoOpAnalyticsTracker()
 }
