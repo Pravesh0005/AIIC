@@ -32,11 +32,11 @@ class FirestoreResumeRepository @Inject constructor(
 
     override fun uploadResume(
         userId: String,
+        resumeId: String,
         fileName: String,
         fileUri: Uri,
         fileSize: Long
     ): Flow<NetworkResult<UploadProgress>> = callbackFlow {
-        val resumeId = UUID.randomUUID().toString()
         val storageRef = storage.reference.child("resumes/$userId/$resumeId.pdf")
 
         currentUploadTask = storageRef.putFile(fileUri)

@@ -18,11 +18,12 @@ class UploadResumeUseCase @Inject constructor(
 ) {
     operator fun invoke(
         userId: String,
+        resumeId: String,
         fileName: String,
         fileUri: Uri,
         fileSize: Long,
     ): Flow<NetworkResult<UploadProgress>> {
-        return resumeRepository.uploadResume(userId, fileName, fileUri, fileSize)
+        return resumeRepository.uploadResume(userId, resumeId, fileName, fileUri, fileSize)
     }
 
     fun validateFile(fileName: String, fileSize: Long, mimeType: String?): FileValidationResult {

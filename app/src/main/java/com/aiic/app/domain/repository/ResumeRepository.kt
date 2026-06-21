@@ -20,6 +20,7 @@ interface ResumeRepository {
      */
     fun uploadResume(
         userId: String,
+        resumeId: String,
         fileName: String,
         fileUri: Uri,
         fileSize: Long,

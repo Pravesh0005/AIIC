@@ -52,8 +52,10 @@ fun SettingsScreen(
     onLogout: () -> Unit = {}
 ) {
     var notificationsEnabled by remember { mutableStateOf(true) }
-    var darkModeEnabled by remember { mutableStateOf(true) }
     var offlineMode by remember { mutableStateOf(false) }
+    
+    val isDarkTheme = com.aiic.app.core.theme.LocalIsDarkTheme.current
+    val onToggleTheme = com.aiic.app.core.theme.LocalThemeToggle.current
 
     Column(
         modifier = Modifier
@@ -94,8 +96,8 @@ fun SettingsScreen(
             SettingsToggle(
                 icon = Icons.Rounded.DarkMode,
                 label = "Dark Mode",
-                checked = darkModeEnabled,
-                onCheckedChange = { darkModeEnabled = it },
+                checked = isDarkTheme,
+                onCheckedChange = { onToggleTheme(it) },
                 color = AIICTheme.colors.secondary,
             )
             SettingsToggle(

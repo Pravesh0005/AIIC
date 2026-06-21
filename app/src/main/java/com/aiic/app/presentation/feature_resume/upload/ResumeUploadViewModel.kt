@@ -67,15 +67,17 @@ class ResumeUploadViewModel @Inject constructor(
             is FileValidationResult.Valid -> {}
         }
 
+        val resumeId = UUID.randomUUID().toString()
+
         viewModelScope.launch {
             _uiState.update { UploadUiState.Uploading(UploadProgress(0, fileSize)) }
             
-            uploadResumeUseCase(userId, fileName, uri, fileSize).collectLatest { result ->
+            uploadResumeUseCase(userId, resumeId, fileName, uri, fileSize).collectLatest { result ->
                 when (result) {
                     is NetworkResult.Success -> {
                         val progress = result.data
                         if (progress.isComplete) {
-                            finalizeUpload(userId, fileName, fileSize)
+                            finalizeUpload(userId, resumeId, fileName, fileSize)
                         } else {
                             _uiState.update { UploadUiState.Uploading(progress) }
                         }
@@ -88,12 +90,12 @@ class ResumeUploadViewModel @Inject constructor(
         }
     }
 
-    private fun finalizeUpload(userId: String, fileName: String, fileSize: Long) {
+    private fun finalizeUpload(userId: String, resumeId: String, fileName: String, fileSize: Long) {
         _uiState.update { UploadUiState.Syncing }
         viewModelScope.launch {
             val nextVersion = resumeRepository.getNextVersionNumber(userId)
             val newResume = Resume(
-                resumeId = UUID.randomUUID().toString(),
+                resumeId = resumeId,
                 userId = userId,
                 fileName = fileName,
                 fileSize = fileSize,
