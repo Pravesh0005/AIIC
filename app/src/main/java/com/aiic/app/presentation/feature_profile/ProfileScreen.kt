@@ -34,7 +34,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.aiic.app.common.components.GlassCard
+import com.aiic.app.common.components.PremiumCard
 import com.aiic.app.common.components.GradientText
 import com.aiic.app.core.theme.AIICTheme
 
@@ -110,7 +110,7 @@ fun ProfileScreen() {
 
         Spacer(Modifier.height(28.dp))
 
-        GlassCard {
+        PremiumCard {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
@@ -143,7 +143,7 @@ fun ProfileScreen() {
 
 @Composable
 private fun ProfileMenuItem(icon: ImageVector, label: String, color: Color) {
-    GlassCard {
+    PremiumCard {
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,

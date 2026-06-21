@@ -37,7 +37,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.aiic.app.common.components.GlassCard
+import com.aiic.app.common.components.PremiumCard
 import com.aiic.app.core.theme.AIICTheme
 
 @Composable
@@ -94,7 +94,7 @@ private fun SettingsToggle(
     onCheckedChange: (Boolean) -> Unit,
     color: Color,
 ) {
-    GlassCard {
+    PremiumCard {
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
@@ -121,7 +121,7 @@ private fun SettingsToggle(
 
 @Composable
 private fun SettingsNavItem(icon: ImageVector, label: String, detail: String?, color: Color) {
-    GlassCard {
+    PremiumCard {
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,

@@ -65,7 +65,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.aiic.app.common.components.FeatureCard
-import com.aiic.app.common.components.GlassCard
+import com.aiic.app.common.components.PremiumCard
 import com.aiic.app.common.components.GradientText
 import com.aiic.app.common.components.PremiumButton
 import com.aiic.app.common.components.ScoreCard
@@ -388,7 +388,7 @@ private fun ActivityItem(
     subtitle: String,
     time: String,
 ) {
-    GlassCard {
+    PremiumCard {
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
@@ -417,7 +417,7 @@ private fun AnalyticsPreview(state: HomeState) {
     Column {
         SectionHeader(title = "Performance", subtitle = "Your interview analytics")
         Spacer(Modifier.height(12.dp))
-        GlassCard(modifier = Modifier.padding(horizontal = AIICTheme.spacing.screenHorizontal)) {
+        PremiumCard(modifier = Modifier.padding(horizontal = AIICTheme.spacing.screenHorizontal)) {
             Column {
                 Row(
                     modifier = Modifier.fillMaxWidth(),

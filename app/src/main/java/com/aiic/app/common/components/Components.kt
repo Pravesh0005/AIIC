@@ -99,7 +99,7 @@ fun PremiumButton(
 }
 
 @Composable
-fun GlassCard(
+fun PremiumCard(
     modifier: Modifier = Modifier,
     content: @Composable () -> Unit,
 ) {
