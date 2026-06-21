@@ -136,7 +136,14 @@ fun AIICNavHost(navController: NavHostController = rememberNavController()) {
         }
 
         composable(AppRoutes.Home.route) {
-            HomeScreen()
+            HomeScreen(
+                onNavigateToResume = { navController.navigate(AppRoutes.ResumeDashboard.route) },
+                onNavigateToLogin = { 
+                    navController.navigate(AppRoutes.Login.route) {
+                        popUpTo(AppRoutes.Home.route) { inclusive = true }
+                    }
+                }
+            )
         }
 
         composable(AppRoutes.Profile.route) {

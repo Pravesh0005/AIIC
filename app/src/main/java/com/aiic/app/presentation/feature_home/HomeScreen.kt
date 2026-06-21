@@ -86,9 +86,21 @@ private val navItems = listOf(
 )
 
 @Composable
-fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
+fun HomeScreen(
+    viewModel: HomeViewModel = hiltViewModel(),
+    onNavigateToResume: () -> Unit = {},
+    onNavigateToLogin: () -> Unit = {}
+) {
     val state by viewModel.state.collectAsState()
     var selectedNav by remember { mutableIntStateOf(0) }
+
+    LaunchedEffect(Unit) {
+        viewModel.events.collect { event ->
+            if (event is com.aiic.app.core.base.UiEvent.Navigate && event.route == "login") {
+                onNavigateToLogin()
+            }
+        }
+    }
 
     Scaffold(
         containerColor = AIICTheme.colors.background,
@@ -130,13 +142,20 @@ fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
                 .padding(innerPadding)
         ) {
             when (selectedNav) {
-                0 -> HomeContent(state)
+                0 -> HomeContent(
+                        state = state, 
+                        onNavigateToProfile = { selectedNav = 2 },
+                        onNavigateToNotifications = { selectedNav = 3 },
+                        onNavigateToResume = onNavigateToResume
+                    )
                 1 -> AnalyticsPlaceholder()
                 2 -> com.aiic.app.presentation.feature_profile.ProfileScreen(
                     onNavigateToEditProfile = { /* TODO: Hook up nav */ },
                     onNavigateToSettings = { selectedNav = 3 }
                 )
-                3 -> com.aiic.app.presentation.feature_settings.SettingsScreen()
+                3 -> com.aiic.app.presentation.feature_settings.SettingsScreen(
+                    onLogout = { viewModel.onAction(HomeAction.Logout) }
+                )
             }
         }
     }
@@ -150,7 +169,12 @@ private fun AnalyticsPlaceholder() {
 }
 
 @Composable
-private fun HomeContent(state: HomeState) {
+private fun HomeContent(
+    state: HomeState,
+    onNavigateToProfile: () -> Unit,
+    onNavigateToNotifications: () -> Unit,
+    onNavigateToResume: () -> Unit
+) {
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -158,16 +182,21 @@ private fun HomeContent(state: HomeState) {
         contentPadding = PaddingValues(bottom = 16.dp),
         verticalArrangement = Arrangement.spacedBy(AIICTheme.spacing.sectionGap),
     ) {
-        item { HeroSection(state) }
+        item { HeroSection(state, onNavigateToProfile, onNavigateToNotifications, onNavigateToResume) }
         item { StatsRow(state) }
-        item { QuickActions() }
+        item { QuickActions(onNavigateToResume) }
         item { RecentActivity(state) }
         item { AnalyticsPreview(state) }
     }
 }
 
 @Composable
-private fun HeroSection(state: HomeState) {
+private fun HeroSection(
+    state: HomeState, 
+    onNavigateToProfile: () -> Unit,
+    onNavigateToNotifications: () -> Unit,
+    onNavigateToResume: () -> Unit
+) {
     val alpha = remember { Animatable(0f) }
     LaunchedEffect(Unit) { alpha.animateTo(1f, tween(600, easing = FastOutSlowInEasing)) }
 
@@ -202,7 +231,7 @@ private fun HeroSection(state: HomeState) {
                         .size(40.dp)
                         .clip(CircleShape)
                         .background(AIICTheme.colors.surfaceElevated)
-                        .clickable { },
+                        .clickable { onNavigateToNotifications() },
                     contentAlignment = Alignment.Center,
                 ) {
                     Icon(
@@ -220,11 +249,12 @@ private fun HeroSection(state: HomeState) {
                             brush = Brush.linearGradient(
                                 listOf(AIICTheme.colors.primary, AIICTheme.colors.accent)
                             )
-                        ),
+                        )
+                        .clickable { onNavigateToProfile() },
                     contentAlignment = Alignment.Center,
                 ) {
                     Text(
-                        text = state.userName.take(1),
+                        text = state.userName.take(1).uppercase(),
                         style = AIICTheme.typography.titleSmall,
                         color = Color.White,
                         fontWeight = FontWeight.Bold,
@@ -278,7 +308,7 @@ private fun HeroSection(state: HomeState) {
                     Spacer(Modifier.height(12.dp))
                     PremiumButton(
                         text = "Start Practice",
-                        onClick = {},
+                        onClick = { onNavigateToResume() },
                         modifier = Modifier.width(160.dp),
                     )
                 }
@@ -350,24 +380,44 @@ private fun QuickActions() {
                 title = "AI Mock Interview",
                 description = "Practice with adaptive AI interviewer",
                 onClick = {},
-            )
-            FeatureCard(
-                icon = {
-                    Icon(Icons.Rounded.QuestionAnswer, null, tint = AIICTheme.colors.secondary, modifier = Modifier.size(22.dp))
-                },
-                title = "Question Bank",
-                description = "Browse 500+ curated questions",
-                onClick = {},
-            )
-            FeatureCard(
-                icon = {
-                    Icon(Icons.Rounded.TrendingUp, null, tint = AIICTheme.colors.tertiary, modifier = Modifier.size(22.dp))
-                },
-                title = "Skill Assessment",
-                description = "Evaluate your strengths & gaps",
-                onClick = {},
-            )
-        }
+private fun QuickActions(onNavigateToResume: () -> Unit) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = AIICTheme.spacing.screenHorizontal),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+        Text(
+            text = "Quick Actions",
+            style = AIICTheme.typography.titleMedium,
+            color = AIICTheme.colors.textPrimary,
+            fontWeight = FontWeight.Bold,
+        )
+        Text(
+            text = "Jump right in",
+            style = AIICTheme.typography.labelMedium,
+            color = AIICTheme.colors.textTertiary,
+            modifier = Modifier.padding(bottom = 8.dp),
+        )
+
+        FeatureCard(
+            title = "AI Mock Interview",
+            description = "Practice with adaptive AI interviewer",
+            icon = { Icon(Icons.Rounded.Psychology, null, tint = AIICTheme.colors.primary, modifier = Modifier.size(22.dp)) },
+            onClick = { onNavigateToResume() }
+        )
+        FeatureCard(
+            title = "Question Bank",
+            description = "Browse 500+ curated questions",
+            icon = { Icon(Icons.Rounded.QuestionAnswer, null, tint = AIICTheme.colors.accent, modifier = Modifier.size(22.dp)) },
+            onClick = { }
+        )
+        FeatureCard(
+            title = "Skill Assessment",
+            description = "Evaluate your strengths & gaps",
+            icon = { Icon(Icons.Rounded.TrendingUp, null, tint = Color(0xFF10B981), modifier = Modifier.size(22.dp)) },
+            onClick = { }
+        )
     }
 }
 

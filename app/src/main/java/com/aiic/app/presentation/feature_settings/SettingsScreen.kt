@@ -48,7 +48,8 @@ import com.aiic.app.core.theme.AIICTheme
 
 @Composable
 fun SettingsScreen(
-    onNavigateBack: () -> Unit = {}
+    onNavigateBack: () -> Unit = {},
+    onLogout: () -> Unit = {}
 ) {
     var notificationsEnabled by remember { mutableStateOf(true) }
     var darkModeEnabled by remember { mutableStateOf(true) }
@@ -134,6 +135,14 @@ fun SettingsScreen(
             SettingsNavItem(Icons.Rounded.SupportAgent, "Help Center", null, AIICTheme.colors.primary, onClick = {})
             SettingsNavItem(Icons.Rounded.Info, "About AIIC", "v1.0.0", AIICTheme.colors.textTertiary, onClick = {})
         }
+
+        Spacer(Modifier.height(32.dp))
+
+        com.aiic.app.common.components.PremiumButton(
+            text = "Log Out",
+            onClick = onLogout,
+            modifier = Modifier.fillMaxWidth()
+        )
     }
 }
 
