@@ -72,21 +72,24 @@ fun AnalysisDashboardContent(
         PremiumButton(
             text = "View ATS Breakdown",
             onClick = onNavigateToATS,
-            isSecondary = true,
+            containerColor = AIICTheme.colors.surfaceBright,
+            contentColor = AIICTheme.colors.textPrimary,
             modifier = Modifier.fillMaxWidth().padding(bottom = 12.dp)
         )
         
         PremiumButton(
             text = "View Skill Matrix & Gaps",
             onClick = onNavigateToSkills,
-            isSecondary = true,
+            containerColor = AIICTheme.colors.surfaceBright,
+            contentColor = AIICTheme.colors.textPrimary,
             modifier = Modifier.fillMaxWidth().padding(bottom = 12.dp)
         )
         
         PremiumButton(
             text = "View Actionable Recommendations",
             onClick = onNavigateToRecommendations,
-            isSecondary = true,
+            containerColor = AIICTheme.colors.surfaceBright,
+            contentColor = AIICTheme.colors.textPrimary,
             modifier = Modifier.fillMaxWidth().padding(bottom = 24.dp)
         )
     }

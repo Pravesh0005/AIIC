@@ -58,7 +58,9 @@ fun RecommendationsScreen(
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
             contentPadding = androidx.compose.foundation.layout.PaddingValues(
-                horizontal = AIICTheme.spacing.screenHorizontal,
+                start = AIICTheme.spacing.screenHorizontal,
+                end = AIICTheme.spacing.screenHorizontal,
+                top = 0.dp,
                 bottom = 24.dp
             )
         ) {

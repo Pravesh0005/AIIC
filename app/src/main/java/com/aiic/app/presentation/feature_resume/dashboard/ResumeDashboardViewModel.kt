@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.aiic.app.core.base.NetworkResult
 import com.aiic.app.domain.model.Resume
-import com.aiic.app.domain.repository.SessionRepository
+import com.aiic.app.domain.repository.AuthRepository
 import com.aiic.app.domain.usecase.GetLatestResumeUseCase
 import com.aiic.app.domain.usecase.ObserveResumeUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -25,7 +25,7 @@ sealed interface DashboardUiState {
 @HiltViewModel
 class ResumeDashboardViewModel @Inject constructor(
     private val observeResumeUseCase: ObserveResumeUseCase,
-    private val sessionRepository: SessionRepository,
+    private val authRepository: AuthRepository,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<DashboardUiState>(DashboardUiState.Loading)
@@ -36,7 +36,7 @@ class ResumeDashboardViewModel @Inject constructor(
     }
 
     private fun observeResumes() {
-        val uid = sessionRepository.getCurrentUserId() ?: return
+        val uid = authRepository.getCurrentSession()?.uid ?: return
         
         viewModelScope.launch {
             observeResumeUseCase(uid).collectLatest { resumes ->

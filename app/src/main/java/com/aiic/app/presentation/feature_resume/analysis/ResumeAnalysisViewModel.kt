@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.aiic.app.core.base.NetworkResult
 import com.aiic.app.domain.model.ResumeAnalysis
-import com.aiic.app.domain.repository.SessionRepository
+import com.aiic.app.domain.repository.AuthRepository
 import com.aiic.app.domain.usecase.analysis.AnalyzeResumeUseCase
 import com.aiic.app.domain.usecase.analysis.GetResumeAnalysisUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -29,14 +29,14 @@ sealed interface AnalysisUiState {
 class ResumeAnalysisViewModel @Inject constructor(
     private val analyzeResumeUseCase: AnalyzeResumeUseCase,
     private val getResumeAnalysisUseCase: GetResumeAnalysisUseCase,
-    private val sessionRepository: SessionRepository
+    private val authRepository: AuthRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<AnalysisUiState>(AnalysisUiState.Idle)
     val uiState: StateFlow<AnalysisUiState> = _uiState.asStateFlow()
 
     fun loadAnalysis(resumeId: String?) {
-        val userId = sessionRepository.getCurrentUserId()
+        val userId = authRepository.getCurrentSession()?.uid
         if (userId == null) {
             _uiState.update { AnalysisUiState.Failed("User not logged in.") }
             return
@@ -76,7 +76,7 @@ class ResumeAnalysisViewModel @Inject constructor(
     }
     
     fun forceReanalyze(resumeId: String) {
-        val userId = sessionRepository.getCurrentUserId() ?: return
+        val userId = authRepository.getCurrentSession()?.uid ?: return
         _uiState.update { AnalysisUiState.Retrying }
         viewModelScope.launch {
             runAnalysisPipeline(userId, resumeId)

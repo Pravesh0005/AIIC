@@ -28,17 +28,17 @@ class FirestoreResumeAnalysisRepository @Inject constructor(
                 .await()
 
             if (snapshot.isEmpty) {
-                NetworkResult.Error("No analysis found for this resume.")
+                NetworkResult.Error(message = "No analysis found for this resume.")
             } else {
                 val dto = snapshot.documents.first().toObject(ResumeAnalysisDto::class.java)
                 if (dto != null) {
                     NetworkResult.Success(dto.toDomain())
                 } else {
-                    NetworkResult.Error("Failed to parse resume analysis data.")
+                    NetworkResult.Error(message = "Failed to parse resume analysis data.")
                 }
             }
         } catch (e: Exception) {
-            NetworkResult.Error(e.message ?: "An unknown error occurred while fetching analysis.")
+            NetworkResult.Error(message = e.message ?: "An unknown error occurred while fetching analysis.")
         }
     }
 
@@ -50,7 +50,7 @@ class FirestoreResumeAnalysisRepository @Inject constructor(
                 .await()
             NetworkResult.Success(Unit)
         } catch (e: Exception) {
-            NetworkResult.Error(e.message ?: "An unknown error occurred while saving analysis.")
+            NetworkResult.Error(message = e.message ?: "An unknown error occurred while saving analysis.")
         }
     }
 

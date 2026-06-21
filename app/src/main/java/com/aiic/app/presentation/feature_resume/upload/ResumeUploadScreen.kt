@@ -155,7 +155,8 @@ fun ResumeUploadScreen(
                             PremiumButton(
                                 text = "Cancel Upload",
                                 onClick = { viewModel.cancelUpload() },
-                                isSecondary = true,
+                                containerColor = AIICTheme.colors.surfaceBright,
+                                contentColor = AIICTheme.colors.textPrimary,
                                 modifier = Modifier.fillMaxWidth()
                             )
                         }

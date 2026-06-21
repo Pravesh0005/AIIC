@@ -136,11 +136,13 @@ class FirestoreResumeRepository @Inject constructor(
 
     override suspend fun setActiveResume(userId: String, resumeId: String): NetworkResult<Unit> {
         return try {
-            firestore.runTransaction { transaction ->
-                val snapshot = transaction.get(
-                    resumesCollection.whereEqualTo("userId", userId).whereEqualTo("activeResume", true)
-                )
+            val snapshot = resumesCollection
+                .whereEqualTo("userId", userId)
+                .whereEqualTo("activeResume", true)
+                .get()
+                .await()
                 
+            firestore.runTransaction { transaction ->
                 for (doc in snapshot.documents) {
                     transaction.update(doc.reference, "activeResume", false)
                 }

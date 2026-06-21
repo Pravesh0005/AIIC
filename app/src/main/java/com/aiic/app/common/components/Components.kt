@@ -331,7 +331,7 @@ fun ScoreCard(
     modifier: Modifier = Modifier,
     accentColor: Color = AIICTheme.colors.primary,
 ) {
-    GlassCard(modifier = modifier) {
+    PremiumCard(modifier = modifier) {
         Column {
             Text(
                 text = title,
@@ -363,7 +363,7 @@ fun FeatureCard(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    GlassCard(modifier = modifier) {
+    PremiumCard(modifier = modifier) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Box(
                 modifier = Modifier

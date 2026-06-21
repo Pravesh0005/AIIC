@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.aiic.app.core.base.NetworkResult
 import com.aiic.app.domain.model.Resume
-import com.aiic.app.domain.repository.SessionRepository
+import com.aiic.app.domain.repository.AuthRepository
 import com.aiic.app.domain.usecase.DeleteResumeUseCase
 import com.aiic.app.domain.usecase.ObserveResumeUseCase
 import com.aiic.app.domain.usecase.SetActiveResumeUseCase
@@ -28,7 +28,7 @@ class ResumeHistoryViewModel @Inject constructor(
     private val observeResumeUseCase: ObserveResumeUseCase,
     private val deleteResumeUseCase: DeleteResumeUseCase,
     private val setActiveResumeUseCase: SetActiveResumeUseCase,
-    private val sessionRepository: SessionRepository,
+    private val authRepository: AuthRepository,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<HistoryUiState>(HistoryUiState.Loading)
@@ -39,7 +39,7 @@ class ResumeHistoryViewModel @Inject constructor(
     }
 
     private fun observeResumes() {
-        val uid = sessionRepository.getCurrentUserId() ?: return
+        val uid = authRepository.getCurrentSession()?.uid ?: return
         
         viewModelScope.launch {
             observeResumeUseCase(uid).collectLatest { resumes ->
@@ -49,14 +49,14 @@ class ResumeHistoryViewModel @Inject constructor(
     }
 
     fun setActiveResume(resumeId: String) {
-        val uid = sessionRepository.getCurrentUserId() ?: return
+        val uid = authRepository.getCurrentSession()?.uid ?: return
         viewModelScope.launch {
             setActiveResumeUseCase(uid, resumeId)
         }
     }
 
     fun deleteResume(resumeId: String, version: Int) {
-        val uid = sessionRepository.getCurrentUserId() ?: return
+        val uid = authRepository.getCurrentSession()?.uid ?: return
         viewModelScope.launch {
             deleteResumeUseCase(resumeId, uid, version)
         }

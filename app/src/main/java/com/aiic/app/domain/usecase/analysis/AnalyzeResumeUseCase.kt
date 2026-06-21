@@ -24,13 +24,13 @@ class AnalyzeResumeUseCase @Inject constructor(
             
             // Stage 1 & 2: Retrieval and Extraction
             when (val textResult = extractResumeTextUseCase(userId, resumeId)) {
-                is NetworkResult.Error -> return@withContext NetworkResult.Error("Failed to extract text from resume: ${textResult.message}")
+                is NetworkResult.Error -> return@withContext NetworkResult.Error(message = "Failed to extract text from resume: ${textResult.message}")
                 is NetworkResult.Success -> {
                     val rawText = textResult.data
                     
                     // Stage 3-8: Cleaning, Parsing, Skill Extraction, Keyword Analysis, ATS Evaluation, Recommendations
                     when (val analysisResult = generativeAiRepository.generateResumeAnalysis(userId, resumeId, rawText)) {
-                        is NetworkResult.Error -> return@withContext NetworkResult.Error("AI Analysis failed: ${analysisResult.message}")
+                        is NetworkResult.Error -> return@withContext NetworkResult.Error(message = "AI Analysis failed: ${analysisResult.message}")
                         is NetworkResult.Success -> {
                             val finalAnalysis = analysisResult.data
                             

@@ -7,7 +7,7 @@ import com.aiic.app.core.base.NetworkResult
 import com.aiic.app.domain.model.Resume
 import com.aiic.app.domain.model.UploadProgress
 import com.aiic.app.domain.repository.ResumeRepository
-import com.aiic.app.domain.repository.SessionRepository
+import com.aiic.app.domain.repository.AuthRepository
 import com.aiic.app.domain.usecase.CancelUploadUseCase
 import com.aiic.app.domain.usecase.FileValidationResult
 import com.aiic.app.domain.usecase.UploadResumeUseCase
@@ -35,14 +35,14 @@ class ResumeUploadViewModel @Inject constructor(
     private val uploadResumeUseCase: UploadResumeUseCase,
     private val cancelUploadUseCase: CancelUploadUseCase,
     private val resumeRepository: ResumeRepository,
-    private val sessionRepository: SessionRepository,
+    private val authRepository: AuthRepository,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<UploadUiState>(UploadUiState.Idle)
     val uiState: StateFlow<UploadUiState> = _uiState.asStateFlow()
 
     fun uploadFile(uri: Uri, fileName: String, fileSize: Long, mimeType: String?) {
-        val userId = sessionRepository.getCurrentUserId()
+        val userId = authRepository.getCurrentSession()?.uid
         if (userId == null) {
             _uiState.update { UploadUiState.Error("User not logged in.") }
             return

@@ -164,7 +164,8 @@ private fun DashboardContent(
                     PremiumButton(
                         text = "View Version History",
                         onClick = onNavigateToHistory,
-                        isSecondary = true,
+                        containerColor = AIICTheme.colors.surfaceBright,
+                        contentColor = AIICTheme.colors.textPrimary,
                         modifier = Modifier.fillMaxWidth()
                     )
                 }

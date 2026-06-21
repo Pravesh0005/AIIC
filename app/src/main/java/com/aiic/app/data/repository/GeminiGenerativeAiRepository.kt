@@ -43,7 +43,7 @@ class GeminiGenerativeAiRepository @Inject constructor() : GenerativeAiRepositor
                 val responseText = response.text
 
                 if (responseText.isNullOrBlank()) {
-                    return@withContext NetworkResult.Error("Failed to generate analysis: Empty response from AI.")
+                    return@withContext NetworkResult.Error(message = "Failed to generate analysis: Empty response from AI.")
                 }
 
                 // Clean the response text from potential markdown code blocks
@@ -73,7 +73,7 @@ class GeminiGenerativeAiRepository @Inject constructor() : GenerativeAiRepositor
 
                 NetworkResult.Success(finalAnalysis)
             } catch (e: Exception) {
-                NetworkResult.Error("AI Processing Error: ${e.message}")
+                NetworkResult.Error(message = "AI Processing Error: ${e.message}")
             }
         }
     }
