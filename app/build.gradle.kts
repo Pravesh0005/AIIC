@@ -19,6 +19,15 @@ android {
         versionName = "1.0.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables { useSupportLibrary = true }
+
+        // Read local.properties or use placeholder
+        val localProperties = java.util.Properties()
+        val localPropertiesFile = rootProject.file("local.properties")
+        if (localPropertiesFile.exists()) {
+            localProperties.load(java.io.FileInputStream(localPropertiesFile))
+        }
+        val geminiKey = localProperties.getProperty("GEMINI_API_KEY") ?: "\"\""
+        buildConfigField("String", "GEMINI_API_KEY", geminiKey)
     }
 
     buildTypes {
@@ -98,6 +107,10 @@ dependencies {
     implementation(libs.lottie.compose)
     implementation(libs.androidx.ui.text.google.fonts)
     implementation(libs.accompanist.systemuicontroller)
+    
+    // AI Intelligence
+    implementation(libs.generativeai)
+    implementation(libs.gson)
 
     debugImplementation(libs.androidx.ui.tooling)
 }

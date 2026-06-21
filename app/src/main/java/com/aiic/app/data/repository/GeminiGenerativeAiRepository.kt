@@ -6,62 +6,90 @@ import com.aiic.app.domain.model.AtsScoreDetails
 import com.aiic.app.domain.model.Recommendation
 import com.aiic.app.domain.model.ResumeAnalysis
 import com.aiic.app.domain.repository.GenerativeAiRepository
-import kotlinx.coroutines.delay
+import com.google.ai.client.generativeai.GenerativeModel
+import com.google.gson.Gson
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.util.UUID
 import javax.inject.Inject
 
 class GeminiGenerativeAiRepository @Inject constructor() : GenerativeAiRepository {
+
+    private val apiKey = com.aiic.app.BuildConfig.GEMINI_API_KEY
+    private val gson = Gson()
 
     override suspend fun generateResumeAnalysis(
         userId: String,
         resumeId: String,
         rawText: String
     ): NetworkResult<ResumeAnalysis> {
-        // Here we would configure the Google AI SDK / Vertex AI
-        val promptBuilder = ResumeAnalysisPromptBuilder()
-            .setRawResumeText(rawText)
-            .includeJsonSchema(true)
+        return withContext(Dispatchers.IO) {
+            try {
+                // Configure the Builder to enforce strict JSON
+                val promptBuilder = ResumeAnalysisPromptBuilder()
+                    .setRawResumeText(rawText)
+                    .includeJsonSchema(true)
 
-        val systemPrompt = promptBuilder.buildSystemPrompt()
-        val userPrompt = promptBuilder.buildUserPrompt()
+                val systemPrompt = promptBuilder.buildSystemPrompt()
+                val userPrompt = promptBuilder.buildUserPrompt()
+                val combinedPrompt = "$systemPrompt\n\n$userPrompt"
 
-        // Simulate AI processing latency
-        delay(3000)
+                val generativeModel = GenerativeModel(
+                    modelName = "gemini-1.5-flash",
+                    apiKey = apiKey
+                )
 
-        // Stubbed structured JSON response mimicking the exact output expected from the LLM
-        val mockAnalysis = ResumeAnalysis(
-            analysisId = UUID.randomUUID().toString(),
-            resumeId = resumeId,
-            userId = userId,
-            timestamp = System.currentTimeMillis(),
-            overallScore = 82,
-            atsScoreDetails = AtsScoreDetails(
-                skillsScore = 85,
-                projectScore = 70,
-                experienceScore = 90,
-                keywordScore = 80,
-                structureScore = 88,
-                completenessScore = 80
-            ),
-            profileSummary = "Strong mid-to-senior level Android developer with significant experience in modern frameworks like Compose and Kotlin. Lacks explicit cloud backend skills.",
-            strengths = listOf("Deep Android knowledge", "Modern stack adoption (Compose, Coroutines)", "Proven track record of performance optimization"),
-            weaknesses = listOf("No mention of testing frameworks (JUnit, Espresso)", "Lacks backend/cloud integration experience", "Missing measurable metrics in earlier roles"),
-            riskAreas = listOf("Might need ramp-up time for full-stack tasks", "Testing practices unclear"),
-            recruiterImpression = "Solid candidate for native Android roles. Needs technical screening on architecture patterns.",
-            hirePotential = "High",
-            skills = mapOf(
-                "Languages" to listOf("Kotlin", "Java"),
-                "Android" to listOf("Jetpack Compose", "Coroutines", "MVVM"),
-                "Backend/Cloud" to listOf("Firebase")
-            ),
-            missingKeywords = listOf("JUnit", "Espresso", "CI/CD", "Dagger/Hilt", "REST APIs"),
-            recommendations = listOf(
-                Recommendation("Resume Improvements", "Add specific metrics to your StartupInc role (e.g. 'reduced crash rate by X%').", "High"),
-                Recommendation("Technology Suggestions", "Include testing frameworks like JUnit or Espresso to strengthen the profile.", "High"),
-                Recommendation("Project Suggestions", "Add a personal project demonstrating CI/CD pipelines.", "Medium")
-            )
-        )
+                val response = generativeModel.generateContent(combinedPrompt)
+                val responseText = response.text
 
-        return NetworkResult.Success(mockAnalysis)
+                if (responseText.isNullOrBlank()) {
+                    return@withContext NetworkResult.Error("Failed to generate analysis: Empty response from AI.")
+                }
+
+                // Clean the response text from potential markdown code blocks
+                val cleanJson = responseText.replace("```json", "").replace("```", "").trim()
+
+                // Parse the JSON into our internal mapping class
+                val analysisData = gson.fromJson(cleanJson, AiAnalysisResponse::class.java)
+
+                // Map to domain model and apply unique identifiers
+                val finalAnalysis = ResumeAnalysis(
+                    analysisId = UUID.randomUUID().toString(),
+                    resumeId = resumeId,
+                    userId = userId,
+                    timestamp = System.currentTimeMillis(),
+                    overallScore = analysisData.overallScore,
+                    atsScoreDetails = analysisData.atsScoreDetails,
+                    profileSummary = analysisData.profileSummary,
+                    strengths = analysisData.strengths ?: emptyList(),
+                    weaknesses = analysisData.weaknesses ?: emptyList(),
+                    riskAreas = analysisData.riskAreas ?: emptyList(),
+                    recruiterImpression = analysisData.recruiterImpression ?: "",
+                    hirePotential = analysisData.hirePotential ?: "",
+                    skills = analysisData.skills ?: emptyMap(),
+                    missingKeywords = analysisData.missingKeywords ?: emptyList(),
+                    recommendations = analysisData.recommendations ?: emptyList()
+                )
+
+                NetworkResult.Success(finalAnalysis)
+            } catch (e: Exception) {
+                NetworkResult.Error("AI Processing Error: ${e.message}")
+            }
+        }
     }
 }
+
+// Temporary internal data class for Gson parsing mapping strictly to the JSON schema
+data class AiAnalysisResponse(
+    val overallScore: Int,
+    val atsScoreDetails: AtsScoreDetails,
+    val profileSummary: String,
+    val strengths: List<String>?,
+    val weaknesses: List<String>?,
+    val riskAreas: List<String>?,
+    val recruiterImpression: String?,
+    val hirePotential: String?,
+    val skills: Map<String, List<String>>?,
+    val missingKeywords: List<String>?,
+    val recommendations: List<Recommendation>?
+)
