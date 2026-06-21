@@ -190,6 +190,16 @@ fun AccountSetupScreen(
         SnackbarHost(
             hostState = snackbarHostState,
             modifier = Modifier.align(Alignment.BottomCenter),
+            snackbar = { data ->
+                androidx.compose.material3.Snackbar(
+                    snackbarData = data,
+                    containerColor = AIICTheme.colors.surfaceElevated,
+                    contentColor = AIICTheme.colors.textPrimary,
+                    actionColor = AIICTheme.colors.primary,
+                    shape = AIICTheme.shapes.medium,
+                    modifier = Modifier.padding(16.dp)
+                )
+            }
         )
     }
 }
