@@ -42,7 +42,11 @@ class FirestoreResumeRepository @Inject constructor(
         currentUploadTask = storageRef.putFile(fileUri)
 
         currentUploadTask?.addOnProgressListener { snapshot ->
-            trySend(NetworkResult.Success(UploadProgress(snapshot.bytesTransferred, snapshot.totalByteCount)))
+            val transferred = snapshot.bytesTransferred
+            val total = snapshot.totalByteCount
+            // Prevent emitting a 100% complete state from the progress listener to avoid race conditions
+            val safeTransferred = if (total > 0 && transferred >= total) total - 1 else transferred
+            trySend(NetworkResult.Success(UploadProgress(safeTransferred, total)))
         }?.addOnSuccessListener {
             // Provide a final progress event to ensure completion is registered before moving to next step
             trySend(NetworkResult.Success(UploadProgress(fileSize, fileSize)))
