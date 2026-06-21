@@ -365,7 +365,7 @@ private fun StatsRow(state: HomeState) {
 }
 
 @Composable
-private fun QuickActions() {
+private fun QuickActions(onNavigateToResume: () -> Unit) {
     Column {
         SectionHeader(title = "Quick Actions", subtitle = "Jump right in")
         Spacer(Modifier.height(12.dp))
@@ -374,50 +374,24 @@ private fun QuickActions() {
             verticalArrangement = Arrangement.spacedBy(10.dp),
         ) {
             FeatureCard(
-                icon = {
-                    Icon(Icons.Rounded.Psychology, null, tint = AIICTheme.colors.primary, modifier = Modifier.size(22.dp))
-                },
+                icon = { Icon(Icons.Rounded.Psychology, null, tint = AIICTheme.colors.primary, modifier = Modifier.size(22.dp)) },
                 title = "AI Mock Interview",
                 description = "Practice with adaptive AI interviewer",
-                onClick = {},
-private fun QuickActions(onNavigateToResume: () -> Unit) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = AIICTheme.spacing.screenHorizontal),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
-    ) {
-        Text(
-            text = "Quick Actions",
-            style = AIICTheme.typography.titleMedium,
-            color = AIICTheme.colors.textPrimary,
-            fontWeight = FontWeight.Bold,
-        )
-        Text(
-            text = "Jump right in",
-            style = AIICTheme.typography.labelMedium,
-            color = AIICTheme.colors.textTertiary,
-            modifier = Modifier.padding(bottom = 8.dp),
-        )
-
-        FeatureCard(
-            title = "AI Mock Interview",
-            description = "Practice with adaptive AI interviewer",
-            icon = { Icon(Icons.Rounded.Psychology, null, tint = AIICTheme.colors.primary, modifier = Modifier.size(22.dp)) },
-            onClick = { onNavigateToResume() }
-        )
-        FeatureCard(
-            title = "Question Bank",
-            description = "Browse 500+ curated questions",
-            icon = { Icon(Icons.Rounded.QuestionAnswer, null, tint = AIICTheme.colors.accent, modifier = Modifier.size(22.dp)) },
-            onClick = { }
-        )
-        FeatureCard(
-            title = "Skill Assessment",
-            description = "Evaluate your strengths & gaps",
-            icon = { Icon(Icons.Rounded.TrendingUp, null, tint = Color(0xFF10B981), modifier = Modifier.size(22.dp)) },
-            onClick = { }
-        )
+                onClick = { onNavigateToResume() }
+            )
+            FeatureCard(
+                icon = { Icon(Icons.Rounded.QuestionAnswer, null, tint = AIICTheme.colors.accent, modifier = Modifier.size(22.dp)) },
+                title = "Question Bank",
+                description = "Browse 500+ curated questions",
+                onClick = { }
+            )
+            FeatureCard(
+                icon = { Icon(Icons.Rounded.TrendingUp, null, tint = Color(0xFF10B981), modifier = Modifier.size(22.dp)) },
+                title = "Skill Assessment",
+                description = "Evaluate your strengths & gaps",
+                onClick = { }
+            )
+        }
     }
 }
 
