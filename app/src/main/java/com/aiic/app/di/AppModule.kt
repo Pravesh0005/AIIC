@@ -14,6 +14,8 @@ import com.aiic.app.data.repository.SessionRepositoryImpl
 import com.aiic.app.domain.repository.AuthRepository
 import com.aiic.app.domain.repository.SessionRepository
 import com.aiic.app.domain.repository.UserRepository
+import com.aiic.app.domain.repository.ResumeRepository
+import com.aiic.app.data.repository.FirestoreResumeRepository
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
@@ -55,6 +57,12 @@ object AppModule {
     @Provides @Singleton
     fun provideSessionRepository(prefs: PreferencesManager): SessionRepository =
         SessionRepositoryImpl(prefs)
+
+    @Provides @Singleton
+    fun provideResumeRepository(
+        firestore: FirebaseFirestore,
+        storage: FirebaseStorage
+    ): ResumeRepository = FirestoreResumeRepository(firestore, storage)
 
     // Infrastructure
     @Provides @Singleton
