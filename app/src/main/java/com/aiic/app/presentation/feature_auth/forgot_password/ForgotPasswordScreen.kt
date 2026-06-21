@@ -18,8 +18,6 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.CheckCircle
-import androidx.compose.material.icons.rounded.Email
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.SnackbarHost
@@ -40,8 +38,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.aiic.app.common.components.AIICTextField
-import com.aiic.app.common.components.GlassCard
-import com.aiic.app.common.components.GradientText
 import com.aiic.app.common.components.PremiumButton
 import com.aiic.app.core.base.UiEvent
 import com.aiic.app.core.theme.AIICTheme
@@ -70,13 +66,15 @@ fun ForgotPasswordScreen(
     }
 
     Box(
-        modifier = Modifier.fillMaxSize().background(AIICTheme.colors.background)
+        modifier = Modifier
+            .fillMaxSize()
+            .background(AIICTheme.colors.background)
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .statusBarsPadding()
-                .padding(horizontal = AIICTheme.spacing.screenHorizontal)
+                .padding(horizontal = 24.dp)
                 .padding(top = 16.dp, bottom = 40.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
@@ -97,16 +95,20 @@ fun ForgotPasswordScreen(
                 // Success state
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier.padding(horizontal = 24.dp),
                 ) {
                     Icon(
                         Icons.Rounded.CheckCircle,
                         contentDescription = null,
-                        tint = AIICTheme.colors.secondary,
+                        tint = AIICTheme.colors.primary, // Using primary since it's white now
                         modifier = Modifier.size(72.dp),
                     )
                     Spacer(Modifier.height(24.dp))
-                    GradientText(text = "Check Your Email", style = AIICTheme.typography.headlineLarge)
+                    Text(
+                        text = "Check Your Email",
+                        style = AIICTheme.typography.displayMedium,
+                        color = AIICTheme.colors.textPrimary,
+                        fontWeight = FontWeight.Bold,
+                    )
                     Spacer(Modifier.height(12.dp))
                     Text(
                         text = "We've sent a password reset link to ${state.email}. Check your inbox and follow the instructions.",
@@ -123,9 +125,14 @@ fun ForgotPasswordScreen(
                 }
             } else {
                 // Form state
-                AnimatedVisibility(visibleItems > 0, enter = fadeIn() + slideInVertically { -40 }) {
+                AnimatedVisibility(visibleItems > 0, enter = fadeIn() + slideInVertically { -20 }) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        GradientText(text = "Reset Password", style = AIICTheme.typography.headlineLarge)
+                        Text(
+                            text = "Reset Password",
+                            style = AIICTheme.typography.displayMedium,
+                            color = AIICTheme.colors.textPrimary,
+                            fontWeight = FontWeight.Bold,
+                        )
                         Spacer(Modifier.height(8.dp))
                         Text(
                             text = "Enter your email and we'll send you a link to reset your password",
@@ -138,44 +145,33 @@ fun ForgotPasswordScreen(
 
                 Spacer(Modifier.height(40.dp))
 
-                AnimatedVisibility(visibleItems > 1, enter = fadeIn() + slideInVertically { 30 }) {
-                    GlassCard(modifier = Modifier.fillMaxWidth()) {
-                        Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                            AIICTextField(
-                                value = state.email,
-                                onValueChange = { viewModel.onAction(ForgotPasswordAction.UpdateEmail(it)) },
-                                label = "Email Address",
-                                placeholder = "you@example.com",
-                                leadingIcon = Icons.Rounded.Email,
-                                isError = state.emailError != null,
-                                errorMessage = state.emailError,
-                                keyboardType = KeyboardType.Email,
-                            )
-                        }
+                AnimatedVisibility(visibleItems > 1, enter = fadeIn() + slideInVertically { 20 }) {
+                    Column(verticalArrangement = Arrangement.spacedBy(20.dp)) {
+                        AIICTextField(
+                            value = state.email,
+                            onValueChange = { viewModel.onAction(ForgotPasswordAction.UpdateEmail(it)) },
+                            label = "EMAIL",
+                            placeholder = "you@example.com",
+                            isError = state.emailError != null,
+                            errorMessage = state.emailError,
+                            keyboardType = KeyboardType.Email,
+                        )
                     }
                 }
 
-                Spacer(Modifier.height(28.dp))
+                Spacer(Modifier.height(32.dp))
 
-                AnimatedVisibility(visibleItems > 2, enter = fadeIn() + slideInVertically { 30 }) {
+                AnimatedVisibility(visibleItems > 2, enter = fadeIn() + slideInVertically { 20 }) {
                     PremiumButton(
-                        text = if (state.isLoading) "" else "Send Reset Link",
+                        text = "Send Reset Link",
                         onClick = { viewModel.onAction(ForgotPasswordAction.ResetPassword) },
                         enabled = !state.isLoading,
+                        isLoading = state.isLoading,
                         modifier = Modifier.fillMaxWidth(),
-                        content = if (state.isLoading) {
-                            {
-                                CircularProgressIndicator(
-                                    modifier = Modifier.size(22.dp),
-                                    color = AIICTheme.colors.textOnPrimary,
-                                    strokeWidth = 2.dp,
-                                )
-                            }
-                        } else null,
                     )
                 }
 
-                Spacer(Modifier.height(24.dp))
+                Spacer(Modifier.height(32.dp))
 
                 AnimatedVisibility(visibleItems > 3, enter = fadeIn()) {
                     Text(
