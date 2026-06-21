@@ -1,8 +1,10 @@
 package com.aiic.app.presentation.feature_home
 
+import androidx.lifecycle.viewModelScope
 import com.aiic.app.core.base.BaseViewModel
 import com.aiic.app.domain.model.InterviewCategory
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 data class HomeState(
@@ -33,7 +35,7 @@ class HomeViewModel @Inject constructor(
     init {
         val user = authRepository.getCurrentSession()
         if (user != null) {
-            updateState { copy(userName = user.name.ifBlank { "User" }) }
+            updateState { copy(userName = user.displayName?.ifBlank { "User" } ?: "User") }
         }
     }
 
