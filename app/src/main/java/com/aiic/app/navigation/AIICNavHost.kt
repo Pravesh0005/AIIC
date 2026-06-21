@@ -18,6 +18,10 @@ import com.aiic.app.presentation.feature_profile.AccountSetupScreen
 import com.aiic.app.presentation.feature_profile.ProfileScreen
 import com.aiic.app.presentation.feature_settings.SettingsScreen
 import com.aiic.app.presentation.feature_splash.SplashScreen
+import com.aiic.app.presentation.feature_resume.dashboard.ResumeDashboardScreen
+import com.aiic.app.presentation.feature_resume.upload.ResumeUploadScreen
+import com.aiic.app.presentation.feature_resume.history.ResumeHistoryScreen
+import com.aiic.app.presentation.feature_resume.detail.ResumeDetailScreen
 
 private const val ANIM_DURATION = 400
 
@@ -134,6 +138,37 @@ fun AIICNavHost(navController: NavHostController = rememberNavController()) {
 
         composable(AppRoutes.Settings.route) {
             SettingsScreen()
+        }
+
+        // Resume Platform
+        composable(AppRoutes.ResumeDashboard.route) {
+            ResumeDashboardScreen(
+                onNavigateToUpload = { navController.navigate(AppRoutes.ResumeUpload.route) },
+                onNavigateToHistory = { navController.navigate(AppRoutes.ResumeHistory.route) },
+                onNavigateToDetail = { resumeId -> navController.navigate(AppRoutes.ResumeDetail.createRoute(resumeId)) }
+            )
+        }
+
+        composable(AppRoutes.ResumeUpload.route) {
+            ResumeUploadScreen(
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
+
+        composable(AppRoutes.ResumeHistory.route) {
+            ResumeHistoryScreen(
+                onNavigateBack = { navController.popBackStack() },
+                onNavigateToDetail = { resumeId -> navController.navigate(AppRoutes.ResumeDetail.createRoute(resumeId)) }
+            )
+        }
+
+        composable(
+            route = AppRoutes.ResumeDetail.route,
+            arguments = listOf(androidx.navigation.navArgument("resumeId") { type = androidx.navigation.NavType.StringType })
+        ) {
+            ResumeDetailScreen(
+                onNavigateBack = { navController.popBackStack() }
+            )
         }
     }
 }

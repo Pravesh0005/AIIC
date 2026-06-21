@@ -11,6 +11,14 @@ sealed class AppRoutes(val route: String) {
     data object Profile : AppRoutes("profile")
     data object Settings : AppRoutes("settings")
 
+    // Resume Platform
+    data object ResumeDashboard : AppRoutes("resume_dashboard")
+    data object ResumeUpload : AppRoutes("resume_upload")
+    data object ResumeHistory : AppRoutes("resume_history")
+    data object ResumeDetail : AppRoutes("resume_detail/{resumeId}") {
+        fun createRoute(resumeId: String) = "resume_detail/$resumeId"
+    }
+
     companion object {
         const val AUTH_GRAPH = "auth_graph"
         const val MAIN_GRAPH = "main_graph"
