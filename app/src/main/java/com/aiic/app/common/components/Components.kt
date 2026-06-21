@@ -43,17 +43,10 @@ fun PremiumButton(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     isLoading: Boolean = false,
-    gradientColors: List<Color>? = null,
+    containerColor: Color = AIICTheme.colors.primary,
+    contentColor: Color = AIICTheme.colors.textOnPrimary,
     content: @Composable (() -> Unit)? = null,
 ) {
-    val colors = gradientColors ?: listOf(
-        AIICTheme.colors.gradientPrimaryStart,
-        AIICTheme.colors.gradientPrimaryEnd,
-    )
-    val disabledColors = listOf(
-        AIICTheme.colors.textDisabled,
-        AIICTheme.colors.textDisabled,
-    )
 
     Button(
         onClick = onClick,
@@ -62,30 +55,42 @@ fun PremiumButton(
             .height(56.dp),
         enabled = enabled && !isLoading,
         shape = AIICTheme.shapes.button,
-        colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = containerColor,
+            contentColor = contentColor,
+            disabledContainerColor = AIICTheme.colors.surfaceBright,
+            disabledContentColor = AIICTheme.colors.textDisabled
+        ),
         contentPadding = PaddingValues(),
     ) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(56.dp)
-                .background(
-                    brush = Brush.linearGradient(if (enabled) colors else disabledColors),
-                    shape = AIICTheme.shapes.button,
-                ),
+                .height(56.dp),
             contentAlignment = Alignment.Center,
         ) {
             when {
                 content != null -> content()
-                isLoading -> CircularProgressIndicator(
-                    modifier = Modifier.size(24.dp),
-                    color = AIICTheme.colors.textOnPrimary,
-                    strokeWidth = 2.5.dp,
-                )
+                isLoading -> Row(
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(20.dp),
+                        color = contentColor,
+                        strokeWidth = 2.dp,
+                    )
+                    Spacer(Modifier.width(12.dp))
+                    Text(
+                        text = "Please wait...",
+                        style = AIICTheme.typography.button,
+                        color = contentColor,
+                    )
+                }
                 else -> Text(
                     text = text,
                     style = AIICTheme.typography.button,
-                    color = AIICTheme.colors.textOnPrimary,
+                    color = contentColor,
                 )
             }
         }
@@ -275,7 +280,8 @@ fun ErrorStateView(
             text = "Try Again",
             onClick = onRetry,
             modifier = Modifier.width(180.dp),
-            gradientColors = listOf(AIICTheme.colors.error, AIICTheme.colors.accentVariant),
+            containerColor = AIICTheme.colors.error,
+            contentColor = AIICTheme.colors.textPrimary,
         )
     }
 }
