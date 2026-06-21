@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.aiic.app.domain.model.ResumeAnalysis
 import com.aiic.app.domain.repository.ResumeAnalysisRepository
-import com.aiic.app.domain.repository.SessionRepository
+import com.aiic.app.domain.repository.AuthRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -23,7 +23,7 @@ sealed interface InsightsUiState {
 @HiltViewModel
 class ResumeInsightsViewModel @Inject constructor(
     private val analysisRepository: ResumeAnalysisRepository,
-    private val sessionRepository: SessionRepository
+    private val authRepository: AuthRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<InsightsUiState>(InsightsUiState.Loading)
@@ -34,7 +34,7 @@ class ResumeInsightsViewModel @Inject constructor(
     }
 
     private fun observeHistory() {
-        val userId = sessionRepository.getCurrentUserId()
+        val userId = authRepository.getCurrentSession()?.uid
         if (userId == null) {
             _uiState.update { InsightsUiState.Error("User not logged in.") }
             return
