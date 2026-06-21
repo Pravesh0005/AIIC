@@ -124,20 +124,45 @@ fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
             }
         },
     ) { innerPadding ->
-        LazyColumn(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .statusBarsPadding(),
-            contentPadding = PaddingValues(bottom = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(AIICTheme.spacing.sectionGap),
         ) {
-            item { HeroSection(state) }
-            item { StatsRow(state) }
-            item { QuickActions() }
-            item { RecentActivity(state) }
-            item { AnalyticsPreview(state) }
+            when (selectedNav) {
+                0 -> HomeContent(state)
+                1 -> AnalyticsPlaceholder()
+                2 -> com.aiic.app.presentation.feature_profile.ProfileScreen(
+                    onNavigateToEditProfile = { /* TODO: Hook up nav */ },
+                    onNavigateToSettings = { selectedNav = 3 }
+                )
+                3 -> com.aiic.app.presentation.feature_settings.SettingsScreen()
+            }
         }
+    }
+}
+
+@Composable
+private fun AnalyticsPlaceholder() {
+    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        Text("Analytics Coming Soon", style = AIICTheme.typography.titleMedium, color = AIICTheme.colors.textSecondary)
+    }
+}
+
+@Composable
+private fun HomeContent(state: HomeState) {
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            .statusBarsPadding(),
+        contentPadding = PaddingValues(bottom = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(AIICTheme.spacing.sectionGap),
+    ) {
+        item { HeroSection(state) }
+        item { StatsRow(state) }
+        item { QuickActions() }
+        item { RecentActivity(state) }
+        item { AnalyticsPreview(state) }
     }
 }
 

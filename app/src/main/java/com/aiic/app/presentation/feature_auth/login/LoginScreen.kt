@@ -110,9 +110,33 @@ fun LoginScreen(
 
             // Google Button (Top Priority)
             AnimatedVisibility(visibleItems > 1, enter = fadeIn() + slideInVertically { 20 }) {
+                val context = androidx.compose.ui.platform.LocalContext.current
+                val googleSignInLauncher = androidx.activity.compose.rememberLauncherForActivityResult(
+                    contract = androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult()
+                ) { result ->
+                    val task = com.google.android.gms.auth.api.signin.GoogleSignIn.getSignedInAccountFromIntent(result.data)
+                    try {
+                        val account = task.getResult(com.google.android.gms.common.api.ApiException::class.java)
+                        account?.idToken?.let { idToken ->
+                            viewModel.onAction(LoginAction.GoogleSignInSuccess(idToken))
+                        }
+                    } catch (e: Exception) {
+                        viewModel.onAction(LoginAction.GoogleSignInFailure(e.message ?: "Google Sign-In Failed"))
+                    }
+                }
+
                 com.aiic.app.common.components.GoogleSignInButton(
                     text = "Continue with Google",
-                    onClick = { viewModel.onAction(LoginAction.LoginWithGoogle) },
+                    onClick = { 
+                        val gso = com.google.android.gms.auth.api.signin.GoogleSignInOptions.Builder(com.google.android.gms.auth.api.signin.GoogleSignInOptions.DEFAULT_SIGN_IN)
+                            .requestIdToken(context.getString(com.aiic.app.R.string.default_web_client_id))
+                            .requestEmail()
+                            .build()
+                        val googleSignInClient = com.google.android.gms.auth.api.signin.GoogleSignIn.getClient(context, gso)
+                        googleSignInClient.signOut().addOnCompleteListener {
+                            googleSignInLauncher.launch(googleSignInClient.signInIntent)
+                        }
+                    },
                     modifier = Modifier.fillMaxWidth()
                 )
             }
