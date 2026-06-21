@@ -64,6 +64,20 @@ object AppModule {
         storage: FirebaseStorage
     ): ResumeRepository = FirestoreResumeRepository(firestore, storage)
 
+    @Provides @Singleton
+    fun providePdfExtractionRepository(): com.aiic.app.domain.repository.PdfExtractionRepository = 
+        com.aiic.app.data.repository.MockPdfExtractionRepository()
+
+    @Provides @Singleton
+    fun provideGenerativeAiRepository(): com.aiic.app.domain.repository.GenerativeAiRepository = 
+        com.aiic.app.data.repository.GeminiGenerativeAiRepository()
+
+    @Provides @Singleton
+    fun provideResumeAnalysisRepository(
+        firestore: FirebaseFirestore
+    ): com.aiic.app.domain.repository.ResumeAnalysisRepository = 
+        com.aiic.app.data.repository.FirestoreResumeAnalysisRepository(firestore)
+
     // Infrastructure
     @Provides @Singleton
     fun provideDispatcherProvider(): DispatcherProvider = DefaultDispatcherProvider()

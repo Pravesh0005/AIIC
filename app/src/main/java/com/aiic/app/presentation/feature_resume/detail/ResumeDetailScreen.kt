@@ -45,6 +45,7 @@ import java.util.Locale
 @Composable
 fun ResumeDetailScreen(
     onNavigateBack: () -> Unit,
+    onNavigateToAnalysis: (String) -> Unit,
     viewModel: ResumeDetailViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -74,7 +75,10 @@ fun ResumeDetailScreen(
                     )
                 }
                 is DetailUiState.Success -> {
-                    DetailContent(resume = state.resume)
+                    DetailContent(
+                        resume = state.resume,
+                        onNavigateToAnalysis = { onNavigateToAnalysis(state.resume.resumeId) }
+                    )
                 }
             }
         }
@@ -103,7 +107,7 @@ private fun RowHeader(onNavigateBack: () -> Unit) {
 }
 
 @Composable
-private fun DetailContent(resume: Resume) {
+private fun DetailContent(resume: Resume, onNavigateToAnalysis: () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -160,6 +164,14 @@ private fun DetailContent(resume: Resume) {
                 DetailRow(label = "Processing State", value = resume.processingState.name)
             }
         }
+        
+        Spacer(Modifier.height(24.dp))
+        
+        com.aiic.app.common.components.PremiumButton(
+            text = "Generate AI Intelligence Insights",
+            onClick = onNavigateToAnalysis,
+            modifier = Modifier.fillMaxWidth()
+        )
         
         Spacer(Modifier.height(24.dp))
         
