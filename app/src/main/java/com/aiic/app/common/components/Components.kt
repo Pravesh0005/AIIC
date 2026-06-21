@@ -7,6 +7,7 @@ import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -106,17 +107,8 @@ fun GlassCard(
         modifier = modifier
             .fillMaxWidth()
             .clip(AIICTheme.shapes.card)
-            .background(AIICTheme.colors.glassBackground)
-            .background(
-                brush = Brush.verticalGradient(
-                    colors = listOf(
-                        AIICTheme.colors.glassBorder,
-                        Color.Transparent,
-                    ),
-                    startY = 0f,
-                    endY = 4f,
-                )
-            )
+            .background(AIICTheme.colors.surfaceElevated)
+            .border(1.dp, AIICTheme.colors.border, AIICTheme.shapes.card)
             .padding(AIICTheme.spacing.cardPadding),
     ) {
         content()
@@ -322,16 +314,12 @@ fun GradientText(
     style: androidx.compose.ui.text.TextStyle = AIICTheme.typography.displayMedium,
     colors: List<Color>? = null,
 ) {
-    val gradient = colors ?: listOf(
-        AIICTheme.colors.gradientPrimaryStart,
-        AIICTheme.colors.gradientPrimaryEnd,
-    )
     Text(
         text = text,
         modifier = modifier,
-        style = style.copy(
-            brush = Brush.linearGradient(gradient),
-        ),
+        style = style,
+        color = AIICTheme.colors.textPrimary,
+        fontWeight = FontWeight.Bold,
     )
 }
 
