@@ -2,7 +2,7 @@ package com.aiic.app.presentation.feature_onboarding
 
 import androidx.lifecycle.viewModelScope
 import com.aiic.app.core.base.BaseViewModel
-import com.aiic.app.domain.repository.UserPreferencesRepository
+import com.aiic.app.domain.repository.SessionRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -45,7 +45,7 @@ val onboardingPages = listOf(
 
 @HiltViewModel
 class OnboardingViewModel @Inject constructor(
-    private val userPreferencesRepository: UserPreferencesRepository,
+    private val sessionRepository: SessionRepository,
 ) : BaseViewModel<OnboardingState, OnboardingAction>(OnboardingState()) {
 
     override fun onAction(action: OnboardingAction) {
@@ -62,7 +62,7 @@ class OnboardingViewModel @Inject constructor(
             }
             OnboardingAction.Skip, OnboardingAction.Complete -> {
                 viewModelScope.launch {
-                    userPreferencesRepository.setOnboardingCompleted(true)
+                    sessionRepository.setOnboardingCompleted(true)
                 }
             }
         }
