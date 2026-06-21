@@ -110,11 +110,9 @@ fun LoginScreen(
 
             // Google Button (Top Priority)
             AnimatedVisibility(visibleItems > 1, enter = fadeIn() + slideInVertically { 20 }) {
-                PremiumButton(
+                com.aiic.app.common.components.GoogleSignInButton(
                     text = "Continue with Google",
                     onClick = { viewModel.onAction(LoginAction.LoginWithGoogle) },
-                    containerColor = AIICTheme.colors.surfaceElevated,
-                    contentColor = AIICTheme.colors.textPrimary,
                     modifier = Modifier.fillMaxWidth()
                 )
             }

@@ -390,3 +390,47 @@ fun FeatureCard(
         }
     }
 }
+
+@Composable
+fun GoogleSignInButton(
+    text: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    isLoading: Boolean = false,
+) {
+    androidx.compose.material3.OutlinedButton(
+        onClick = onClick,
+        modifier = modifier
+            .fillMaxWidth()
+            .height(56.dp),
+        enabled = !isLoading,
+        shape = AIICTheme.shapes.button,
+        colors = androidx.compose.material3.ButtonDefaults.outlinedButtonColors(
+            containerColor = Color.Transparent,
+            contentColor = AIICTheme.colors.textPrimary,
+        ),
+        border = androidx.compose.foundation.BorderStroke(1.dp, AIICTheme.colors.border),
+        contentPadding = PaddingValues(horizontal = 16.dp),
+    ) {
+        if (isLoading) {
+            CircularProgressIndicator(
+                modifier = Modifier.size(24.dp),
+                color = AIICTheme.colors.textPrimary,
+                strokeWidth = 2.dp,
+            )
+        } else {
+            androidx.compose.material3.Icon(
+                painter = androidx.compose.ui.res.painterResource(id = com.aiic.app.R.drawable.ic_google),
+                contentDescription = "Google Logo",
+                modifier = Modifier.size(24.dp),
+                tint = Color.Unspecified
+            )
+            Spacer(Modifier.width(12.dp))
+            Text(
+                text = text,
+                style = AIICTheme.typography.button,
+                color = AIICTheme.colors.textPrimary,
+            )
+        }
+    }
+}

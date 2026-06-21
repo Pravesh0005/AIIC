@@ -109,11 +109,9 @@ fun RegisterScreen(
 
             AnimatedVisibility(visibleItems > 1, enter = fadeIn() + slideInVertically { 20 }) {
                 // Top Priority: Google Sign-In (Standard premium flow)
-                PremiumButton(
+                com.aiic.app.common.components.GoogleSignInButton(
                     text = "Continue with Google",
                     onClick = { /* TODO: Launch Google Sign In */ },
-                    containerColor = AIICTheme.colors.surfaceElevated,
-                    contentColor = AIICTheme.colors.textPrimary,
                     modifier = Modifier.fillMaxWidth()
                 )
             }
