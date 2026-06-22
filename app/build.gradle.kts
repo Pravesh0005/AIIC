@@ -1,3 +1,6 @@
+import java.util.Properties
+import java.io.FileInputStream
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -19,6 +22,18 @@ android {
         versionName = "1.0.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables { useSupportLibrary = true }
+
+        // Read local.properties or use placeholder
+        val localProperties = Properties()
+        val localPropertiesFile = rootProject.file("local.properties")
+        if (localPropertiesFile.exists()) {
+            localProperties.load(FileInputStream(localPropertiesFile))
+        }
+        val geminiKey = localProperties.getProperty("GEMINI_API_KEY") ?: "\"\""
+        buildConfigField("String", "GEMINI_API_KEY", geminiKey)
+        
+        val groqKey = localProperties.getProperty("GROQ_API_KEY") ?: "\"\""
+        buildConfigField("String", "GROQ_API_KEY", groqKey)
     }
 
     buildTypes {
@@ -32,7 +47,6 @@ android {
         }
         debug {
             isDebuggable = true
-            applicationIdSuffix = ".debug"
         }
     }
 
@@ -99,6 +113,11 @@ dependencies {
     implementation(libs.lottie.compose)
     implementation(libs.androidx.ui.text.google.fonts)
     implementation(libs.accompanist.systemuicontroller)
+    
+    // AI Intelligence
+    implementation(libs.generativeai)
+    implementation(libs.gson)
+    implementation(libs.pdfbox.android)
 
     debugImplementation(libs.androidx.ui.tooling)
 }

@@ -24,12 +24,14 @@ sealed interface LoginAction {
     data class UpdatePassword(val password: String) : LoginAction
     data object TogglePasswordVisibility : LoginAction
     data object Login : LoginAction
-    data object LoginWithGoogle : LoginAction
+    data class GoogleSignInSuccess(val idToken: String) : LoginAction
+    data class GoogleSignInFailure(val error: String) : LoginAction
 }
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     private val loginUseCase: LoginUseCase,
+    private val authRepository: com.aiic.app.domain.repository.AuthRepository
 ) : BaseViewModel<LoginState, LoginAction>(LoginState()) {
 
     override fun onAction(action: LoginAction) {
@@ -44,7 +46,23 @@ class LoginViewModel @Inject constructor(
                 copy(isPasswordVisible = !isPasswordVisible)
             }
             LoginAction.Login -> login()
-            LoginAction.LoginWithGoogle -> sendEvent(UiEvent.ShowSnackbar("Google Sign-In coming soon"))
+            is LoginAction.GoogleSignInSuccess -> loginWithGoogle(action.idToken)
+            is LoginAction.GoogleSignInFailure -> sendEvent(UiEvent.ShowSnackbar(action.error))
+        }
+    }
+
+    private fun loginWithGoogle(idToken: String) {
+        viewModelScope.launch {
+            updateState { copy(isLoading = true) }
+            when (val result = authRepository.loginWithGoogle(idToken)) {
+                is NetworkResult.Success -> {
+                    sendEvent(UiEvent.Navigate("home"))
+                }
+                is NetworkResult.Error -> {
+                    sendEvent(UiEvent.ShowSnackbar(result.message))
+                }
+            }
+            updateState { copy(isLoading = false) }
         }
     }
 

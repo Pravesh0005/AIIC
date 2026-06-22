@@ -20,8 +20,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
@@ -36,13 +34,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.aiic.app.common.components.GradientText
 import com.aiic.app.common.components.PremiumButton
 import com.aiic.app.core.theme.AIICTheme
 
@@ -57,18 +52,17 @@ fun OnboardingScreen(
         modifier = Modifier
             .fillMaxSize()
             .background(AIICTheme.colors.background)
-            .statusBarsPadding()
             .navigationBarsPadding(),
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = AIICTheme.spacing.screenHorizontal),
+                .padding(horizontal = 24.dp)
+                .padding(top = 48.dp),
         ) {
             Row(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = AIICTheme.spacing.base),
+                    .fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
             ) {
@@ -127,7 +121,7 @@ fun OnboardingScreen(
                 },
             )
 
-            Spacer(Modifier.height(AIICTheme.spacing.xxl))
+            Spacer(Modifier.height(48.dp))
         }
     }
 }
@@ -160,9 +154,11 @@ private fun OnboardingPageContent(page: OnboardingPage) {
 
         Spacer(Modifier.height(32.dp))
 
-        GradientText(
+        Text(
             text = page.title,
             style = AIICTheme.typography.displayMedium,
+            color = AIICTheme.colors.textPrimary,
+            fontWeight = FontWeight.Bold,
             modifier = Modifier.alpha(contentAlpha.value),
         )
 

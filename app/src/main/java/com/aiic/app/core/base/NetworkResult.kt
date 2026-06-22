@@ -13,12 +13,12 @@ sealed interface NetworkResult<out T> {
     ) : NetworkResult<Nothing>
 }
 
-fun <T> NetworkResult<T>.onSuccess(action: (T) -> Unit): NetworkResult<T> {
+inline fun <T> NetworkResult<T>.onSuccess(action: (T) -> Unit): NetworkResult<T> {
     if (this is NetworkResult.Success) action(data)
     return this
 }
 
-fun <T> NetworkResult<T>.onError(action: (NetworkResult.Error) -> Unit): NetworkResult<T> {
+inline fun <T> NetworkResult<T>.onError(action: (NetworkResult.Error) -> Unit): NetworkResult<T> {
     if (this is NetworkResult.Error) action(this)
     return this
 }

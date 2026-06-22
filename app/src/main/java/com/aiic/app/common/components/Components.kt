@@ -7,6 +7,7 @@ import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -43,17 +44,10 @@ fun PremiumButton(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     isLoading: Boolean = false,
-    gradientColors: List<Color>? = null,
+    containerColor: Color = AIICTheme.colors.primary,
+    contentColor: Color = AIICTheme.colors.textOnPrimary,
     content: @Composable (() -> Unit)? = null,
 ) {
-    val colors = gradientColors ?: listOf(
-        AIICTheme.colors.gradientPrimaryStart,
-        AIICTheme.colors.gradientPrimaryEnd,
-    )
-    val disabledColors = listOf(
-        AIICTheme.colors.textDisabled,
-        AIICTheme.colors.textDisabled,
-    )
 
     Button(
         onClick = onClick,
@@ -62,30 +56,42 @@ fun PremiumButton(
             .height(56.dp),
         enabled = enabled && !isLoading,
         shape = AIICTheme.shapes.button,
-        colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = containerColor,
+            contentColor = contentColor,
+            disabledContainerColor = AIICTheme.colors.surfaceBright,
+            disabledContentColor = AIICTheme.colors.textDisabled
+        ),
         contentPadding = PaddingValues(),
     ) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(56.dp)
-                .background(
-                    brush = Brush.linearGradient(if (enabled) colors else disabledColors),
-                    shape = AIICTheme.shapes.button,
-                ),
+                .height(56.dp),
             contentAlignment = Alignment.Center,
         ) {
             when {
                 content != null -> content()
-                isLoading -> CircularProgressIndicator(
-                    modifier = Modifier.size(24.dp),
-                    color = AIICTheme.colors.textOnPrimary,
-                    strokeWidth = 2.5.dp,
-                )
+                isLoading -> Row(
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(20.dp),
+                        color = contentColor,
+                        strokeWidth = 2.dp,
+                    )
+                    Spacer(Modifier.width(12.dp))
+                    Text(
+                        text = "Please wait...",
+                        style = AIICTheme.typography.button,
+                        color = contentColor,
+                    )
+                }
                 else -> Text(
                     text = text,
                     style = AIICTheme.typography.button,
-                    color = AIICTheme.colors.textOnPrimary,
+                    color = contentColor,
                 )
             }
         }
@@ -93,7 +99,7 @@ fun PremiumButton(
 }
 
 @Composable
-fun GlassCard(
+fun PremiumCard(
     modifier: Modifier = Modifier,
     content: @Composable () -> Unit,
 ) {
@@ -101,17 +107,8 @@ fun GlassCard(
         modifier = modifier
             .fillMaxWidth()
             .clip(AIICTheme.shapes.card)
-            .background(AIICTheme.colors.glassBackground)
-            .background(
-                brush = Brush.verticalGradient(
-                    colors = listOf(
-                        AIICTheme.colors.glassBorder,
-                        Color.Transparent,
-                    ),
-                    startY = 0f,
-                    endY = 4f,
-                )
-            )
+            .background(AIICTheme.colors.surfaceElevated)
+            .border(1.dp, AIICTheme.colors.border, AIICTheme.shapes.card)
             .padding(AIICTheme.spacing.cardPadding),
     ) {
         content()
@@ -275,7 +272,8 @@ fun ErrorStateView(
             text = "Try Again",
             onClick = onRetry,
             modifier = Modifier.width(180.dp),
-            gradientColors = listOf(AIICTheme.colors.error, AIICTheme.colors.accentVariant),
+            containerColor = AIICTheme.colors.error,
+            contentColor = AIICTheme.colors.textPrimary,
         )
     }
 }
@@ -316,16 +314,12 @@ fun GradientText(
     style: androidx.compose.ui.text.TextStyle = AIICTheme.typography.displayMedium,
     colors: List<Color>? = null,
 ) {
-    val gradient = colors ?: listOf(
-        AIICTheme.colors.gradientPrimaryStart,
-        AIICTheme.colors.gradientPrimaryEnd,
-    )
     Text(
         text = text,
         modifier = modifier,
-        style = style.copy(
-            brush = Brush.linearGradient(gradient),
-        ),
+        style = style,
+        color = AIICTheme.colors.textPrimary,
+        fontWeight = FontWeight.Bold,
     )
 }
 
@@ -337,7 +331,7 @@ fun ScoreCard(
     modifier: Modifier = Modifier,
     accentColor: Color = AIICTheme.colors.primary,
 ) {
-    GlassCard(modifier = modifier) {
+    PremiumCard(modifier = modifier) {
         Column {
             Text(
                 text = title,
@@ -369,7 +363,7 @@ fun FeatureCard(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    GlassCard(modifier = modifier) {
+    PremiumCard(modifier = modifier) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Box(
                 modifier = Modifier
@@ -393,6 +387,50 @@ fun FeatureCard(
                     color = AIICTheme.colors.textTertiary,
                 )
             }
+        }
+    }
+}
+
+@Composable
+fun GoogleSignInButton(
+    text: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    isLoading: Boolean = false,
+) {
+    androidx.compose.material3.OutlinedButton(
+        onClick = onClick,
+        modifier = modifier
+            .fillMaxWidth()
+            .height(56.dp),
+        enabled = !isLoading,
+        shape = AIICTheme.shapes.button,
+        colors = androidx.compose.material3.ButtonDefaults.outlinedButtonColors(
+            containerColor = Color.Transparent,
+            contentColor = AIICTheme.colors.textPrimary,
+        ),
+        border = androidx.compose.foundation.BorderStroke(1.dp, AIICTheme.colors.border),
+        contentPadding = PaddingValues(horizontal = 16.dp),
+    ) {
+        if (isLoading) {
+            CircularProgressIndicator(
+                modifier = Modifier.size(24.dp),
+                color = AIICTheme.colors.textPrimary,
+                strokeWidth = 2.dp,
+            )
+        } else {
+            androidx.compose.material3.Icon(
+                painter = androidx.compose.ui.res.painterResource(id = com.aiic.app.R.drawable.ic_google),
+                contentDescription = "Google Logo",
+                modifier = Modifier.size(24.dp),
+                tint = Color.Unspecified
+            )
+            Spacer(Modifier.width(12.dp))
+            Text(
+                text = text,
+                style = AIICTheme.typography.button,
+                color = AIICTheme.colors.textPrimary,
+            )
         }
     }
 }

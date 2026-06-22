@@ -22,9 +22,10 @@
 <br/><br/>
 
 <!-- BADGES ROW 3 -->
-<a href="#"><img src="https://img.shields.io/badge/Status-Day%202%20Complete-10b981?style=for-the-badge&logo=checkmarx&logoColor=white"/></a>
-<a href="#"><img src="https://img.shields.io/badge/Screens-9%20Premium%20UIs-f59e0b?style=for-the-badge&logo=figma&logoColor=white"/></a>
-<a href="#"><img src="https://img.shields.io/badge/Components-12%2B%20Reusable-8b5cf6?style=for-the-badge&logo=react&logoColor=white"/></a>
+<a href="#"><img src="https://img.shields.io/badge/Status-Day%204%20Complete-10b981?style=for-the-badge&logo=checkmarx&logoColor=white"/></a>
+<a href="#"><img src="https://img.shields.io/badge/Screens-15%2B%20Premium%20UIs-f59e0b?style=for-the-badge&logo=figma&logoColor=white"/></a>
+<a href="#"><img src="https://img.shields.io/badge/Components-25%2B%20Reusable-8b5cf6?style=for-the-badge&logo=react&logoColor=white"/></a>
+<a href="#"><img src="https://img.shields.io/badge/AI-Gemini%201.5%20Flash-00D4AA?style=for-the-badge&logo=google&logoColor=white"/></a>
 <a href="#"><img src="https://img.shields.io/badge/License-Proprietary-ef4444?style=for-the-badge&logo=shield&logoColor=white"/></a>
 
 <br/><br/>
@@ -71,6 +72,7 @@
 - [🗺️ Navigation Flow](#️-navigation-flow)
 - [📊 Day 1 Progress](#-day-1-progress)
 - [🔥 Day 2 Progress](#-day-2-progress)
+- [🤖 Day 3 Progress](#-day-3-progress)
 - [🔮 Roadmap](#-roadmap)
 - [📄 License](#-license)
 
@@ -161,6 +163,28 @@ The app is designed to feel like:
 - ✅ Hilt dependency injection
 - ✅ Clean layer separation
 - ✅ Use case pattern
+
+</td>
+</tr>
+<tr>
+<td>
+
+### 📄 Resume Platform & Parsing
+- ✅ PDF File Uploads & Permissions
+- ✅ Cloud Storage Sync & Retrieval
+- ✅ Version History & Iteration Tracking
+- ✅ Content Extraction Engine
+
+</td>
+<td>
+
+### 🤖 AI Intelligence Engine
+- ✅ Live Gemini 1.5 Flash Integration
+- ✅ Groq API (Llama 3) Fallback Mechanism
+- ✅ Prompt Engineering & JSON Constraints
+- ✅ Real-time ATS Scoring Engine
+- ✅ Keyword Gap & Skill Extraction
+- ✅ Actionable AI Recommendations
 
 </td>
 </tr>
@@ -528,15 +552,54 @@ git clone https://github.com/Pravesh0005/AIIC.git
 
 ---
 
+## 🤖 Day 3 Progress
+
+```diff
++ ✅ Phase 3A: Resume Platform Core
++ ✅ File Picker Integration (PDF Uploads)
++ ✅ Firestore Resume Document Storage (Version History)
++ ✅ Cloud Storage Resume File Uploading 
++ ✅ ResumeDetailScreen (Stats, Metadata, Actions)
++ ✅ ResumeHistoryScreen (Track uploaded iterations)
++ ✅ ResumeDashboardScreen (Upload & Manage)
++ ✅ Phase 3B: AI Resume Intelligence Engine
++ ✅ Generative AI SDK Integration (Live Gemini 1.5 Flash)
++ ✅ Prompt Engineering Pipeline (Structured JSON constraints)
++ ✅ Real-Time ATS Score Engine (Visual Progress Indicators)
++ ✅ Strength & Weakness Extraction Engine
++ ✅ Skill Categorization & Keyword Gap Analysis
++ ✅ Actionable AI Recommendation Cards
++ ✅ Animated State Management (Analyzing, Success, Failed)
++ ✅ ResumeInsightsScreen (Historical AI feedback viewer)
++ ✅ Glassmorphic Premium Components (SkillChips, ATS Cards)
+```
+
+## 🤖 Day 4 Progress
+```diff
++ ✅ Phase 4: AI Mock Interview Engine
++ ✅ Interview Setup Screen (Role, Difficulty, Configuration)
++ ✅ Interview Session Engine (State Machine for Interviews)
++ ✅ Generative AI Real-Time Answer Evaluation
++ ✅ Groq API (Llama 3) Fallback Integration for high availability
++ ✅ Dynamic Follow-Up Question Generation
++ ✅ Distraction-Free Interview UI with Live Timer
++ ✅ Interview Summary Dashboard
++ ✅ Firestore Session, Question, and Answer Tracking
++ ✅ Hilt Repositories Injection for Data Layer
+```
+
+---
+
 ## 🔮 Roadmap
 
 ```
 Day 1  ██████████████████████████████ 100% — Foundation ✅
 Day 2  ██████████████████████████████ 100% — Firebase Auth + Firestore + Session ✅
-Day 3  ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   0% — AI Mock Interview Engine
-Day 4  ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   0% — Question Bank + Categories
+Day 3A ██████████████████████████████ 100% — Resume Platform Foundation ✅
+Day 3B ██████████████████████████████ 100% — AI Resume Intelligence Engine ✅
+Day 4  ██████████████████████████████ 100% — AI Mock Interview Engine ✅
 Day 5  ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   0% — Analytics & Performance
-Day 6  ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   0% — Voice Features + Resume
+Day 6  ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   0% — Voice Features
 Day 7  ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   0% — Polish & Play Store
 ```
 

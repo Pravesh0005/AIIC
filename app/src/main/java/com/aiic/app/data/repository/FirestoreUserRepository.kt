@@ -45,7 +45,7 @@ class FirestoreUserRepository @Inject constructor(
 
     override suspend fun updateUserProfile(uid: String, updates: Map<String, Any>): NetworkResult<Unit> {
         return try {
-            usersCollection.document(uid).update(updates).await()
+            usersCollection.document(uid).set(updates, SetOptions.merge()).await()
             NetworkResult.Success(Unit)
         } catch (e: Exception) {
             NetworkResult.Error(code = 500, message = e.localizedMessage ?: "Failed to update profile", throwable = e)

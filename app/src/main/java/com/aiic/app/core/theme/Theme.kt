@@ -8,40 +8,63 @@ import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.SideEffect
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
-private val aiicColors = AIICColors()
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.material3.lightColorScheme
+
 private val aiicTypography = AIICTypography()
 private val aiicShapes = AIICShapes()
 private val aiicSpacing = AIICSpacing()
 
-private val DarkColorScheme = darkColorScheme(
-    primary = aiicColors.primary,
-    onPrimary = aiicColors.textOnPrimary,
-    primaryContainer = aiicColors.primaryContainer,
-    secondary = aiicColors.secondary,
-    tertiary = aiicColors.tertiary,
-    background = aiicColors.background,
-    surface = aiicColors.surface,
-    surfaceVariant = aiicColors.surfaceElevated,
-    error = aiicColors.error,
-    onBackground = aiicColors.textPrimary,
-    onSurface = aiicColors.textPrimary,
-    onSurfaceVariant = aiicColors.textSecondary,
-    outline = aiicColors.border,
-    outlineVariant = aiicColors.borderSubtle,
+private fun darkColorScheme(colors: AIICColors) = darkColorScheme(
+    primary = colors.primary,
+    onPrimary = colors.textOnPrimary,
+    primaryContainer = colors.primaryContainer,
+    secondary = colors.secondary,
+    tertiary = colors.tertiary,
+    background = colors.background,
+    surface = colors.surface,
+    surfaceVariant = colors.surfaceElevated,
+    error = colors.error,
+    onBackground = colors.textPrimary,
+    onSurface = colors.textPrimary,
+    onSurfaceVariant = colors.textSecondary,
+    outline = colors.border,
+    outlineVariant = colors.borderSubtle,
+)
+
+private fun lightColorScheme(colors: AIICColors) = lightColorScheme(
+    primary = colors.primary,
+    onPrimary = colors.textOnPrimary,
+    primaryContainer = colors.primaryContainer,
+    secondary = colors.secondary,
+    tertiary = colors.tertiary,
+    background = colors.background,
+    surface = colors.surface,
+    surfaceVariant = colors.surfaceElevated,
+    error = colors.error,
+    onBackground = colors.textPrimary,
+    onSurface = colors.textPrimary,
+    onSurfaceVariant = colors.textSecondary,
+    outline = colors.border,
+    outlineVariant = colors.borderSubtle,
 )
 
 @Composable
-fun AIICTheme(content: @Composable () -> Unit) {
+fun AIICTheme(
+    darkTheme: Boolean = isSystemInDarkTheme(),
+    content: @Composable () -> Unit
+) {
+    val aiicColors = if (darkTheme) AIICColors() else lightColors()
     val systemUiController = rememberSystemUiController()
 
     SideEffect {
         systemUiController.setSystemBarsColor(
             color = aiicColors.background,
-            darkIcons = false
+            darkIcons = !darkTheme
         )
         systemUiController.setNavigationBarColor(
             color = aiicColors.background,
-            darkIcons = false
+            darkIcons = !darkTheme
         )
     }
 
@@ -52,7 +75,7 @@ fun AIICTheme(content: @Composable () -> Unit) {
         LocalAIICSpacing provides aiicSpacing,
     ) {
         MaterialTheme(
-            colorScheme = DarkColorScheme,
+            colorScheme = if (darkTheme) darkColorScheme(aiicColors) else lightColorScheme(aiicColors),
             typography = aiicTypography.toMaterial3Typography(),
             shapes = aiicShapes.toMaterial3Shapes(),
             content = content

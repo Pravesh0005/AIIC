@@ -38,7 +38,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.aiic.app.common.components.AIICTextField
-import com.aiic.app.common.components.GlassCard
+import com.aiic.app.common.components.PremiumCard
 import com.aiic.app.common.components.GradientText
 import com.aiic.app.common.components.PremiumButton
 import com.aiic.app.core.base.UiEvent
@@ -104,7 +104,7 @@ fun AccountSetupScreen(
             Spacer(Modifier.height(32.dp))
 
             AnimatedVisibility(visibleItems > 1, enter = fadeIn() + slideInVertically { 30 }) {
-                GlassCard(modifier = Modifier.fillMaxWidth()) {
+                PremiumCard(modifier = Modifier.fillMaxWidth()) {
                     Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
                         Text(
                             text = "Career Goals",
@@ -135,7 +135,7 @@ fun AccountSetupScreen(
             Spacer(Modifier.height(16.dp))
 
             AnimatedVisibility(visibleItems > 2, enter = fadeIn() + slideInVertically { 30 }) {
-                GlassCard(modifier = Modifier.fillMaxWidth()) {
+                PremiumCard(modifier = Modifier.fillMaxWidth()) {
                     Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
                         Text(
                             text = "Background",
@@ -190,6 +190,16 @@ fun AccountSetupScreen(
         SnackbarHost(
             hostState = snackbarHostState,
             modifier = Modifier.align(Alignment.BottomCenter),
+            snackbar = { data ->
+                androidx.compose.material3.Snackbar(
+                    snackbarData = data,
+                    containerColor = AIICTheme.colors.surfaceElevated,
+                    contentColor = AIICTheme.colors.textPrimary,
+                    actionColor = AIICTheme.colors.primary,
+                    shape = AIICTheme.shapes.medium,
+                    modifier = Modifier.padding(16.dp)
+                )
+            }
         )
     }
 }

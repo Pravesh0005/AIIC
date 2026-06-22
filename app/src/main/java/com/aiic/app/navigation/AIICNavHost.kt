@@ -18,6 +18,17 @@ import com.aiic.app.presentation.feature_profile.AccountSetupScreen
 import com.aiic.app.presentation.feature_profile.ProfileScreen
 import com.aiic.app.presentation.feature_settings.SettingsScreen
 import com.aiic.app.presentation.feature_splash.SplashScreen
+import com.aiic.app.presentation.feature_resume.dashboard.ResumeDashboardScreen
+import com.aiic.app.presentation.feature_resume.upload.ResumeUploadScreen
+import com.aiic.app.presentation.feature_resume.history.ResumeHistoryScreen
+import com.aiic.app.presentation.feature_resume.detail.ResumeDetailScreen
+import com.aiic.app.presentation.feature_resume.analysis.ResumeAnalysisScreen
+import com.aiic.app.presentation.feature_resume.analysis.ATSScoreScreen
+import com.aiic.app.presentation.feature_resume.analysis.SkillBreakdownScreen
+import com.aiic.app.presentation.feature_resume.analysis.RecommendationsScreen
+import com.aiic.app.presentation.feature_resume.analysis.ResumeInsightsScreen
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 
 private const val ANIM_DURATION = 400
 
@@ -125,15 +136,123 @@ fun AIICNavHost(navController: NavHostController = rememberNavController()) {
         }
 
         composable(AppRoutes.Home.route) {
-            HomeScreen()
+            HomeScreen(
+                onNavigateToResume = { navController.navigate(AppRoutes.ResumeDashboard.route) },
+                onNavigateToInterviewSetup = { navController.navigate(AppRoutes.InterviewSetup.route) },
+                onNavigateToLogin = { 
+                    navController.navigate(AppRoutes.Login.route) {
+                        popUpTo(AppRoutes.Home.route) { inclusive = true }
+                    }
+                },
+                onNavigateToDummy = { title -> navController.navigate(AppRoutes.Dummy.createRoute(title)) }
+            )
         }
 
         composable(AppRoutes.Profile.route) {
-            ProfileScreen()
+            ProfileScreen(
+                onNavigateToEditProfile = { navController.navigate(AppRoutes.EditProfile.route) },
+                onNavigateToSettings = { navController.navigate(AppRoutes.Settings.route) },
+                onNavigateToDummy = { title -> navController.navigate(AppRoutes.Dummy.createRoute(title)) }
+            )
+        }
+        
+        composable(AppRoutes.EditProfile.route) {
+            com.aiic.app.presentation.feature_profile.EditProfileScreen(
+                onNavigateBack = { navController.popBackStack() }
+            )
         }
 
         composable(AppRoutes.Settings.route) {
-            SettingsScreen()
+            SettingsScreen(
+                onNavigateToDummy = { title -> navController.navigate(AppRoutes.Dummy.createRoute(title)) }
+            )
         }
+
+        // Resume Platform
+        composable(AppRoutes.ResumeDashboard.route) {
+            ResumeDashboardScreen(
+                onNavigateToUpload = { navController.navigate(AppRoutes.ResumeUpload.route) },
+                onNavigateToHistory = { navController.navigate(AppRoutes.ResumeHistory.route) },
+                onNavigateToDetail = { resumeId -> navController.navigate(AppRoutes.ResumeDetail.createRoute(resumeId)) }
+            )
+        }
+
+        composable(AppRoutes.ResumeUpload.route) {
+            ResumeUploadScreen(
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
+
+        composable(AppRoutes.ResumeHistory.route) {
+            ResumeHistoryScreen(
+                onNavigateBack = { navController.popBackStack() },
+                onNavigateToDetail = { resumeId -> navController.navigate(AppRoutes.ResumeDetail.createRoute(resumeId)) }
+            )
+        }
+
+        composable(
+            route = AppRoutes.ResumeDetail.route,
+            arguments = listOf(androidx.navigation.navArgument("resumeId") { type = androidx.navigation.NavType.StringType })
+        ) { backStackEntry ->
+            val resumeId = backStackEntry.arguments?.getString("resumeId")
+            ResumeDetailScreen(
+                onNavigateBack = { navController.popBackStack() },
+                onNavigateToAnalysis = { id -> navController.navigate(AppRoutes.ResumeAnalysis.createRoute(id)) }
+            )
+        }
+
+        composable(AppRoutes.ResumeInsights.route) {
+            ResumeInsightsScreen(
+                onNavigateBack = { navController.popBackStack() },
+                onNavigateToAnalysis = { resumeId -> navController.navigate(AppRoutes.ResumeAnalysis.createRoute(resumeId)) }
+            )
+        }
+
+        // --- Day 4: AI Mock Interview Engine ---
+        composable(AppRoutes.InterviewSetup.route) {
+            com.aiic.app.presentation.feature_interview.setup.InterviewSetupScreen(
+                onNavigateBack = { navController.popBackStack() },
+                onNavigateToSession = { sessionId -> 
+                    navController.navigate(AppRoutes.InterviewSession.createRoute(sessionId)) {
+                        popUpTo(AppRoutes.InterviewSetup.route) { inclusive = true }
+                    }
+                }
+            )
+        }
+
+        composable(
+            route = AppRoutes.InterviewSession.route,
+            arguments = listOf(androidx.navigation.navArgument("sessionId") { type = androidx.navigation.NavType.StringType })
+        ) { 
+            com.aiic.app.presentation.feature_interview.session.InterviewSessionScreen(
+                onNavigateBack = { navController.popBackStack() },
+                onNavigateToSummary = { route -> navController.navigate(route) { popUpTo(AppRoutes.InterviewSetup.route) { inclusive = true } } }
+            )
+        }
+
+        composable(
+            route = AppRoutes.InterviewSummary.route,
+            arguments = listOf(androidx.navigation.navArgument("sessionId") { type = androidx.navigation.NavType.StringType })
+        ) { 
+            com.aiic.app.presentation.feature_interview.summary.InterviewSummaryScreen(
+                onNavigateHome = { 
+                    navController.navigate(AppRoutes.Home.route) {
+                        popUpTo(AppRoutes.Home.route) { inclusive = true }
+                    } 
+                }
+            )
+        }
+
+        composable(
+            route = AppRoutes.Dummy.route,
+            arguments = listOf(androidx.navigation.navArgument("title") { type = androidx.navigation.NavType.StringType })
+        ) { backStackEntry ->
+            val title = backStackEntry.arguments?.getString("title") ?: "Feature"
+            com.aiic.app.presentation.feature_dummy.DummyScreen(
+                title = title,
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
+
     }
 }

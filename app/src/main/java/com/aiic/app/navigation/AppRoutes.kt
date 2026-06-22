@@ -9,7 +9,44 @@ sealed class AppRoutes(val route: String) {
     data object AccountSetup : AppRoutes("account_setup")
     data object Home : AppRoutes("home")
     data object Profile : AppRoutes("profile")
+    data object EditProfile : AppRoutes("edit_profile")
     data object Settings : AppRoutes("settings")
+
+    // Resume Platform
+    data object ResumeDashboard : AppRoutes("resume_dashboard")
+    data object ResumeUpload : AppRoutes("resume_upload")
+    data object ResumeHistory : AppRoutes("resume_history")
+    data object ResumeDetail : AppRoutes("resume_detail/{resumeId}") {
+        fun createRoute(resumeId: String) = "resume_detail/$resumeId"
+    }
+    
+    // Resume Analysis
+    data object ResumeAnalysis : AppRoutes("resume_analysis/{resumeId}") {
+        fun createRoute(resumeId: String) = "resume_analysis/$resumeId"
+    }
+    data object ATSScore : AppRoutes("ats_score/{resumeId}") {
+        fun createRoute(resumeId: String) = "ats_score/$resumeId"
+    }
+    data object SkillBreakdown : AppRoutes("skill_breakdown/{resumeId}") {
+        fun createRoute(resumeId: String) = "skill_breakdown/$resumeId"
+    }
+    data object Recommendations : AppRoutes("recommendations/{resumeId}") {
+        fun createRoute(resumeId: String) = "recommendations/$resumeId"
+    }
+    data object ResumeInsights : AppRoutes("resume_insights")
+    
+    // Interview Engine
+    data object InterviewSetup : AppRoutes("interview_setup")
+    data object InterviewSession : AppRoutes("interview_session/{sessionId}") {
+        fun createRoute(sessionId: String) = "interview_session/$sessionId"
+    }
+    data object InterviewSummary : AppRoutes("interview_summary/{sessionId}") {
+        fun createRoute(sessionId: String) = "interview_summary/$sessionId"
+    }
+    
+    data object Dummy : AppRoutes("dummy/{title}") {
+        fun createRoute(title: String) = "dummy/$title"
+    }
 
     companion object {
         const val AUTH_GRAPH = "auth_graph"

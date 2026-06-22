@@ -1,6 +1,7 @@
 package com.aiic.app.presentation.feature_settings
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,13 +15,18 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ChevronRight
 import androidx.compose.material.icons.rounded.DarkMode
 import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.Language
+import androidx.compose.material.icons.rounded.Lock
 import androidx.compose.material.icons.rounded.Notifications
+import androidx.compose.material.icons.rounded.Payment
 import androidx.compose.material.icons.rounded.Storage
+import androidx.compose.material.icons.rounded.SupportAgent
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
@@ -37,13 +43,19 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.aiic.app.common.components.GlassCard
+import com.aiic.app.common.components.PremiumCard
 import com.aiic.app.core.theme.AIICTheme
 
 @Composable
-fun SettingsScreen() {
+fun SettingsScreen(
+    onNavigateBack: () -> Unit = {},
+    onNavigateToDummy: (String) -> Unit = {},
+    onLogout: () -> Unit = {}
+) {
     var notificationsEnabled by remember { mutableStateOf(true) }
-    var darkModeEnabled by remember { mutableStateOf(true) }
+    
+    val isDarkTheme = com.aiic.app.core.theme.LocalIsDarkTheme.current
+    val onToggleTheme = com.aiic.app.core.theme.LocalThemeToggle.current
 
     Column(
         modifier = Modifier
@@ -51,7 +63,9 @@ fun SettingsScreen() {
             .background(AIICTheme.colors.background)
             .statusBarsPadding()
             .navigationBarsPadding()
-            .padding(horizontal = AIICTheme.spacing.screenHorizontal),
+            .verticalScroll(rememberScrollState())
+            .padding(horizontal = AIICTheme.spacing.screenHorizontal)
+            .padding(bottom = 80.dp),
     ) {
         Spacer(Modifier.height(24.dp))
 
@@ -64,7 +78,14 @@ fun SettingsScreen() {
 
         Spacer(Modifier.height(28.dp))
 
-        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Text(
+            text = "Preferences",
+            style = AIICTheme.typography.titleMedium,
+            color = AIICTheme.colors.textSecondary,
+            modifier = Modifier.padding(bottom = 12.dp)
+        )
+
+        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
             SettingsToggle(
                 icon = Icons.Rounded.Notifications,
                 label = "Notifications",
@@ -75,14 +96,19 @@ fun SettingsScreen() {
             SettingsToggle(
                 icon = Icons.Rounded.DarkMode,
                 label = "Dark Mode",
-                checked = darkModeEnabled,
-                onCheckedChange = { darkModeEnabled = it },
+                checked = isDarkTheme,
+                onCheckedChange = { onToggleTheme(it) },
                 color = AIICTheme.colors.secondary,
             )
-            SettingsNavItem(Icons.Rounded.Language, "Language", "English", AIICTheme.colors.tertiary)
-            SettingsNavItem(Icons.Rounded.Storage, "Data & Storage", null, AIICTheme.colors.warning)
-            SettingsNavItem(Icons.Rounded.Info, "About AIIC", "v1.0.0", AIICTheme.colors.textTertiary)
         }
+
+        Spacer(Modifier.height(32.dp))
+
+        com.aiic.app.common.components.PremiumButton(
+            text = "Log Out",
+            onClick = onLogout,
+            modifier = Modifier.fillMaxWidth()
+        )
     }
 }
 
@@ -94,16 +120,16 @@ private fun SettingsToggle(
     onCheckedChange: (Boolean) -> Unit,
     color: Color,
 ) {
-    GlassCard {
+    PremiumCard(modifier = Modifier.clickable { onCheckedChange(!checked) }) {
         Row(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Box(
-                modifier = Modifier.size(36.dp).clip(AIICTheme.shapes.small).background(color.copy(alpha = 0.12f)),
+                modifier = Modifier.size(40.dp).clip(AIICTheme.shapes.small).background(color.copy(alpha = 0.12f)),
                 contentAlignment = Alignment.Center,
-            ) { Icon(icon, null, tint = color, modifier = Modifier.size(18.dp)) }
-            Spacer(Modifier.width(14.dp))
+            ) { Icon(icon, null, tint = color, modifier = Modifier.size(20.dp)) }
+            Spacer(Modifier.width(16.dp))
             Text(label, style = AIICTheme.typography.titleSmall, color = AIICTheme.colors.textPrimary, modifier = Modifier.weight(1f))
             Switch(
                 checked = checked,
@@ -120,23 +146,23 @@ private fun SettingsToggle(
 }
 
 @Composable
-private fun SettingsNavItem(icon: ImageVector, label: String, detail: String?, color: Color) {
-    GlassCard {
+private fun SettingsNavItem(icon: ImageVector, label: String, detail: String?, color: Color, onClick: () -> Unit) {
+    PremiumCard(modifier = Modifier.clickable { onClick() }) {
         Row(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Box(
-                modifier = Modifier.size(36.dp).clip(AIICTheme.shapes.small).background(color.copy(alpha = 0.12f)),
+                modifier = Modifier.size(40.dp).clip(AIICTheme.shapes.small).background(color.copy(alpha = 0.12f)),
                 contentAlignment = Alignment.Center,
-            ) { Icon(icon, null, tint = color, modifier = Modifier.size(18.dp)) }
-            Spacer(Modifier.width(14.dp))
+            ) { Icon(icon, null, tint = color, modifier = Modifier.size(20.dp)) }
+            Spacer(Modifier.width(16.dp))
             Text(label, style = AIICTheme.typography.titleSmall, color = AIICTheme.colors.textPrimary, modifier = Modifier.weight(1f))
             if (detail != null) {
-                Text(detail, style = AIICTheme.typography.caption, color = AIICTheme.colors.textDisabled)
-                Spacer(Modifier.width(6.dp))
+                Text(detail, style = AIICTheme.typography.bodySmall, color = AIICTheme.colors.textSecondary)
+                Spacer(Modifier.width(8.dp))
             }
-            Icon(Icons.Rounded.ChevronRight, null, tint = AIICTheme.colors.textDisabled, modifier = Modifier.size(18.dp))
+            Icon(Icons.Rounded.ChevronRight, null, tint = AIICTheme.colors.textDisabled, modifier = Modifier.size(20.dp))
         }
     }
 }

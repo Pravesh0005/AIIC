@@ -32,11 +32,14 @@ sealed interface RegisterAction {
     data object TogglePasswordVisibility : RegisterAction
     data class ToggleTerms(val agreed: Boolean) : RegisterAction
     data object Register : RegisterAction
+    data class GoogleSignInSuccess(val idToken: String) : RegisterAction
+    data class GoogleSignInFailure(val error: String) : RegisterAction
 }
 
 @HiltViewModel
 class RegisterViewModel @Inject constructor(
     private val registerUseCase: RegisterUseCase,
+    private val authRepository: com.aiic.app.domain.repository.AuthRepository
 ) : BaseViewModel<RegisterState, RegisterAction>(RegisterState()) {
 
     override fun onAction(action: RegisterAction) {
@@ -48,6 +51,23 @@ class RegisterViewModel @Inject constructor(
             RegisterAction.TogglePasswordVisibility -> updateState { copy(isPasswordVisible = !isPasswordVisible) }
             is RegisterAction.ToggleTerms -> updateState { copy(agreedToTerms = action.agreed) }
             RegisterAction.Register -> register()
+            is RegisterAction.GoogleSignInSuccess -> registerWithGoogle(action.idToken)
+            is RegisterAction.GoogleSignInFailure -> sendEvent(UiEvent.ShowSnackbar(action.error))
+        }
+    }
+
+    private fun registerWithGoogle(idToken: String) {
+        viewModelScope.launch {
+            updateState { copy(isLoading = true) }
+            when (val result = authRepository.loginWithGoogle(idToken)) {
+                is NetworkResult.Success -> {
+                    sendEvent(UiEvent.Navigate("account_setup"))
+                }
+                is NetworkResult.Error -> {
+                    sendEvent(UiEvent.ShowSnackbar(result.message))
+                }
+            }
+            updateState { copy(isLoading = false) }
         }
     }
 

@@ -14,6 +14,8 @@ import com.aiic.app.data.repository.SessionRepositoryImpl
 import com.aiic.app.domain.repository.AuthRepository
 import com.aiic.app.domain.repository.SessionRepository
 import com.aiic.app.domain.repository.UserRepository
+import com.aiic.app.domain.repository.ResumeRepository
+import com.aiic.app.data.repository.FirestoreResumeRepository
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
@@ -55,6 +57,44 @@ object AppModule {
     @Provides @Singleton
     fun provideSessionRepository(prefs: PreferencesManager): SessionRepository =
         SessionRepositoryImpl(prefs)
+
+    @Provides @Singleton
+    fun provideResumeRepository(
+        firestore: FirebaseFirestore,
+        storage: FirebaseStorage
+    ): ResumeRepository = FirestoreResumeRepository(firestore, storage)
+
+    @Provides @Singleton
+    fun providePdfExtractionRepository(
+        storage: FirebaseStorage
+    ): com.aiic.app.domain.repository.PdfExtractionRepository = 
+        com.aiic.app.data.repository.RealPdfExtractionRepository(storage)
+
+    @Provides @Singleton
+    fun provideGenerativeAiRepository(): com.aiic.app.domain.repository.GenerativeAiRepository = 
+        com.aiic.app.data.repository.GeminiGenerativeAiRepository()
+
+    @Provides @Singleton
+    fun provideResumeAnalysisRepository(
+        firestore: FirebaseFirestore
+    ): com.aiic.app.domain.repository.ResumeAnalysisRepository = 
+        com.aiic.app.data.repository.FirestoreResumeAnalysisRepository(firestore)
+
+    @Provides @Singleton
+    fun provideInterviewSessionRepository(): com.aiic.app.domain.repository.InterviewSessionRepository =
+        com.aiic.app.data.repository.FirestoreInterviewSessionRepository()
+
+    @Provides @Singleton
+    fun provideInterviewQuestionRepository(
+        generativeAiRepository: com.aiic.app.domain.repository.GenerativeAiRepository
+    ): com.aiic.app.domain.repository.InterviewQuestionRepository =
+        com.aiic.app.data.repository.FirestoreInterviewQuestionRepository(generativeAiRepository)
+
+    @Provides @Singleton
+    fun provideInterviewAnswerRepository(
+        generativeAiRepository: com.aiic.app.domain.repository.GenerativeAiRepository
+    ): com.aiic.app.domain.repository.InterviewAnswerRepository =
+        com.aiic.app.data.repository.FirestoreInterviewAnswerRepository(generativeAiRepository)
 
     // Infrastructure
     @Provides @Singleton

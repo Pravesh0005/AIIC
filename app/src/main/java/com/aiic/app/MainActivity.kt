@@ -12,6 +12,13 @@ import com.aiic.app.core.theme.AIICTheme
 import com.aiic.app.navigation.AIICNavHost
 import dagger.hilt.android.AndroidEntryPoint
 
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import com.aiic.app.core.theme.LocalThemeToggle
+import com.aiic.app.core.theme.LocalIsDarkTheme
+import android.content.Context
+
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -19,13 +26,25 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
 
+        val sharedPrefs = getSharedPreferences("aiic_prefs", Context.MODE_PRIVATE)
+
         setContent {
-            AIICTheme {
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = AIICTheme.colors.background
-                ) {
-                    AIICNavHost()
+            val isDarkThemePref = remember { mutableStateOf(sharedPrefs.getBoolean("dark_mode", true)) }
+
+            CompositionLocalProvider(
+                LocalThemeToggle provides { isDark ->
+                    sharedPrefs.edit().putBoolean("dark_mode", isDark).apply()
+                    isDarkThemePref.value = isDark
+                },
+                LocalIsDarkTheme provides isDarkThemePref.value
+            ) {
+                AIICTheme(darkTheme = isDarkThemePref.value) {
+                    Surface(
+                        modifier = Modifier.fillMaxSize(),
+                        color = AIICTheme.colors.background
+                    ) {
+                        AIICNavHost()
+                    }
                 }
             }
         }
