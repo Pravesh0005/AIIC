@@ -89,7 +89,8 @@ private val navItems = listOf(
 fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel(),
     onNavigateToResume: () -> Unit = {},
-    onNavigateToLogin: () -> Unit = {}
+    onNavigateToLogin: () -> Unit = {},
+    onNavigateToDummy: (String) -> Unit = {}
 ) {
     val state by viewModel.state.collectAsState()
     var selectedNav by remember { mutableIntStateOf(0) }
@@ -145,16 +146,21 @@ fun HomeScreen(
                 0 -> HomeContent(
                         state = state, 
                         onNavigateToProfile = { selectedNav = 2 },
-                        onNavigateToNotifications = { selectedNav = 3 },
-                        onNavigateToResume = onNavigateToResume
+                        onNavigateToNotifications = { onNavigateToDummy("Notifications") },
+                        onNavigateToResume = onNavigateToResume,
+                        onNavigateToDummy = onNavigateToDummy
                     )
                 1 -> com.aiic.app.presentation.feature_analytics.AnalyticsScreen()
                 2 -> com.aiic.app.presentation.feature_profile.ProfileScreen(
-                    onNavigateToEditProfile = { /* TODO: Hook up nav */ },
-                    onNavigateToSettings = { selectedNav = 3 }
+                    onNavigateToEditProfile = { onNavigateToDummy("Edit Profile") },
+                    onNavigateToSettings = { selectedNav = 3 },
+                    onNavigateToDummy = onNavigateToDummy,
+                    onSignOut = onNavigateToLogin
                 )
                 3 -> com.aiic.app.presentation.feature_settings.SettingsScreen(
-                    onLogout = { viewModel.onAction(HomeAction.Logout) }
+                    onNavigateToDummy = onNavigateToDummy,
+                    onLogout = { viewModel.onAction(HomeAction.Logout) },
+                    onNavigateBack = {}
                 )
             }
         }
@@ -168,7 +174,8 @@ private fun HomeContent(
     state: HomeState,
     onNavigateToProfile: () -> Unit,
     onNavigateToNotifications: () -> Unit,
-    onNavigateToResume: () -> Unit
+    onNavigateToResume: () -> Unit,
+    onNavigateToDummy: (String) -> Unit
 ) {
     LazyColumn(
         modifier = Modifier
@@ -179,67 +186,13 @@ private fun HomeContent(
     ) {
         item { HeroSection(state, onNavigateToProfile, onNavigateToNotifications, onNavigateToResume) }
         item { StatsRow(state) }
-        item { QuickActions(onNavigateToResume) }
+        item { QuickActions(onNavigateToResume, onNavigateToDummy) }
         item { RecentActivity(state) }
         item { AnalyticsPreview(state) }
     }
 }
 
-                .padding(paddingValues)
-        ) {
-            when (selectedBottomNav) {
-                0 -> { // Home Tab
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .verticalScroll(rememberScrollState())
-                            .padding(bottom = 80.dp) // Extra padding for bottom nav
-                    ) {
-                        HomeHeader(
-                            state = state, 
-                            onNavigateToProfile = { selectedBottomNav = 2 },
-                            onNavigateToDummy = onNavigateToDummy
-                        )
-                        Spacer(Modifier.height(24.dp))
-                        
-                        StatsCarousel(state = state)
-                        Spacer(Modifier.height(32.dp))
-                        
-                        QuickActions(onNavigateToResume, onNavigateToDummy)
-                        Spacer(Modifier.height(32.dp))
-                        
-                        HomeTabs(
-                            activeTab = activeTab,
-                            onTabSelected = { activeTab = it }
-                        )
-                        
-                        when (activeTab) {
-                            0 -> RecentActivityList(state.recentActivity, onNavigateToResume)
-                            1 -> RecommendedTasks()
-                        }
-                    }
-                }
-                1 -> { // Analytics Tab
-                    com.aiic.app.presentation.feature_analytics.AnalyticsScreen()
-                }
-                2 -> { // Profile Tab
-                    com.aiic.app.presentation.feature_profile.ProfileScreen(
-                        onNavigateToEditProfile = { onNavigateToDummy("Edit Profile") },
-                        onNavigateToSettings = { selectedBottomNav = 3 },
-                        onNavigateToDummy = onNavigateToDummy,
-                        onSignOut = onNavigateToLogin
-                    )
-                }
-                3 -> { // Settings Tab
-                    com.aiic.app.presentation.feature_settings.SettingsScreen(
-                        onNavigateToDummy = onNavigateToDummy,
-                        onLogout = onNavigateToLogin
-                    )
-                }
-            }
-        }
-    }
-}
+
 
 @Composable
 private fun HomeHeader(
