@@ -34,6 +34,15 @@ sealed class AppRoutes(val route: String) {
     }
     data object ResumeInsights : AppRoutes("resume_insights")
     
+    // Interview Engine
+    data object InterviewSetup : AppRoutes("interview_setup")
+    data object InterviewSession : AppRoutes("interview_session/{sessionId}") {
+        fun createRoute(sessionId: String) = "interview_session/$sessionId"
+    }
+    data object InterviewSummary : AppRoutes("interview_summary/{sessionId}") {
+        fun createRoute(sessionId: String) = "interview_summary/$sessionId"
+    }
+    
     data object Dummy : AppRoutes("dummy/{title}") {
         fun createRoute(title: String) = "dummy/$title"
     }
