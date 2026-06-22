@@ -38,20 +38,24 @@ class CompleteInterviewUseCase @Inject constructor(
         val session = sessionRepository.getSessionById(sessionId).getOrNull()
         if (session != null) {
             val userResult = userRepository.getUserProfile(session.userId).getOrNull()
-            if (userResult != null) {
-                // Moving average or basic weighting for readiness score
-                // Example: average of existing score and this score, but normalized to 0.0 - 1.0
-                val normalizedScore = finalScore / 100f
-                val newCount = userResult.interviewCount + 1
-                // Simple moving average
-                val currentReadiness = userResult.readinessScore
-                val newReadiness = if (currentReadiness == 0f) normalizedScore else ((currentReadiness * userResult.interviewCount) + normalizedScore) / newCount
-
-                userRepository.updateUserProfile(session.userId, mapOf(
-                    "readinessScore" to newReadiness,
-                    "interviewCount" to newCount
-                ))
+            
+            val currentCount = userResult?.interviewCount ?: 0
+            val currentReadiness = userResult?.readinessScore ?: 0f
+            
+            val normalizedScore = finalScore / 100f
+            val newCount = currentCount + 1
+            
+            // Simple moving average
+            val newReadiness = if (currentReadiness == 0f) {
+                normalizedScore 
+            } else {
+                ((currentReadiness * currentCount) + normalizedScore) / newCount
             }
+
+            userRepository.updateUserProfile(session.userId, mapOf(
+                "readinessScore" to newReadiness,
+                "interviewCount" to newCount
+            ))
         }
 
         return NetworkResult.Success(finalScore)
