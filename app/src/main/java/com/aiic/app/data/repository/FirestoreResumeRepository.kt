@@ -65,10 +65,22 @@ class FirestoreResumeRepository @Inject constructor(
     override suspend fun createResumeMetadata(resume: Resume): NetworkResult<Resume> {
         return try {
             val storageRef = storage.reference.child("resumes/${resume.userId}/${resume.resumeId}.pdf")
-            val downloadUrl = storageRef.downloadUrl.await().toString()
+            
+            // Add retry logic for downloadUrl to handle Google Cloud Storage eventual consistency latency
+            var downloadUrl: String? = null
+            var retryCount = 0
+            while (downloadUrl == null && retryCount < 5) {
+                try {
+                    downloadUrl = storageRef.downloadUrl.await().toString()
+                } catch (e: Exception) {
+                    retryCount++
+                    if (retryCount >= 5) throw e
+                    kotlinx.coroutines.delay(1000)
+                }
+            }
             
             val updatedResume = resume.copy(
-                fileUrl = downloadUrl,
+                fileUrl = downloadUrl ?: "",
                 uploadDate = System.currentTimeMillis(),
                 lastUpdated = System.currentTimeMillis()
             )

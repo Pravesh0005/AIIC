@@ -124,8 +124,13 @@ fun ProfileScreen(
 
         Spacer(Modifier.height(32.dp))
 
+        val context = androidx.compose.ui.platform.LocalContext.current
+        val showToast = { message: String ->
+            android.widget.Toast.makeText(context, message, android.widget.Toast.LENGTH_SHORT).show()
+        }
+
         PremiumCard(
-            modifier = Modifier.clickable { /* Upgrade action */ }
+            modifier = Modifier.clickable { showToast("Upgrade to Pro coming soon!") }
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
@@ -164,8 +169,8 @@ fun ProfileScreen(
         )
 
         Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            ProfileMenuItem(Icons.Rounded.Edit, "Edit Profile", AIICTheme.colors.primary, onClick = onNavigateToEditProfile)
-            ProfileMenuItem(Icons.Rounded.WorkspacePremium, "Achievements", AIICTheme.colors.warning, onClick = {})
+            ProfileMenuItem(Icons.Rounded.Edit, "Edit Profile", AIICTheme.colors.primary, onClick = { showToast("Edit Profile coming soon!") })
+            ProfileMenuItem(Icons.Rounded.WorkspacePremium, "Achievements", AIICTheme.colors.warning, onClick = { showToast("Achievements coming soon!") })
             ProfileMenuItem(Icons.Rounded.Shield, "Privacy & Security", AIICTheme.colors.secondary, onClick = onNavigateToSettings)
             ProfileMenuItem(Icons.Rounded.Logout, "Sign Out", AIICTheme.colors.error, onClick = onSignOut)
         }

@@ -195,6 +195,11 @@ private fun HeroSection(
     val alpha = remember { Animatable(0f) }
     LaunchedEffect(Unit) { alpha.animateTo(1f, tween(600, easing = FastOutSlowInEasing)) }
 
+    val context = androidx.compose.ui.platform.LocalContext.current
+    val showToast = { message: String ->
+        android.widget.Toast.makeText(context, message, android.widget.Toast.LENGTH_SHORT).show()
+    }
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -226,7 +231,7 @@ private fun HeroSection(
                         .size(40.dp)
                         .clip(CircleShape)
                         .background(AIICTheme.colors.surfaceElevated)
-                        .clickable { onNavigateToNotifications() },
+                        .clickable { showToast("You have 0 new notifications.") },
                     contentAlignment = Alignment.Center,
                 ) {
                     Icon(
@@ -361,6 +366,11 @@ private fun StatsRow(state: HomeState) {
 
 @Composable
 private fun QuickActions(onNavigateToResume: () -> Unit) {
+    val context = androidx.compose.ui.platform.LocalContext.current
+    val showToast = { message: String ->
+        android.widget.Toast.makeText(context, message, android.widget.Toast.LENGTH_SHORT).show()
+    }
+
     Column {
         SectionHeader(title = "Quick Actions", subtitle = "Jump right in")
         Spacer(Modifier.height(12.dp))
@@ -378,13 +388,13 @@ private fun QuickActions(onNavigateToResume: () -> Unit) {
                 icon = { Icon(Icons.Rounded.QuestionAnswer, null, tint = AIICTheme.colors.accent, modifier = Modifier.size(22.dp)) },
                 title = "Question Bank",
                 description = "Browse 500+ curated questions",
-                onClick = { }
+                onClick = { showToast("Question Bank coming soon!") }
             )
             FeatureCard(
                 icon = { Icon(Icons.Rounded.TrendingUp, null, tint = Color(0xFF10B981), modifier = Modifier.size(22.dp)) },
                 title = "Skill Assessment",
                 description = "Evaluate your strengths & gaps",
-                onClick = { }
+                onClick = { showToast("Skill Assessment coming soon!") }
             )
         }
     }

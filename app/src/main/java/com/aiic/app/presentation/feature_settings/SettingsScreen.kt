@@ -118,10 +118,15 @@ fun SettingsScreen(
             modifier = Modifier.padding(bottom = 12.dp)
         )
 
+        val context = androidx.compose.ui.platform.LocalContext.current
+        val showToast = { message: String ->
+            android.widget.Toast.makeText(context, message, android.widget.Toast.LENGTH_SHORT).show()
+        }
+
         Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            SettingsNavItem(Icons.Rounded.Language, "Language", "English", AIICTheme.colors.accent, onClick = {})
-            SettingsNavItem(Icons.Rounded.Lock, "Security", null, AIICTheme.colors.error, onClick = {})
-            SettingsNavItem(Icons.Rounded.Payment, "Subscription", "Free Plan", AIICTheme.colors.warning, onClick = {})
+            SettingsNavItem(Icons.Rounded.Language, "Language", "English", AIICTheme.colors.accent, onClick = { showToast("Language selection coming soon!") })
+            SettingsNavItem(Icons.Rounded.Lock, "Security", null, AIICTheme.colors.error, onClick = { showToast("Security settings coming soon!") })
+            SettingsNavItem(Icons.Rounded.Payment, "Subscription", "Free Plan", AIICTheme.colors.warning, onClick = { showToast("Subscription management coming soon!") })
         }
 
         Spacer(Modifier.height(28.dp))
@@ -134,8 +139,8 @@ fun SettingsScreen(
         )
 
         Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            SettingsNavItem(Icons.Rounded.SupportAgent, "Help Center", null, AIICTheme.colors.primary, onClick = {})
-            SettingsNavItem(Icons.Rounded.Info, "About AIIC", "v1.0.0", AIICTheme.colors.textTertiary, onClick = {})
+            SettingsNavItem(Icons.Rounded.SupportAgent, "Help Center", null, AIICTheme.colors.primary, onClick = { showToast("Help Center coming soon!") })
+            SettingsNavItem(Icons.Rounded.Info, "About AIIC", "v1.0.0", AIICTheme.colors.textTertiary, onClick = { showToast("AIIC App v1.0.0") })
         }
 
         Spacer(Modifier.height(32.dp))
