@@ -22,7 +22,7 @@ class SetupInterviewSessionUseCase @Inject constructor(
             val resumeResult = resumeRepository.getResumeById(config.resumeId)
             val resume = resumeResult.getOrNull()
             if (resume != null) {
-                resumeContext = resume.content ?: ""
+                resumeContext = resume.fileName
             }
         }
 

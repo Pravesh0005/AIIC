@@ -17,7 +17,7 @@ data class HomeState(
     val recentCategories: List<InterviewType> = listOf(
         InterviewType.TECHNICAL,
         InterviewType.BEHAVIORAL,
-        InterviewType.DSA,
+        InterviewType.MIXED,
     ),
 )
 
