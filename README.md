@@ -180,6 +180,7 @@ The app is designed to feel like:
 
 ### 🤖 AI Intelligence Engine
 - ✅ Live Gemini 1.5 Flash Integration
+- ✅ Groq API (Llama 3) Fallback Mechanism
 - ✅ Prompt Engineering & JSON Constraints
 - ✅ Real-time ATS Scoring Engine
 - ✅ Keyword Gap & Skill Extraction
@@ -574,12 +575,12 @@ git clone https://github.com/Pravesh0005/AIIC.git
 ```
 
 ## 🤖 Day 4 Progress
-
 ```diff
 + ✅ Phase 4: AI Mock Interview Engine
 + ✅ Interview Setup Screen (Role, Difficulty, Configuration)
 + ✅ Interview Session Engine (State Machine for Interviews)
 + ✅ Generative AI Real-Time Answer Evaluation
++ ✅ Groq API (Llama 3) Fallback Integration for high availability
 + ✅ Dynamic Follow-Up Question Generation
 + ✅ Distraction-Free Interview UI with Live Timer
 + ✅ Interview Summary Dashboard
