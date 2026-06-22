@@ -57,10 +57,10 @@ class FirestoreInterviewQuestionRepository @Inject constructor(
                 "Where do you see yourself in 5 years?",
                 "How do you stay updated with the latest trends in ${config.role}?"
             )
-            val fallback = List(config.questionCount) { i ->
+            val fallback = fallbackBase.shuffled().take(config.questionCount).mapIndexed { i, content ->
                 InterviewQuestion(
                     questionId = UUID.randomUUID().toString(),
-                    content = fallbackBase[i % fallbackBase.size],
+                    content = content,
                     order = i + 1
                 )
             }
