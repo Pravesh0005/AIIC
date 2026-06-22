@@ -150,8 +150,13 @@ fun HomeScreen(
                         onNavigateToResume = onNavigateToResume,
                         onNavigateToDummy = onNavigateToDummy
                     )
-                1 -> com.aiic.app.presentation.feature_analytics.AnalyticsScreen()
+                1 -> com.aiic.app.presentation.feature_analytics.AnalyticsScreen(
+                    interviewsCompleted = state.interviewsCompleted,
+                    readinessScore = state.readinessScore
+                )
                 2 -> com.aiic.app.presentation.feature_profile.ProfileScreen(
+                    userName = state.userName,
+                    userEmail = state.userEmail,
                     onNavigateToEditProfile = { onNavigateToDummy("Edit Profile") },
                     onNavigateToSettings = { selectedNav = 3 },
                     onNavigateToDummy = onNavigateToDummy,

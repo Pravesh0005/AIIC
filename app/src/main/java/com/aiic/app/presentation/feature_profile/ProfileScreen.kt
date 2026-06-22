@@ -43,6 +43,8 @@ import com.aiic.app.core.theme.AIICTheme
 
 @Composable
 fun ProfileScreen(
+    userName: String = "User",
+    userEmail: String = "",
     onNavigateToEditProfile: () -> Unit = {},
     onNavigateToSettings: () -> Unit = {},
     onNavigateToDummy: (String) -> Unit = {},
@@ -89,7 +91,7 @@ fun ProfileScreen(
                     contentAlignment = Alignment.Center,
                 ) {
                     Text(
-                        text = "P",
+                        text = userName.firstOrNull()?.uppercase() ?: "U",
                         style = AIICTheme.typography.displaySmall,
                         color = Color.White,
                         fontWeight = FontWeight.Bold,
@@ -114,10 +116,10 @@ fun ProfileScreen(
 
             Spacer(Modifier.height(16.dp))
 
-            GradientText(text = "Praveen", style = AIICTheme.typography.headlineLarge)
+            GradientText(text = userName, style = AIICTheme.typography.headlineLarge)
             Spacer(Modifier.height(4.dp))
             Text(
-                text = "praveen@example.com",
+                text = userEmail,
                 style = AIICTheme.typography.bodyMedium,
                 color = AIICTheme.colors.textTertiary,
             )

@@ -24,7 +24,10 @@ import com.aiic.app.common.components.PremiumCard
 import com.aiic.app.core.theme.AIICTheme
 
 @Composable
-fun AnalyticsScreen() {
+fun AnalyticsScreen(
+    interviewsCompleted: Int = 0,
+    readinessScore: Float = 0f
+) {
     val scrollState = rememberScrollState()
 
     Column(
@@ -78,16 +81,16 @@ fun AnalyticsScreen() {
             AnalyticsStatCard(
                 modifier = Modifier.weight(1f),
                 title = "Interviews",
-                value = "12",
-                trend = "+3",
+                value = "$interviewsCompleted",
+                trend = "+0",
                 isPositive = true,
                 icon = Icons.Rounded.WorkOutline
             )
             AnalyticsStatCard(
                 modifier = Modifier.weight(1f),
                 title = "Avg. Score",
-                value = "85%",
-                trend = "+5%",
+                value = "${(readinessScore * 100).toInt()}%",
+                trend = "+0%",
                 isPositive = true,
                 icon = Icons.Rounded.TrendingUp
             )
