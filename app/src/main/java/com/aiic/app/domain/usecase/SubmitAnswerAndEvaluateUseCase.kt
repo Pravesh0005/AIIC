@@ -8,6 +8,9 @@ import com.aiic.app.domain.repository.InterviewAnswerRepository
 import com.aiic.app.domain.repository.InterviewQuestionRepository
 import javax.inject.Inject
 
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
+
 class SubmitAnswerAndEvaluateUseCase @Inject constructor(
     private val answerRepository: InterviewAnswerRepository,
     private val questionRepository: InterviewQuestionRepository
@@ -20,12 +23,12 @@ class SubmitAnswerAndEvaluateUseCase @Inject constructor(
     ): NetworkResult<InterviewQuestion?> {
         
         // Run AI requests concurrently to cut latency in half
-        return kotlinx.coroutines.coroutineScope {
-            val evalDeferred = kotlinx.coroutines.async {
+        return coroutineScope {
+            val evalDeferred = async {
                 answerRepository.evaluateAnswer(currentQuestion.content, answerContent)
             }
             
-            val followUpDeferred = kotlinx.coroutines.async {
+            val followUpDeferred = async {
                 questionRepository.generateFollowUpQuestion(currentQuestion.content, answerContent)
             }
             
