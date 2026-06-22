@@ -31,6 +31,9 @@ android {
         }
         val geminiKey = localProperties.getProperty("GEMINI_API_KEY") ?: "\"\""
         buildConfigField("String", "GEMINI_API_KEY", geminiKey)
+        
+        val groqKey = localProperties.getProperty("GROQ_API_KEY") ?: "\"\""
+        buildConfigField("String", "GROQ_API_KEY", groqKey)
     }
 
     buildTypes {
