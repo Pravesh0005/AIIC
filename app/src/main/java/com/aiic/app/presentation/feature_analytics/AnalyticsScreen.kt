@@ -1,6 +1,7 @@
 package com.aiic.app.presentation.feature_analytics
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -18,6 +19,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.aiic.app.common.components.PremiumCard
 import com.aiic.app.core.theme.AIICTheme
 
@@ -147,7 +149,7 @@ fun AnalyticsScreen() {
                     text = "You are performing exceptionally well in technical algorithms, but your System Design explanations lack real-world examples. AI suggests practicing scalability scenarios.",
                     style = AIICTheme.typography.bodyMedium,
                     color = AIICTheme.colors.textSecondary,
-                    lineHeight = 22.dp
+                    lineHeight = 22.sp
                 )
             }
         }
