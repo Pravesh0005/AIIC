@@ -49,7 +49,7 @@ class FirestoreInterviewSessionRepository @Inject constructor() : InterviewSessi
             )
             return NetworkResult.Success(Unit)
         }
-        return NetworkResult.Error("Session not found")
+        return NetworkResult.Error(message = "Session not found")
     }
 
     override suspend fun updateSessionStatus(
@@ -61,7 +61,7 @@ class FirestoreInterviewSessionRepository @Inject constructor() : InterviewSessi
             sessions[sessionId] = session.copy(status = status)
             return NetworkResult.Success(Unit)
         }
-        return NetworkResult.Error("Session not found")
+        return NetworkResult.Error(message = "Session not found")
     }
 
     override fun getSessionHistory(userId: String): Flow<List<InterviewSession>> = flow {

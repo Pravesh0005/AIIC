@@ -1,6 +1,7 @@
 package com.aiic.app.data.repository
 
 import com.aiic.app.core.base.NetworkResult
+import com.aiic.app.core.base.getOrNull
 import com.aiic.app.domain.model.InterviewConfig
 import com.aiic.app.domain.model.InterviewQuestion
 import com.aiic.app.domain.repository.GenerativeAiRepository

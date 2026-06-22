@@ -2,7 +2,7 @@ package com.aiic.app.presentation.feature_home
 
 import androidx.lifecycle.viewModelScope
 import com.aiic.app.core.base.BaseViewModel
-import com.aiic.app.domain.model.InterviewCategory
+import com.aiic.app.domain.model.InterviewType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -14,10 +14,10 @@ data class HomeState(
     val interviewsCompleted: Int = 0,
     val streakDays: Int = 0,
     val hoursOfPractice: Float = 0.0f,
-    val recentCategories: List<InterviewCategory> = listOf(
-        InterviewCategory.TECHNICAL,
-        InterviewCategory.BEHAVIORAL,
-        InterviewCategory.DSA,
+    val recentCategories: List<InterviewType> = listOf(
+        InterviewType.TECHNICAL,
+        InterviewType.BEHAVIORAL,
+        InterviewType.DSA,
     ),
 )
 

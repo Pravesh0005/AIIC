@@ -14,4 +14,6 @@ interface GenerativeAiRepository {
         resumeId: String,
         rawText: String
     ): NetworkResult<ResumeAnalysis>
+
+    suspend fun generateText(prompt: String): NetworkResult<String>
 }
