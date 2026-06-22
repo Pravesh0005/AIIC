@@ -138,6 +138,7 @@ fun AIICNavHost(navController: NavHostController = rememberNavController()) {
         composable(AppRoutes.Home.route) {
             HomeScreen(
                 onNavigateToResume = { navController.navigate(AppRoutes.ResumeDashboard.route) },
+                onNavigateToInterviewSetup = { navController.navigate(AppRoutes.InterviewSetup.route) },
                 onNavigateToLogin = { 
                     navController.navigate(AppRoutes.Login.route) {
                         popUpTo(AppRoutes.Home.route) { inclusive = true }
@@ -240,34 +241,5 @@ fun AIICNavHost(navController: NavHostController = rememberNavController()) {
             )
         }
 
-        // --- Day 4: AI Mock Interview Engine ---
-        composable(AppRoutes.InterviewSetup.route) {
-            com.aiic.app.presentation.feature_interview.setup.InterviewSetupScreen(
-                onNavigateBack = { navController.popBackStack() }
-            )
-        }
-
-        composable(
-            route = AppRoutes.InterviewSession.route,
-            arguments = listOf(androidx.navigation.navArgument("sessionId") { type = androidx.navigation.NavType.StringType })
-        ) { 
-            com.aiic.app.presentation.feature_interview.session.InterviewSessionScreen(
-                onNavigateBack = { navController.popBackStack() },
-                onNavigateToSummary = { route -> navController.navigate(route) { popUpTo(AppRoutes.InterviewSetup.route) { inclusive = true } } }
-            )
-        }
-
-        composable(
-            route = AppRoutes.InterviewSummary.route,
-            arguments = listOf(androidx.navigation.navArgument("sessionId") { type = androidx.navigation.NavType.StringType })
-        ) { 
-            com.aiic.app.presentation.feature_interview.summary.InterviewSummaryScreen(
-                onNavigateHome = { 
-                    navController.navigate(AppRoutes.Home.route) {
-                        popUpTo(AppRoutes.Home.route) { inclusive = true }
-                    } 
-                }
-            )
-        }
     }
 }

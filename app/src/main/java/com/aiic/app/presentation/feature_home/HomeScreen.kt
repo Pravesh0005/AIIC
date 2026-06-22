@@ -89,6 +89,7 @@ private val navItems = listOf(
 fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel(),
     onNavigateToResume: () -> Unit = {},
+    onNavigateToInterviewSetup: () -> Unit = {},
     onNavigateToLogin: () -> Unit = {},
     onNavigateToDummy: (String) -> Unit = {}
 ) {
@@ -148,6 +149,7 @@ fun HomeScreen(
                         onNavigateToProfile = { selectedNav = 2 },
                         onNavigateToNotifications = { onNavigateToDummy("Notifications") },
                         onNavigateToResume = onNavigateToResume,
+                        onNavigateToInterviewSetup = onNavigateToInterviewSetup,
                         onNavigateToDummy = onNavigateToDummy
                     )
                 1 -> com.aiic.app.presentation.feature_analytics.AnalyticsScreen(
@@ -180,6 +182,7 @@ private fun HomeContent(
     onNavigateToProfile: () -> Unit,
     onNavigateToNotifications: () -> Unit,
     onNavigateToResume: () -> Unit,
+    onNavigateToInterviewSetup: () -> Unit,
     onNavigateToDummy: (String) -> Unit
 ) {
     LazyColumn(
@@ -189,9 +192,9 @@ private fun HomeContent(
         contentPadding = PaddingValues(bottom = 16.dp),
         verticalArrangement = Arrangement.spacedBy(AIICTheme.spacing.sectionGap),
     ) {
-        item { HeroSection(state, onNavigateToProfile, onNavigateToDummy, onNavigateToResume) }
+        item { HeroSection(state, onNavigateToProfile, onNavigateToDummy, onNavigateToResume, onNavigateToInterviewSetup) }
         item { StatsRow(state) }
-        item { QuickActions(onNavigateToResume, onNavigateToDummy) }
+        item { QuickActions(onNavigateToResume, onNavigateToInterviewSetup, onNavigateToDummy) }
         item { RecentActivity(state) }
         item { AnalyticsPreview(state) }
     }
@@ -204,7 +207,8 @@ private fun HeroSection(
     state: HomeState,
     onNavigateToProfile: () -> Unit,
     onNavigateToDummy: (String) -> Unit,
-    onNavigateToResume: () -> Unit
+    onNavigateToResume: () -> Unit,
+    onNavigateToInterviewSetup: () -> Unit
 ) {
     val alpha = remember { Animatable(0f) }
     LaunchedEffect(Unit) { alpha.animateTo(1f, tween(600, easing = FastOutSlowInEasing)) }
@@ -317,7 +321,7 @@ private fun HeroSection(
                     Spacer(Modifier.height(12.dp))
                     PremiumButton(
                         text = "Start Practice",
-                        onClick = { onNavigateToResume() },
+                        onClick = { onNavigateToInterviewSetup() },
                         modifier = Modifier.width(160.dp),
                     )
                 }
@@ -376,6 +380,7 @@ private fun StatsRow(state: HomeState) {
 @Composable
 private fun QuickActions(
     onNavigateToResume: () -> Unit,
+    onNavigateToInterviewSetup: () -> Unit,
     onNavigateToDummy: (String) -> Unit
 ) {
     Column {
@@ -389,13 +394,13 @@ private fun QuickActions(
                 icon = { Icon(Icons.Rounded.Psychology, null, tint = AIICTheme.colors.primary, modifier = Modifier.size(22.dp)) },
                 title = "AI Mock Interview",
                 description = "Practice with adaptive AI interviewer",
-                onClick = { onNavigateToResume() }
+                onClick = { onNavigateToInterviewSetup() }
             )
             FeatureCard(
                 icon = { Icon(Icons.Rounded.QuestionAnswer, null, tint = AIICTheme.colors.accent, modifier = Modifier.size(22.dp)) },
-                title = "Question Bank",
-                description = "Browse 500+ curated questions",
-                onClick = { onNavigateToDummy("Question Bank") }
+                title = "Resume ATS Scanner",
+                description = "Scan your resume for ATS score",
+                onClick = { onNavigateToResume() }
             )
             FeatureCard(
                 icon = { Icon(Icons.Rounded.TrendingUp, null, tint = Color(0xFF10B981), modifier = Modifier.size(22.dp)) },
