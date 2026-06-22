@@ -27,10 +27,27 @@ import com.aiic.app.domain.model.InterviewType
 @Composable
 fun InterviewSetupScreen(
     onNavigateBack: () -> Unit,
+    onNavigateToSession: (String) -> Unit,
     viewModel: InterviewSetupViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsState()
     val scrollState = rememberScrollState()
+
+    LaunchedEffect(Unit) {
+        viewModel.events.collect { event ->
+            when (event) {
+                is com.aiic.app.core.base.UiEvent.Navigate -> {
+                    // Extract sessionId from "interview_session/{id}"
+                    val prefix = "interview_session/"
+                    if (event.route.startsWith(prefix)) {
+                        val id = event.route.removePrefix(prefix)
+                        onNavigateToSession(id)
+                    }
+                }
+                else -> {}
+            }
+        }
+    }
 
     Scaffold(
         topBar = {

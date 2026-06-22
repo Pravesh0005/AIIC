@@ -203,7 +203,12 @@ fun AIICNavHost(navController: NavHostController = rememberNavController()) {
         // --- Day 4: AI Mock Interview Engine ---
         composable(AppRoutes.InterviewSetup.route) {
             com.aiic.app.presentation.feature_interview.setup.InterviewSetupScreen(
-                onNavigateBack = { navController.popBackStack() }
+                onNavigateBack = { navController.popBackStack() },
+                onNavigateToSession = { sessionId -> 
+                    navController.navigate(AppRoutes.InterviewSession.createRoute(sessionId)) {
+                        popUpTo(AppRoutes.InterviewSetup.route) { inclusive = true }
+                    }
+                }
             )
         }
 
