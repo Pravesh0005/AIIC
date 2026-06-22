@@ -24,11 +24,11 @@ class SubmitAnswerAndEvaluateUseCase @Inject constructor(
         
         // Run AI requests concurrently to cut latency in half
         return coroutineScope {
-            val evalDeferred = async {
+            val evalDeferred = async<NetworkResult<Pair<Float, String>>> {
                 answerRepository.evaluateAnswer(currentQuestion.content, answerContent)
             }
             
-            val followUpDeferred = async {
+            val followUpDeferred = async<NetworkResult<InterviewQuestion?>> {
                 questionRepository.generateFollowUpQuestion(currentQuestion.content, answerContent)
             }
             
