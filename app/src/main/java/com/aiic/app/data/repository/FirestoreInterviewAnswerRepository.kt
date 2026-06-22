@@ -33,6 +33,7 @@ class FirestoreInterviewAnswerRepository @Inject constructor(
             Candidate answer: $answer
             
             Evaluate this answer out of 100 based on accuracy, depth, and communication.
+            If the answer is completely irrelevant, abusive (e.g. "fuck you"), or nonsense, give a SCORE: 0.
             Format your response exactly as:
             SCORE: [number 0-100]
             FEEDBACK: [1-2 sentences of feedback]
@@ -43,11 +44,11 @@ class FirestoreInterviewAnswerRepository @Inject constructor(
         val aiResponse = aiResult.getOrNull()
         if (aiResponse != null) {
             val response = aiResponse
-            var score = 50f
-            var feedback = "Fair attempt."
+            var score = 0f
+            var feedback = "Unable to provide specific feedback."
             
             try {
-                val scoreRegex = Regex("SCORE:\\s*(\\d+)")
+                val scoreRegex = Regex("SCORE:\\s*(\\d+)", RegexOption.IGNORE_CASE)
                 val feedbackRegex = Regex("FEEDBACK:\\s*(.+)", RegexOption.DOT_MATCHES_ALL)
                 
                 scoreRegex.find(response)?.groupValues?.get(1)?.let {
@@ -65,6 +66,6 @@ class FirestoreInterviewAnswerRepository @Inject constructor(
         }
         
         // Default fallback if parsing fails
-        return NetworkResult.Success(Pair(60f, "Your answer was acceptable but could use more detail."))
+        return NetworkResult.Success(Pair(0f, "We couldn't evaluate this answer correctly."))
     }
 }
