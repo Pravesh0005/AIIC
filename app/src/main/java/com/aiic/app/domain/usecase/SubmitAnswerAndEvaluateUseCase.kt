@@ -23,9 +23,10 @@ class SubmitAnswerAndEvaluateUseCase @Inject constructor(
         var score = 0f
         var feedback = ""
         
-        if (evalResult is NetworkResult.Success) {
-            score = evalResult.data.first
-            feedback = evalResult.data.second
+        val evalResponse = evalResult.getOrNull()
+        if (evalResponse != null) {
+            score = evalResponse.first
+            feedback = evalResponse.second
         }
 
         // 2. Save the answer
@@ -40,16 +41,17 @@ class SubmitAnswerAndEvaluateUseCase @Inject constructor(
         )
         
         val submitResult = answerRepository.submitAnswer(answer)
-        if (submitResult !is NetworkResult.Success) {
-            return NetworkResult.Error("Failed to save answer")
+        if (submitResult.getOrNull() == null) {
+            return NetworkResult.Error(message = "Failed to save answer")
         }
 
         // 3. Determine if Follow-up is needed
         // For simplicity, we ask the AI to generate a follow-up. If it returns null, no follow-up is needed.
         val followUpResult = questionRepository.generateFollowUpQuestion(currentQuestion.content, answerContent)
+        val followUpData = followUpResult.getOrNull()
         
-        if (followUpResult is NetworkResult.Success && followUpResult.data != null) {
-            val followUpQuestion = followUpResult.data.copy(
+        if (followUpData != null) {
+            val followUpQuestion = followUpData.copy(
                 sessionId = sessionId,
                 parentQuestionId = currentQuestion.questionId,
                 isFollowUp = true

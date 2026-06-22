@@ -76,6 +76,25 @@ class GeminiGenerativeAiRepository @Inject constructor() : GenerativeAiRepositor
                 NetworkResult.Error(message = "AI Processing Error: ${e.message}")
             }
         }
+    override suspend fun generateText(prompt: String): NetworkResult<String> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val generativeModel = GenerativeModel(
+                    modelName = "gemini-1.5-flash",
+                    apiKey = apiKey
+                )
+                val response = generativeModel.generateContent(prompt)
+                val responseText = response.text
+                
+                if (responseText.isNullOrBlank()) {
+                    NetworkResult.Error(message = "Failed to generate text: Empty response from AI.")
+                } else {
+                    NetworkResult.Success(responseText)
+                }
+            } catch (e: Exception) {
+                NetworkResult.Error(message = "AI Processing Error: ${e.message}")
+            }
+        }
     }
 }
 

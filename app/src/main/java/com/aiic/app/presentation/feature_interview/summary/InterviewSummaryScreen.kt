@@ -20,7 +20,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.aiic.app.common.components.PremiumCard
-import com.aiic.app.common.components.PrimaryButton
+import com.aiic.app.common.components.PremiumButton
 import com.aiic.app.core.theme.AIICTheme
 
 @Composable
@@ -31,8 +31,8 @@ fun InterviewSummaryScreen(
     val state by viewModel.state.collectAsState()
     val scrollState = rememberScrollState()
 
-    LaunchedEffect(viewModel.uiEvent) {
-        viewModel.uiEvent.collect { event ->
+    LaunchedEffect(viewModel.events) {
+        viewModel.events.collect { event ->
             when (event) {
                 is com.aiic.app.core.base.UiEvent.Navigate -> {
                     if (event.route == "home") onNavigateHome()
@@ -131,10 +131,9 @@ fun InterviewSummaryScreen(
 
         Spacer(modifier = Modifier.weight(1f))
 
-        PrimaryButton(
+        PremiumButton(
             text = "Return to Dashboard",
             onClick = { viewModel.onAction(InterviewSummaryAction.FinishReview) },
-            icon = Icons.Rounded.Home,
             modifier = Modifier.fillMaxWidth().padding(bottom = 24.dp)
         )
     }

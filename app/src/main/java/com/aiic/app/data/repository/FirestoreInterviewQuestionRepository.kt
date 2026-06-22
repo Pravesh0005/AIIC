@@ -30,8 +30,9 @@ class FirestoreInterviewQuestionRepository @Inject constructor(
 
         val aiResult = generativeAiRepository.generateText(prompt)
         
-        return if (aiResult is NetworkResult.Success) {
-            val generatedLines = aiResult.data.split("\n").filter { it.isNotBlank() }
+        val aiResponse = aiResult.getOrNull()
+        return if (aiResponse != null) {
+            val generatedLines = aiResponse.split("\n").filter { it.isNotBlank() }
             val questions = generatedLines.take(config.questionCount).mapIndexed { index, content ->
                 InterviewQuestion(
                     questionId = UUID.randomUUID().toString(),
@@ -68,8 +69,9 @@ class FirestoreInterviewQuestionRepository @Inject constructor(
         """.trimIndent()
 
         val aiResult = generativeAiRepository.generateText(prompt)
-        if (aiResult is NetworkResult.Success) {
-            val followUp = aiResult.data.trim()
+        val aiResponse = aiResult.getOrNull()
+        if (aiResponse != null) {
+            val followUp = aiResponse.trim()
             if (followUp == "NO_FOLLOW_UP" || followUp.isBlank()) {
                 return NetworkResult.Success(null)
             }

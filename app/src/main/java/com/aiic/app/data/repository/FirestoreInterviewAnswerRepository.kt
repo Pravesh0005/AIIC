@@ -39,8 +39,9 @@ class FirestoreInterviewAnswerRepository @Inject constructor(
 
         val aiResult = generativeAiRepository.generateText(prompt)
         
-        if (aiResult is NetworkResult.Success) {
-            val response = aiResult.data
+        val aiResponse = aiResult.getOrNull()
+        if (aiResponse != null) {
+            val response = aiResponse
             var score = 50f
             var feedback = "Fair attempt."
             

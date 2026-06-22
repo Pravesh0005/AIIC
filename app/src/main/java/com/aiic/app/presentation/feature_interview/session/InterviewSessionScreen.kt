@@ -37,8 +37,8 @@ fun InterviewSessionScreen(
     val state by viewModel.state.collectAsState()
     val scrollState = rememberScrollState()
 
-    LaunchedEffect(viewModel.uiEvent) {
-        viewModel.uiEvent.collect { event ->
+    LaunchedEffect(viewModel.events) {
+        viewModel.events.collect { event ->
             when (event) {
                 is com.aiic.app.core.base.UiEvent.NavigateBack -> onNavigateBack()
                 is com.aiic.app.core.base.UiEvent.Navigate -> {

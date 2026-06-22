@@ -18,40 +18,37 @@ class SetupInterviewSessionUseCase @Inject constructor(
         // 1. Fetch Resume Context if provided
         var resumeContext = ""
         if (config.resumeId != null) {
-            when (val resumeResult = resumeRepository.getResume(config.resumeId)) {
-                is NetworkResult.Success -> {
-                    resumeContext = resumeResult.data.content
-                }
-                is NetworkResult.Error -> {
-                    // Decide whether to fail or continue without resume.
-                    // For now, continue with empty string (generic questions).
-                }
-                else -> {}
+            val resumeResult = resumeRepository.getResumeById(config.resumeId)
+            val resume = resumeResult.getOrNull()
+            if (resume != null) {
+                resumeContext = resume.content ?: ""
             }
         }
 
         // 2. Create the Session in DB
         val sessionResult = sessionRepository.createSession(config, userId)
-        if (sessionResult !is NetworkResult.Success) {
-            return NetworkResult.Error(sessionResult.message ?: "Failed to create session")
+        val session = sessionResult.getOrNull()
+        if (session == null) {
+            val errorMsg = (sessionResult as? NetworkResult.Error)?.message ?: "Failed to create session"
+            return NetworkResult.Error(message = errorMsg)
         }
-        val session = sessionResult.data
 
         // 3. Generate Initial Questions via AI
         val questionsResult = questionRepository.generateInitialQuestions(config, resumeContext)
-        if (questionsResult !is NetworkResult.Success) {
-            // Rollback or mark session as failed if needed
-            return NetworkResult.Error(questionsResult.message ?: "Failed to generate questions")
+        val questions = questionsResult.getOrNull()
+        if (questions == null) {
+            val errorMsg = (questionsResult as? NetworkResult.Error)?.message ?: "Failed to generate questions"
+            return NetworkResult.Error(message = errorMsg)
         }
         
         // 4. Assign SessionId to questions and save them
-        val finalQuestions = questionsResult.data.mapIndexed { index, q ->
+        val finalQuestions = questions.mapIndexed { index, q ->
             q.copy(sessionId = session.sessionId, order = index + 1)
         }
         
         val saveResult = questionRepository.saveQuestions(finalQuestions)
-        if (saveResult !is NetworkResult.Success) {
-            return NetworkResult.Error("Failed to save questions to database")
+        if (saveResult.getOrNull() == null) {
+            return NetworkResult.Error(message = "Failed to save questions to database")
         }
 
         return NetworkResult.Success(Pair(session, finalQuestions))

@@ -18,7 +18,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.aiic.app.common.components.PrimaryButton
+import com.aiic.app.common.components.PremiumButton
 import com.aiic.app.core.theme.AIICTheme
 import com.aiic.app.domain.model.InterviewDifficulty
 import com.aiic.app.domain.model.InterviewType
@@ -144,11 +144,11 @@ fun InterviewSetupScreen(
                 )
             }
             
-            PrimaryButton(
+            PremiumButton(
                 text = if (state.isLoading) "Preparing AI..." else "Start Interview",
                 onClick = { viewModel.onAction(InterviewSetupAction.StartInterview) },
-                icon = if (!state.isLoading) Icons.Rounded.PlayArrow else null,
                 enabled = !state.isLoading,
+                isLoading = state.isLoading,
                 modifier = Modifier.fillMaxWidth()
             )
             
