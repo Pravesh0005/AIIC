@@ -86,7 +86,8 @@ fun ProfileScreen(
                             Brush.linearGradient(
                                 listOf(AIICTheme.colors.primary, AIICTheme.colors.accent)
                             )
-                        ),
+                        )
+                        .clickable { onNavigateToDummy("Change Avatar") },
                     contentAlignment = Alignment.Center,
                 ) {
                     Text(
@@ -100,7 +101,8 @@ fun ProfileScreen(
                     modifier = Modifier
                         .size(32.dp)
                         .clip(CircleShape)
-                        .background(AIICTheme.colors.surfaceElevated),
+                        .background(AIICTheme.colors.surfaceElevated)
+                        .clickable { onNavigateToDummy("Change Avatar") },
                     contentAlignment = Alignment.Center,
                 ) {
                     Icon(
