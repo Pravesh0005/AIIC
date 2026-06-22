@@ -19,50 +19,59 @@ class SubmitAnswerAndEvaluateUseCase @Inject constructor(
         responseTimeMs: Long
     ): NetworkResult<InterviewQuestion?> {
         
-        // 1. Evaluate the answer via AI
-        val evalResult = answerRepository.evaluateAnswer(currentQuestion.content, answerContent)
-        var score = 0f
-        var feedback = ""
-        
-        val evalResponse = evalResult.getOrNull()
-        if (evalResponse != null) {
-            score = evalResponse.first
-            feedback = evalResponse.second
-        }
+        // Run AI requests concurrently to cut latency in half
+        return kotlinx.coroutines.coroutineScope {
+            val evalDeferred = kotlinx.coroutines.async {
+                answerRepository.evaluateAnswer(currentQuestion.content, answerContent)
+            }
+            
+            val followUpDeferred = kotlinx.coroutines.async {
+                questionRepository.generateFollowUpQuestion(currentQuestion.content, answerContent)
+            }
+            
+            val evalResult = evalDeferred.await()
+            val followUpResult = followUpDeferred.await()
 
-        // 2. Save the answer
-        val answer = InterviewAnswer(
-            answerId = "ans_${System.currentTimeMillis()}", // Mock ID generator, typically handled by Firestore
-            questionId = currentQuestion.questionId,
-            sessionId = sessionId,
-            content = answerContent,
-            responseTimeMs = responseTimeMs,
-            aiEvaluationScore = score,
-            aiFeedback = feedback
-        )
-        
-        val submitResult = answerRepository.submitAnswer(answer)
-        if (submitResult.getOrNull() == null) {
-            return NetworkResult.Error(message = "Failed to save answer")
-        }
+            var score = 0f
+            var feedback = ""
+            
+            val evalResponse = evalResult.getOrNull()
+            if (evalResponse != null) {
+                score = evalResponse.first
+                feedback = evalResponse.second
+            }
 
-        // 3. Determine if Follow-up is needed
-        // For simplicity, we ask the AI to generate a follow-up. If it returns null, no follow-up is needed.
-        val followUpResult = questionRepository.generateFollowUpQuestion(currentQuestion.content, answerContent)
-        val followUpData = followUpResult.getOrNull()
-        
-        if (followUpData != null) {
-            val followUpQuestion = followUpData.copy(
+            // 2. Save the answer
+            val answer = InterviewAnswer(
+                answerId = "ans_${System.currentTimeMillis()}", // Mock ID generator, typically handled by Firestore
+                questionId = currentQuestion.questionId,
                 sessionId = sessionId,
-                parentQuestionId = currentQuestion.questionId,
-                isFollowUp = true
+                content = answerContent,
+                responseTimeMs = responseTimeMs,
+                aiEvaluationScore = score,
+                aiFeedback = feedback
             )
-            // Save the follow-up question
-            questionRepository.saveQuestions(listOf(followUpQuestion))
-            return NetworkResult.Success(followUpQuestion)
-        }
+            
+            val submitResult = answerRepository.submitAnswer(answer)
+            if (submitResult.getOrNull() == null) {
+                return@coroutineScope NetworkResult.Error(message = "Failed to save answer")
+            }
 
-        // Returns null indicating no follow up generated.
-        return NetworkResult.Success(null)
+            // 3. Determine if Follow-up is needed
+            val followUpData = followUpResult.getOrNull()
+            if (followUpData != null) {
+                val followUpQuestion = followUpData.copy(
+                    sessionId = sessionId,
+                    parentQuestionId = currentQuestion.questionId,
+                    isFollowUp = true
+                )
+                // Save the follow-up question
+                questionRepository.saveQuestions(listOf(followUpQuestion))
+                return@coroutineScope NetworkResult.Success(followUpQuestion)
+            }
+
+            // Returns null indicating no follow up generated.
+            return@coroutineScope NetworkResult.Success(null)
+        }
     }
 }
