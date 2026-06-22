@@ -50,6 +50,8 @@ class GeminiGenerativeAiRepository @Inject constructor() : GenerativeAiRepositor
             try {
                 val url = java.net.URL("https://api.groq.com/openai/v1/chat/completions")
                 val connection = url.openConnection() as java.net.HttpURLConnection
+                connection.connectTimeout = 15000 // 15 seconds
+                connection.readTimeout = 20000 // 20 seconds
                 connection.requestMethod = "POST"
                 connection.setRequestProperty("Content-Type", "application/json")
                 connection.setRequestProperty("Authorization", "Bearer $groqKey")
