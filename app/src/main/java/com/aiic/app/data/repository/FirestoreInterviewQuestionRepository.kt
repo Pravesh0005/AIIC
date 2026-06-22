@@ -22,9 +22,13 @@ class FirestoreInterviewQuestionRepository @Inject constructor(
         val prompt = """
             You are an expert technical recruiter and hiring manager.
             Generate ${config.questionCount} interview questions for a ${config.role} role.
-            Interview Type: ${config.interviewType}
-            Difficulty: ${config.difficulty}
+            Interview Type: ${config.interviewType.name}
+            Difficulty: ${config.difficulty.name}
             Resume Context: ${resumeContext.ifBlank { "None provided." }}
+            
+            IMPORTANT RULES:
+            - If Interview Type is MIXED, you MUST include a balance of highly TECHNICAL coding/architecture questions and behavioral questions. Do not only ask behavioral questions.
+            - If Interview Type is TECHNICAL, ask only deep technical questions.
             
             Return the output as a list of questions separated by newlines. No formatting or numbers.
         """.trimIndent()
