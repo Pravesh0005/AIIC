@@ -76,6 +76,8 @@ class GeminiGenerativeAiRepository @Inject constructor() : GenerativeAiRepositor
                 NetworkResult.Error(message = "AI Processing Error: ${e.message}")
             }
         }
+    }
+
     override suspend fun generateText(prompt: String): NetworkResult<String> {
         return withContext(Dispatchers.IO) {
             try {
