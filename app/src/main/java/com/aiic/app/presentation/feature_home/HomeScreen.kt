@@ -185,20 +185,70 @@ private fun HomeContent(
     }
 }
 
+                .padding(paddingValues)
+        ) {
+            when (selectedBottomNav) {
+                0 -> { // Home Tab
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .verticalScroll(rememberScrollState())
+                            .padding(bottom = 80.dp) // Extra padding for bottom nav
+                    ) {
+                        HomeHeader(
+                            state = state, 
+                            onNavigateToProfile = { selectedBottomNav = 2 },
+                            onNavigateToDummy = onNavigateToDummy
+                        )
+                        Spacer(Modifier.height(24.dp))
+                        
+                        StatsCarousel(state = state)
+                        Spacer(Modifier.height(32.dp))
+                        
+                        QuickActions(onNavigateToResume, onNavigateToDummy)
+                        Spacer(Modifier.height(32.dp))
+                        
+                        HomeTabs(
+                            activeTab = activeTab,
+                            onTabSelected = { activeTab = it }
+                        )
+                        
+                        when (activeTab) {
+                            0 -> RecentActivityList(state.recentActivity, onNavigateToResume)
+                            1 -> RecommendedTasks()
+                        }
+                    }
+                }
+                1 -> { // Analytics Tab
+                    com.aiic.app.presentation.feature_analytics.AnalyticsScreen()
+                }
+                2 -> { // Profile Tab
+                    com.aiic.app.presentation.feature_profile.ProfileScreen(
+                        onNavigateToEditProfile = { onNavigateToDummy("Edit Profile") },
+                        onNavigateToSettings = { selectedBottomNav = 3 },
+                        onNavigateToDummy = onNavigateToDummy,
+                        onSignOut = onNavigateToLogin
+                    )
+                }
+                3 -> { // Settings Tab
+                    com.aiic.app.presentation.feature_settings.SettingsScreen(
+                        onNavigateToDummy = onNavigateToDummy,
+                        onLogout = onNavigateToLogin
+                    )
+                }
+            }
+        }
+    }
+}
+
 @Composable
-private fun HeroSection(
-    state: HomeState, 
+private fun HomeHeader(
+    state: HomeUiState,
     onNavigateToProfile: () -> Unit,
-    onNavigateToNotifications: () -> Unit,
-    onNavigateToResume: () -> Unit
+    onNavigateToDummy: (String) -> Unit
 ) {
     val alpha = remember { Animatable(0f) }
     LaunchedEffect(Unit) { alpha.animateTo(1f, tween(600, easing = FastOutSlowInEasing)) }
-
-    val context = androidx.compose.ui.platform.LocalContext.current
-    val showToast = { message: String ->
-        android.widget.Toast.makeText(context, message, android.widget.Toast.LENGTH_SHORT).show()
-    }
 
     Column(
         modifier = Modifier
@@ -231,7 +281,7 @@ private fun HeroSection(
                         .size(40.dp)
                         .clip(CircleShape)
                         .background(AIICTheme.colors.surfaceElevated)
-                        .clickable { showToast("You have 0 new notifications.") },
+                        .clickable { onNavigateToDummy("Notifications") },
                     contentAlignment = Alignment.Center,
                 ) {
                     Icon(
@@ -365,12 +415,10 @@ private fun StatsRow(state: HomeState) {
 }
 
 @Composable
-private fun QuickActions(onNavigateToResume: () -> Unit) {
-    val context = androidx.compose.ui.platform.LocalContext.current
-    val showToast = { message: String ->
-        android.widget.Toast.makeText(context, message, android.widget.Toast.LENGTH_SHORT).show()
-    }
-
+private fun QuickActions(
+    onNavigateToResume: () -> Unit,
+    onNavigateToDummy: (String) -> Unit
+) {
     Column {
         SectionHeader(title = "Quick Actions", subtitle = "Jump right in")
         Spacer(Modifier.height(12.dp))
@@ -388,13 +436,13 @@ private fun QuickActions(onNavigateToResume: () -> Unit) {
                 icon = { Icon(Icons.Rounded.QuestionAnswer, null, tint = AIICTheme.colors.accent, modifier = Modifier.size(22.dp)) },
                 title = "Question Bank",
                 description = "Browse 500+ curated questions",
-                onClick = { showToast("Question Bank coming soon!") }
+                onClick = { onNavigateToDummy("Question Bank") }
             )
             FeatureCard(
                 icon = { Icon(Icons.Rounded.TrendingUp, null, tint = Color(0xFF10B981), modifier = Modifier.size(22.dp)) },
                 title = "Skill Assessment",
                 description = "Evaluate your strengths & gaps",
-                onClick = { showToast("Skill Assessment coming soon!") }
+                onClick = { onNavigateToDummy("Skill Assessment") }
             )
         }
     }

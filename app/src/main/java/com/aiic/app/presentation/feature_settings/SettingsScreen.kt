@@ -49,6 +49,7 @@ import com.aiic.app.core.theme.AIICTheme
 @Composable
 fun SettingsScreen(
     onNavigateBack: () -> Unit = {},
+    onNavigateToDummy: (String) -> Unit = {},
     onLogout: () -> Unit = {}
 ) {
     var notificationsEnabled by remember { mutableStateOf(true) }
@@ -118,15 +119,10 @@ fun SettingsScreen(
             modifier = Modifier.padding(bottom = 12.dp)
         )
 
-        val context = androidx.compose.ui.platform.LocalContext.current
-        val showToast = { message: String ->
-            android.widget.Toast.makeText(context, message, android.widget.Toast.LENGTH_SHORT).show()
-        }
-
         Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            SettingsNavItem(Icons.Rounded.Language, "Language", "English", AIICTheme.colors.accent, onClick = { showToast("Language selection coming soon!") })
-            SettingsNavItem(Icons.Rounded.Lock, "Security", null, AIICTheme.colors.error, onClick = { showToast("Security settings coming soon!") })
-            SettingsNavItem(Icons.Rounded.Payment, "Subscription", "Free Plan", AIICTheme.colors.warning, onClick = { showToast("Subscription management coming soon!") })
+            SettingsNavItem(Icons.Rounded.Language, "Language", "English", AIICTheme.colors.accent, onClick = { onNavigateToDummy("Language") })
+            SettingsNavItem(Icons.Rounded.Lock, "Security", null, AIICTheme.colors.error, onClick = { onNavigateToDummy("Security") })
+            SettingsNavItem(Icons.Rounded.Payment, "Subscription", "Free Plan", AIICTheme.colors.warning, onClick = { onNavigateToDummy("Subscription") })
         }
 
         Spacer(Modifier.height(28.dp))
@@ -139,8 +135,8 @@ fun SettingsScreen(
         )
 
         Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            SettingsNavItem(Icons.Rounded.SupportAgent, "Help Center", null, AIICTheme.colors.primary, onClick = { showToast("Help Center coming soon!") })
-            SettingsNavItem(Icons.Rounded.Info, "About AIIC", "v1.0.0", AIICTheme.colors.textTertiary, onClick = { showToast("AIIC App v1.0.0") })
+            SettingsNavItem(Icons.Rounded.SupportAgent, "Help Center", null, AIICTheme.colors.primary, onClick = { onNavigateToDummy("Help Center") })
+            SettingsNavItem(Icons.Rounded.Info, "About AIIC", "v1.0.0", AIICTheme.colors.textTertiary, onClick = { onNavigateToDummy("About AIIC") })
         }
 
         Spacer(Modifier.height(32.dp))

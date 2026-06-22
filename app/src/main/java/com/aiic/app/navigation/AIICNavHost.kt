@@ -142,16 +142,21 @@ fun AIICNavHost(navController: NavHostController = rememberNavController()) {
                     navController.navigate(AppRoutes.Login.route) {
                         popUpTo(AppRoutes.Home.route) { inclusive = true }
                     }
-                }
+                },
+                onNavigateToDummy = { title -> navController.navigate(AppRoutes.Dummy.createRoute(title)) }
             )
         }
 
         composable(AppRoutes.Profile.route) {
-            ProfileScreen()
+            ProfileScreen(
+                onNavigateToDummy = { title -> navController.navigate(AppRoutes.Dummy.createRoute(title)) }
+            )
         }
 
         composable(AppRoutes.Settings.route) {
-            SettingsScreen()
+            SettingsScreen(
+                onNavigateToDummy = { title -> navController.navigate(AppRoutes.Dummy.createRoute(title)) }
+            )
         }
 
         // Resume Platform
@@ -255,6 +260,17 @@ fun AIICNavHost(navController: NavHostController = rememberNavController()) {
                     onNavigateBack = { navController.popBackStack() }
                 )
             }
+        }
+
+        composable(
+            route = AppRoutes.Dummy.route,
+            arguments = listOf(androidx.navigation.navArgument("title") { type = androidx.navigation.NavType.StringType })
+        ) { backStackEntry ->
+            val title = backStackEntry.arguments?.getString("title") ?: "Feature"
+            com.aiic.app.presentation.feature_dummy.DummyScreen(
+                title = title,
+                onNavigateBack = { navController.popBackStack() }
+            )
         }
     }
 }
