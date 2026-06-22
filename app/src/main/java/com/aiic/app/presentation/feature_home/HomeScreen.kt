@@ -184,7 +184,7 @@ private fun HomeContent(
         contentPadding = PaddingValues(bottom = 16.dp),
         verticalArrangement = Arrangement.spacedBy(AIICTheme.spacing.sectionGap),
     ) {
-        item { HeroSection(state, onNavigateToProfile, onNavigateToNotifications, onNavigateToResume) }
+        item { HeroSection(state, onNavigateToProfile, onNavigateToDummy, onNavigateToResume) }
         item { StatsRow(state) }
         item { QuickActions(onNavigateToResume, onNavigateToDummy) }
         item { RecentActivity(state) }
@@ -195,10 +195,11 @@ private fun HomeContent(
 
 
 @Composable
-private fun HomeHeader(
-    state: HomeUiState,
+private fun HeroSection(
+    state: HomeState,
     onNavigateToProfile: () -> Unit,
-    onNavigateToDummy: (String) -> Unit
+    onNavigateToDummy: (String) -> Unit,
+    onNavigateToResume: () -> Unit
 ) {
     val alpha = remember { Animatable(0f) }
     LaunchedEffect(Unit) { alpha.animateTo(1f, tween(600, easing = FastOutSlowInEasing)) }
