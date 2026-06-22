@@ -489,9 +489,10 @@ private fun AnalyticsPreview(state: HomeState) {
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                 ) {
-                    AnalyticsStat("Avg. Score", "82%", AIICTheme.colors.secondary)
-                    AnalyticsStat("Best Area", "DSA", AIICTheme.colors.primary)
-                    AnalyticsStat("Improve", "HR", AIICTheme.colors.accent)
+                    val avgScoreStr = if (state.readinessScore > 0f) "${(state.readinessScore * 100).toInt()}%" else "0%"
+                    AnalyticsStat("Avg. Score", avgScoreStr, AIICTheme.colors.secondary)
+                    AnalyticsStat("Best Area", "Mixed", AIICTheme.colors.primary)
+                    AnalyticsStat("Completed", "${state.interviewsCompleted}", AIICTheme.colors.success)
                 }
                 Spacer(Modifier.height(16.dp))
                 Box(

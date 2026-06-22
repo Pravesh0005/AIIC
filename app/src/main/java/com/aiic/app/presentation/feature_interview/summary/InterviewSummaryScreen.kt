@@ -114,17 +114,18 @@ fun InterviewSummaryScreen(
                 
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                     Text("Role", style = AIICTheme.typography.bodyMedium, color = AIICTheme.colors.textSecondary)
-                    Text("Android Developer", style = AIICTheme.typography.bodyMedium, color = AIICTheme.colors.textPrimary, fontWeight = FontWeight.SemiBold)
+                    Text(state.session?.role ?: "Unknown", style = AIICTheme.typography.bodyMedium, color = AIICTheme.colors.textPrimary, fontWeight = FontWeight.SemiBold)
                 }
                 
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                     Text("Questions Answered", style = AIICTheme.typography.bodyMedium, color = AIICTheme.colors.textSecondary)
-                    Text("5", style = AIICTheme.typography.bodyMedium, color = AIICTheme.colors.textPrimary, fontWeight = FontWeight.SemiBold)
+                    Text("${state.session?.questionCount ?: 0}", style = AIICTheme.typography.bodyMedium, color = AIICTheme.colors.textPrimary, fontWeight = FontWeight.SemiBold)
                 }
 
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                     Text("Session Score", style = AIICTheme.typography.bodyMedium, color = AIICTheme.colors.textSecondary)
-                    Text("82%", style = AIICTheme.typography.bodyMedium, color = AIICTheme.colors.success, fontWeight = FontWeight.Bold)
+                    val scoreStr = state.session?.score?.let { "${it.toInt()}%" } ?: "0%"
+                    Text(scoreStr, style = AIICTheme.typography.bodyMedium, color = AIICTheme.colors.success, fontWeight = FontWeight.Bold)
                 }
             }
         }

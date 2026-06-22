@@ -10,5 +10,6 @@ interface InterviewSessionRepository {
     suspend fun getActiveSession(userId: String): NetworkResult<InterviewSession?>
     suspend fun completeSession(sessionId: String, finalScore: Float): NetworkResult<Unit>
     suspend fun updateSessionStatus(sessionId: String, status: com.aiic.app.domain.model.SessionStatus): NetworkResult<Unit>
+    suspend fun getSessionById(sessionId: String): NetworkResult<InterviewSession>
     fun getSessionHistory(userId: String): Flow<List<InterviewSession>>
 }

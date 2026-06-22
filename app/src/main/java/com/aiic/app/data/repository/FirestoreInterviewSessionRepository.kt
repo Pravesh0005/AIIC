@@ -64,6 +64,15 @@ class FirestoreInterviewSessionRepository @Inject constructor() : InterviewSessi
         return NetworkResult.Error(message = "Session not found")
     }
 
+    override suspend fun getSessionById(sessionId: String): NetworkResult<InterviewSession> {
+        val session = sessions[sessionId]
+        return if (session != null) {
+            NetworkResult.Success(session)
+        } else {
+            NetworkResult.Error(message = "Session not found")
+        }
+    }
+
     override fun getSessionHistory(userId: String): Flow<List<InterviewSession>> = flow {
         emit(sessions.values.filter { it.userId == userId && it.status == SessionStatus.COMPLETED })
     }

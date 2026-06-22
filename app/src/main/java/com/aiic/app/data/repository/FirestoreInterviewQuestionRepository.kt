@@ -44,10 +44,19 @@ class FirestoreInterviewQuestionRepository @Inject constructor(
             NetworkResult.Success(questions)
         } else {
             // Fallback generic questions
+            val fallbackBase = listOf(
+                "Tell me about a time you solved a difficult problem regarding ${config.role}.",
+                "What is your biggest strength related to ${config.role}?",
+                "How do you handle tight deadlines and pressure?",
+                "Describe a situation where you had a conflict with a team member.",
+                "What are your core technical skills for a ${config.role} position?",
+                "Where do you see yourself in 5 years?",
+                "How do you stay updated with the latest trends in ${config.role}?"
+            )
             val fallback = List(config.questionCount) { i ->
                 InterviewQuestion(
                     questionId = UUID.randomUUID().toString(),
-                    content = "Tell me about a time you solved a difficult problem regarding ${config.role}.",
+                    content = fallbackBase[i % fallbackBase.size],
                     order = i + 1
                 )
             }

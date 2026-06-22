@@ -39,10 +39,16 @@ class InterviewSummaryViewModel @Inject constructor(
         val user = authRepository.getCurrentSession() ?: return
         
         viewModelScope.launch {
-            // Ideally we should have a getSessionById. For simplicity, we just filter the history or assume we can fetch it.
-            // In a real app, add getSession(sessionId) to InterviewSessionRepository.
-            // Let's mock the UI state population or fetch from a newly added method.
-            updateState { copy(isLoading = false) } // Mock loaded
+            val result = sessionRepository.getSessionById(sessionId)
+            when (result) {
+                is com.aiic.app.core.base.NetworkResult.Success -> {
+                    updateState { copy(isLoading = false, session = result.data) }
+                }
+                is com.aiic.app.core.base.NetworkResult.Error -> {
+                    updateState { copy(isLoading = false, error = result.message) }
+                }
+                else -> {}
+            }
         }
     }
 
