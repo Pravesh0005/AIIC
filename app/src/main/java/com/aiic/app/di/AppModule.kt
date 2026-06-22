@@ -78,6 +78,22 @@ object AppModule {
     ): com.aiic.app.domain.repository.ResumeAnalysisRepository = 
         com.aiic.app.data.repository.FirestoreResumeAnalysisRepository(firestore)
 
+    @Provides @Singleton
+    fun provideInterviewSessionRepository(): com.aiic.app.domain.repository.InterviewSessionRepository =
+        com.aiic.app.data.repository.FirestoreInterviewSessionRepository()
+
+    @Provides @Singleton
+    fun provideInterviewQuestionRepository(
+        generativeAiRepository: com.aiic.app.domain.repository.GenerativeAiRepository
+    ): com.aiic.app.domain.repository.InterviewQuestionRepository =
+        com.aiic.app.data.repository.FirestoreInterviewQuestionRepository(generativeAiRepository)
+
+    @Provides @Singleton
+    fun provideInterviewAnswerRepository(
+        generativeAiRepository: com.aiic.app.domain.repository.GenerativeAiRepository
+    ): com.aiic.app.domain.repository.InterviewAnswerRepository =
+        com.aiic.app.data.repository.FirestoreInterviewAnswerRepository(generativeAiRepository)
+
     // Infrastructure
     @Provides @Singleton
     fun provideDispatcherProvider(): DispatcherProvider = DefaultDispatcherProvider()
