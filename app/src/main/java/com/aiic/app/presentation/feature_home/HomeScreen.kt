@@ -148,7 +148,7 @@ fun HomeScreen(
                         onNavigateToNotifications = { selectedNav = 3 },
                         onNavigateToResume = onNavigateToResume
                     )
-                1 -> AnalyticsPlaceholder()
+                1 -> com.aiic.app.presentation.feature_analytics.AnalyticsScreen()
                 2 -> com.aiic.app.presentation.feature_profile.ProfileScreen(
                     onNavigateToEditProfile = { /* TODO: Hook up nav */ },
                     onNavigateToSettings = { selectedNav = 3 }
@@ -161,12 +161,7 @@ fun HomeScreen(
     }
 }
 
-@Composable
-private fun AnalyticsPlaceholder() {
-    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        Text("Analytics Coming Soon", style = AIICTheme.typography.titleMedium, color = AIICTheme.colors.textSecondary)
-    }
-}
+
 
 @Composable
 private fun HomeContent(
