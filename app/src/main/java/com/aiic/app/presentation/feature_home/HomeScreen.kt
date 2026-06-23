@@ -85,6 +85,8 @@ private val navItems = listOf(
     NavItem("Settings", Icons.Filled.Settings, Icons.Outlined.Settings),
 )
 
+import androidx.compose.runtime.saveable.rememberSaveable
+
 @Composable
 fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel(),
@@ -95,7 +97,7 @@ fun HomeScreen(
     onNavigateToDummy: (String) -> Unit = {}
 ) {
     val state by viewModel.state.collectAsState()
-    var selectedNav by remember { mutableIntStateOf(0) }
+    var selectedNav by rememberSaveable { mutableIntStateOf(0) }
 
     LaunchedEffect(Unit) {
         viewModel.events.collect { event ->
