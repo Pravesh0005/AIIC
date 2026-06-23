@@ -96,6 +96,12 @@ object AppModule {
     ): com.aiic.app.domain.repository.InterviewAnswerRepository =
         com.aiic.app.data.repository.FirestoreInterviewAnswerRepository(generativeAiRepository)
 
+    @Provides @Singleton
+    fun provideFeedbackRepository(
+        firestore: FirebaseFirestore
+    ): com.aiic.app.domain.repository.FeedbackRepository =
+        com.aiic.app.data.repository.FirestoreFeedbackRepositoryImpl(firestore)
+
     // Infrastructure
     @Provides @Singleton
     fun provideDispatcherProvider(): DispatcherProvider = DefaultDispatcherProvider()

@@ -241,20 +241,34 @@ fun AIICNavHost(navController: NavHostController = rememberNavController()) {
         ) { 
             com.aiic.app.presentation.feature_interview.session.InterviewSessionScreen(
                 onNavigateBack = { navController.popBackStack() },
-                onNavigateToSummary = { route -> navController.navigate(route) { popUpTo(AppRoutes.InterviewSetup.route) { inclusive = true } } }
+                onNavigateToSummary = { route -> navController.navigate(route) { popUpTo(AppRoutes.InterviewSetup.route) { inclusive = true } } },
+                onNavigateToFeedback = { route -> navController.navigate(route) }
             )
         }
 
         composable(
             route = AppRoutes.InterviewSummary.route,
             arguments = listOf(androidx.navigation.navArgument("sessionId") { type = androidx.navigation.NavType.StringType })
-        ) { 
-            com.aiic.app.presentation.feature_interview.summary.InterviewSummaryScreen(
+        ) { backStackEntry ->
+            val sessionId = backStackEntry.arguments?.getString("sessionId") ?: ""
+            com.aiic.app.presentation.feature_feedback.SessionSummaryScreen(
+                sessionId = sessionId,
                 onNavigateHome = { 
                     navController.navigate(AppRoutes.Home.route) {
                         popUpTo(AppRoutes.Home.route) { inclusive = true }
                     } 
                 }
+            )
+        }
+
+        composable(
+            route = AppRoutes.AnswerFeedback.route,
+            arguments = listOf(androidx.navigation.navArgument("answerId") { type = androidx.navigation.NavType.StringType })
+        ) { backStackEntry ->
+            val answerId = backStackEntry.arguments?.getString("answerId") ?: ""
+            com.aiic.app.presentation.feature_feedback.AnswerFeedbackScreen(
+                answerId = answerId,
+                onNavigateBack = { navController.popBackStack() }
             )
         }
 

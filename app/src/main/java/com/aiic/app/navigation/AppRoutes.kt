@@ -44,6 +44,10 @@ sealed class AppRoutes(val route: String) {
         fun createRoute(sessionId: String) = "interview_summary/$sessionId"
     }
     
+    data object AnswerFeedback : AppRoutes("answer_feedback/{answerId}") {
+        fun createRoute(answerId: String) = "answer_feedback/$answerId"
+    }
+    
     data object Dummy : AppRoutes("dummy/{title}") {
         fun createRoute(title: String) = "dummy/$title"
     }

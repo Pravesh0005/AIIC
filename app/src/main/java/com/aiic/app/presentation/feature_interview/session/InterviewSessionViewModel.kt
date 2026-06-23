@@ -18,6 +18,7 @@ import javax.inject.Inject
 
 data class InterviewSessionState(
     val sessionId: String = "",
+    val targetRole: String = "Software Engineer",
     val isLoading: Boolean = true,
     val currentQuestion: InterviewQuestion? = null,
     val questionNumber: Int = 1,
@@ -56,6 +57,12 @@ class InterviewSessionViewModel @Inject constructor(
     private fun loadSession(sessionId: String) {
         viewModelScope.launch {
             updateState { copy(isLoading = true, error = null) }
+            
+            // Fetch session to get target role
+            val sessionResult = sessionRepository.getSessionById(sessionId)
+            if (sessionResult is NetworkResult.Success) {
+                updateState { copy(targetRole = sessionResult.data.role) }
+            }
 
             when (val result = questionRepository.getQuestionsForSession(sessionId)) {
                 is NetworkResult.Success -> {
@@ -122,16 +129,18 @@ class InterviewSessionViewModel @Inject constructor(
         viewModelScope.launch {
             val responseTimeMs = (currentState.timeRemainingSeconds * 1000).toLong()
 
-            // HARD 25-second timeout — UI will NEVER stay stuck
-            val evalResult = withTimeoutOrNull(25000L) {
-                submitAnswerAndEvaluateUseCase(currentState.sessionId, question, answer, responseTimeMs)
+            // HARD 10-second timeout — UI will NEVER stay stuck
+            val evalResult = withTimeoutOrNull(10000L) {
+                submitAnswerAndEvaluateUseCase(currentState.sessionId, question, answer, responseTimeMs, currentState.targetRole)
             }
 
             when {
                 evalResult == null -> {
                     // Timeout hit — skip evaluation, move forward
                     updateState { copy(error = "Evaluation timed out. Moving to next question.") }
+                    val currentQId = question.questionId
                     moveToNextQuestion()
+                    sendEvent(UiEvent.Navigate("answer_feedback/${currentQId}"))
                 }
                 evalResult is NetworkResult.Success -> {
                     val followUp = evalResult.data
@@ -139,12 +148,16 @@ class InterviewSessionViewModel @Inject constructor(
                         pendingQuestions.add(0, followUp)
                         updateState { copy(totalQuestions = currentState.totalQuestions + 1) }
                     }
+                    val currentQId = question.questionId
                     moveToNextQuestion()
+                    sendEvent(UiEvent.Navigate("answer_feedback/${currentQId}"))
                 }
                 evalResult is NetworkResult.Error -> {
                     // Error from AI — show it but still move forward so user isn't stuck
                     updateState { copy(error = "Evaluation issue: ${evalResult.message}. Moving forward.") }
+                    val currentQId = question.questionId
                     moveToNextQuestion()
+                    sendEvent(UiEvent.Navigate("answer_feedback/${currentQId}"))
                 }
             }
         }
