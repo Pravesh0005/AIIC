@@ -59,6 +59,10 @@ object AppModule {
         SessionRepositoryImpl(prefs)
 
     @Provides @Singleton
+    fun provideUserPreferencesRepository(prefs: PreferencesManager): com.aiic.app.domain.repository.UserPreferencesRepository =
+        com.aiic.app.data.repository.UserPreferencesRepositoryImpl(prefs)
+
+    @Provides @Singleton
     fun provideResumeRepository(
         firestore: FirebaseFirestore,
         storage: FirebaseStorage
