@@ -36,7 +36,7 @@ class AnalyzeAnswerUseCase @Inject constructor(
             // 2. Call AI
             val aiResponse = generativeAiRepository.generateText(prompt)
             if (aiResponse is NetworkResult.Error) {
-                return@withContext NetworkResult.Error(aiResponse.message ?: "AI Evaluation failed")
+                return@withContext NetworkResult.Error(message = aiResponse.message ?: "AI Evaluation failed")
             }
 
             val jsonString = (aiResponse as NetworkResult.Success).data ?: ""
@@ -76,7 +76,7 @@ class AnalyzeAnswerUseCase @Inject constructor(
             NetworkResult.Success(feedback)
         } catch (e: Exception) {
             e.printStackTrace()
-            NetworkResult.Error("Failed to analyze answer: ${e.message}")
+            NetworkResult.Error(message = "Failed to analyze answer: ${e.message}")
         }
     }
 }
