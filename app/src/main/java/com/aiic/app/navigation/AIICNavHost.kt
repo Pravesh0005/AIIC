@@ -202,6 +202,20 @@ fun AIICNavHost(navController: NavHostController = rememberNavController()) {
             )
         }
 
+        composable(
+            route = AppRoutes.ResumeAnalysis.route,
+            arguments = listOf(androidx.navigation.navArgument("resumeId") { type = androidx.navigation.NavType.StringType })
+        ) { backStackEntry ->
+            val resumeId = backStackEntry.arguments?.getString("resumeId")
+            com.aiic.app.presentation.feature_resume.analysis.ResumeAnalysisScreen(
+                resumeId = resumeId,
+                onNavigateBack = { navController.popBackStack() },
+                onNavigateToATS = { id -> navController.navigate(AppRoutes.Dummy.createRoute("ATS Insights")) },
+                onNavigateToSkills = { id -> navController.navigate(AppRoutes.Dummy.createRoute("Skills Breakdown")) },
+                onNavigateToRecommendations = { id -> navController.navigate(AppRoutes.Dummy.createRoute("AI Recommendations")) }
+            )
+        }
+
         composable(AppRoutes.ResumeInsights.route) {
             ResumeInsightsScreen(
                 onNavigateBack = { navController.popBackStack() },
