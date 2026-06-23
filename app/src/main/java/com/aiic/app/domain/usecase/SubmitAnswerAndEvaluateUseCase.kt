@@ -20,13 +20,18 @@ class SubmitAnswerAndEvaluateUseCase @Inject constructor(
         sessionId: String,
         currentQuestion: InterviewQuestion,
         answerContent: String,
-        responseTimeMs: Long
+        responseTimeMs: Long,
+        targetRole: String = "General Candidate",
+        resumeContext: String = ""
     ): NetworkResult<InterviewQuestion?> {
-        // Run AI requests concurrently to cut latency in half, with 20s overall timeout
-        val timeoutResult = withTimeoutOrNull(20000L) {
+        // Run AI requests concurrently
+        val timeoutResult = withTimeoutOrNull(10000L) {
             coroutineScope {
-                val evalDeferred = async<NetworkResult<Pair<Float, String>>> {
-                    answerRepository.evaluateAnswer(currentQuestion.content, answerContent)
+                val evalDeferred = async<NetworkResult<com.aiic.app.domain.model.AnswerFeedback>> {
+                    com.aiic.app.domain.usecase.feedback.AnalyzeAnswerUseCase(
+                        com.aiic.app.data.repository.GeminiGenerativeAiRepository(), // In a real scenario, inject this properly
+                        com.aiic.app.data.repository.FirestoreFeedbackRepositoryImpl(com.google.firebase.firestore.FirebaseFirestore.getInstance())
+                    ).invoke(sessionId, currentQuestion.questionId, currentQuestion.content, answerContent, targetRole, resumeContext)
                 }
                 
                 val followUpDeferred = async<NetworkResult<InterviewQuestion?>> {
@@ -37,23 +42,23 @@ class SubmitAnswerAndEvaluateUseCase @Inject constructor(
                 val followUpResult = followUpDeferred.await()
     
                 var score = 0f
-                var feedback = ""
+                var feedbackStr = ""
                 
                 val evalResponse = evalResult.getOrNull()
                 if (evalResponse != null) {
-                    score = evalResponse.first
-                    feedback = evalResponse.second
+                    score = evalResponse.overallScore.toFloat()
+                    feedbackStr = evalResponse.interviewerPerspective
                 }
     
                 // 2. Save the answer
                 val answer = InterviewAnswer(
-                    answerId = "ans_${System.currentTimeMillis()}", // Mock ID generator, typically handled by Firestore
+                    answerId = "ans_${System.currentTimeMillis()}",
                     questionId = currentQuestion.questionId,
                     sessionId = sessionId,
                     content = answerContent,
                     responseTimeMs = responseTimeMs,
                     aiEvaluationScore = score,
-                    aiFeedback = feedback
+                    aiFeedback = feedbackStr
                 )
                 
                 val submitResult = answerRepository.submitAnswer(answer)
