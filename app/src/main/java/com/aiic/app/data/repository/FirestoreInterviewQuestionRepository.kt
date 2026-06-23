@@ -19,6 +19,9 @@ class FirestoreInterviewQuestionRepository @Inject constructor(
         config: InterviewConfig,
         resumeContext: String
     ): NetworkResult<List<InterviewQuestion>> {
+        // Fetch any previously generated questions across sessions to avoid repetition
+        val pastQuestions = questionsCache.map { it.content }.takeLast(20).joinToString("\n- ")
+        
         val prompt = """
             You are an expert technical recruiter and hiring manager.
             Generate ${config.questionCount} interview questions for a ${config.role} role.
@@ -31,6 +34,8 @@ class FirestoreInterviewQuestionRepository @Inject constructor(
             - If Interview Type is MIXED, you MUST include a balance of highly TECHNICAL coding/architecture questions and behavioral questions. Do not only ask behavioral questions.
             - If Interview Type is TECHNICAL, ask only deep technical questions.
             - Provide completely unique and distinct questions.
+            - DO NOT ask any of the following questions that were previously asked:
+            - $pastQuestions
             
             Return the output as a list of questions separated by newlines. No formatting or numbers.
         """.trimIndent()

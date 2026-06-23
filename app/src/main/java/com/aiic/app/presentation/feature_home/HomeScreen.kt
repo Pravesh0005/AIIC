@@ -148,7 +148,8 @@ fun HomeScreen(
                         state = state, 
                         onNavigateToProfile = { selectedNav = 2 },
                         onNavigateToResume = onNavigateToResume,
-                        onNavigateToInterviewSetup = onNavigateToInterviewSetup
+                        onNavigateToInterviewSetup = onNavigateToInterviewSetup,
+                        onNavigateToDummy = onNavigateToDummy
                     )
                 1 -> com.aiic.app.presentation.feature_analytics.AnalyticsScreen(
                     interviewsCompleted = state.interviewsCompleted,
@@ -179,7 +180,8 @@ private fun HomeContent(
     state: HomeState,
     onNavigateToProfile: () -> Unit,
     onNavigateToResume: () -> Unit,
-    onNavigateToInterviewSetup: () -> Unit
+    onNavigateToInterviewSetup: () -> Unit,
+    onNavigateToDummy: (String) -> Unit
 ) {
     LazyColumn(
         modifier = Modifier
@@ -190,7 +192,7 @@ private fun HomeContent(
     ) {
         item { HeroSection(state, onNavigateToProfile, onNavigateToResume, onNavigateToInterviewSetup) }
         item { StatsRow(state) }
-        item { QuickActions(onNavigateToResume, onNavigateToInterviewSetup) }
+        item { QuickActions(onNavigateToResume, onNavigateToInterviewSetup, onNavigateToDummy) }
     }
 }
 
@@ -358,7 +360,8 @@ private fun StatsRow(state: HomeState) {
 @Composable
 private fun QuickActions(
     onNavigateToResume: () -> Unit,
-    onNavigateToInterviewSetup: () -> Unit
+    onNavigateToInterviewSetup: () -> Unit,
+    onNavigateToDummy: (String) -> Unit
 ) {
     Column {
         SectionHeader(title = "Quick Actions", subtitle = "Jump right in")
@@ -378,6 +381,24 @@ private fun QuickActions(
                 title = "Resume ATS Scanner",
                 description = "Scan your resume for ATS score",
                 onClick = { onNavigateToResume() }
+            )
+            FeatureCard(
+                icon = { Icon(Icons.Rounded.TrendingUp, null, tint = AIICTheme.colors.secondary, modifier = Modifier.size(22.dp)) },
+                title = "Career Roadmap",
+                description = "Generate your personalized AI career path",
+                onClick = { onNavigateToDummy("Career Roadmap") }
+            )
+            FeatureCard(
+                icon = { Icon(Icons.Rounded.LocalFireDepartment, null, tint = AIICTheme.colors.warning, modifier = Modifier.size(22.dp)) },
+                title = "Daily Challenges",
+                description = "Solve quick algorithmic puzzles",
+                onClick = { onNavigateToDummy("Daily Challenges") }
+            )
+            FeatureCard(
+                icon = { Icon(Icons.Rounded.PlayArrow, null, tint = AIICTheme.colors.tertiary, modifier = Modifier.size(22.dp)) },
+                title = "Voice Interview Mode",
+                description = "Real-time spoken technical interview",
+                onClick = { onNavigateToDummy("Voice Interview Mode") }
             )
         }
     }

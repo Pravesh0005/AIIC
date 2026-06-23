@@ -128,7 +128,7 @@ fun ProfileScreen(
         Spacer(Modifier.height(32.dp))
 
         PremiumCard(
-            modifier = Modifier
+            modifier = Modifier.clickable { onNavigateToDummy("Upgrade to Pro") }
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
@@ -168,6 +168,7 @@ fun ProfileScreen(
 
         Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
             ProfileMenuItem(Icons.Rounded.Edit, "Edit Profile", AIICTheme.colors.primary, onClick = onNavigateToEditProfile)
+            ProfileMenuItem(Icons.Rounded.WorkspacePremium, "Achievements", AIICTheme.colors.tertiary, onClick = { onNavigateToDummy("Achievements") })
             ProfileMenuItem(Icons.Rounded.Shield, "Privacy & Security", AIICTheme.colors.secondary, onClick = onNavigateToSettings)
             ProfileMenuItem(Icons.Rounded.Logout, "Sign Out", AIICTheme.colors.error, onClick = onSignOut)
         }

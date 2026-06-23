@@ -12,6 +12,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.util.UUID
 import javax.inject.Inject
+import com.google.ai.client.generativeai.type.generationConfig
+import com.google.ai.client.generativeai.type.RequestOptions
 
 class GeminiGenerativeAiRepository @Inject constructor() : GenerativeAiRepository {
 
@@ -22,7 +24,11 @@ class GeminiGenerativeAiRepository @Inject constructor() : GenerativeAiRepositor
         try {
             val generativeModel = GenerativeModel(
                 modelName = "gemini-1.5-flash",
-                apiKey = apiKey
+                apiKey = apiKey,
+                generationConfig = generationConfig {
+                    temperature = 0.85f
+                },
+                requestOptions = RequestOptions(timeout = 15000L)
             )
             val response = generativeModel.generateContent(prompt)
             val text = response.text
