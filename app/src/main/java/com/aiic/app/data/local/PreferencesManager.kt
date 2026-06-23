@@ -24,6 +24,7 @@ class PreferencesManager @Inject constructor(private val context: Context) {
         val USER_NAME = stringPreferencesKey("user_name")
         val USER_EMAIL = stringPreferencesKey("user_email")
         val AUTH_TOKEN = stringPreferencesKey("auth_token")
+        val LANGUAGE = stringPreferencesKey("language")
     }
 
     suspend fun setOnboardingCompleted(completed: Boolean) {
@@ -63,4 +64,10 @@ class PreferencesManager @Inject constructor(private val context: Context) {
             it[Keys.IS_LOGGED_IN] = false
         }
     }
+
+    suspend fun setLanguage(language: String) {
+        context.dataStore.edit { it[Keys.LANGUAGE] = language }
+    }
+
+    fun getLanguage(): Flow<String> = context.dataStore.data.map { it[Keys.LANGUAGE] ?: "English" }
 }
