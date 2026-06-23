@@ -52,6 +52,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -82,10 +83,7 @@ private val navItems = listOf(
     NavItem("Home", Icons.Filled.Home, Icons.Outlined.Home),
     NavItem("Analytics", Icons.Filled.Analytics, Icons.Outlined.Analytics),
     NavItem("Profile", Icons.Filled.Person, Icons.Outlined.Person),
-    NavItem("Settings", Icons.Filled.Settings, Icons.Outlined.Settings),
 )
-
-import androidx.compose.runtime.saveable.rememberSaveable
 
 @Composable
 fun HomeScreen(
