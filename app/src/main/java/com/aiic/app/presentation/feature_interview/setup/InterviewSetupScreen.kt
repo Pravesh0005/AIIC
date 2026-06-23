@@ -88,6 +88,7 @@ fun InterviewSetupScreen(
                 value = state.selectedRole,
                 onValueChange = { viewModel.onAction(InterviewSetupAction.UpdateRole(it)) },
                 modifier = Modifier.fillMaxWidth(),
+                placeholder = { Text("Type or select a role below", color = AIICTheme.colors.textTertiary) },
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor = AIICTheme.colors.primary,
                     unfocusedBorderColor = AIICTheme.colors.borderSubtle,
@@ -96,6 +97,38 @@ fun InterviewSetupScreen(
                 ),
                 shape = RoundedCornerShape(12.dp)
             )
+            Spacer(Modifier.height(10.dp))
+            // Quick role chips
+            @OptIn(ExperimentalLayoutApi::class)
+            FlowRow(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(6.dp),
+            ) {
+                val roles = listOf(
+                    "Android Developer", "Backend Developer", "Frontend Developer",
+                    "Full Stack Developer", "AI/ML Engineer", "DevOps Engineer",
+                    "iOS Developer", "Data Scientist", "Product Manager", "Cloud Engineer"
+                )
+                roles.forEach { role ->
+                    FilterChip(
+                        selected = state.selectedRole == role,
+                        onClick = { viewModel.onAction(InterviewSetupAction.UpdateRole(role)) },
+                        label = { Text(role, style = AIICTheme.typography.labelSmall) },
+                        colors = FilterChipDefaults.filterChipColors(
+                            selectedContainerColor = AIICTheme.colors.primary.copy(alpha = 0.15f),
+                            selectedLabelColor = AIICTheme.colors.primary,
+                            containerColor = AIICTheme.colors.surfaceElevated,
+                            labelColor = AIICTheme.colors.textSecondary,
+                        ),
+                        border = FilterChipDefaults.filterChipBorder(
+                            borderColor = AIICTheme.colors.borderSubtle,
+                            selectedBorderColor = AIICTheme.colors.primary,
+                            enabled = true,
+                            selected = state.selectedRole == role,
+                        ),
+                    )
+                }
+            }
             
             Spacer(Modifier.height(24.dp))
             
