@@ -49,16 +49,19 @@ import com.aiic.app.common.components.PremiumCard
 import com.aiic.app.common.components.PremiumButton
 import com.aiic.app.core.theme.AIICTheme
 
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+
 @Composable
 fun SettingsScreen(
+    viewModel: SettingsViewModel = hiltViewModel(),
     onNavigateBack: () -> Unit = {},
     onNavigateToDummy: (String) -> Unit = {},
     onLogout: () -> Unit = {}
 ) {
-    var notificationsEnabled by remember { mutableStateOf(true) }
-    var hapticEnabled by remember { mutableStateOf(true) }
+    val state by viewModel.state.collectAsStateWithLifecycle()
+    
     var showLanguageDialog by remember { mutableStateOf(false) }
-    var selectedLanguage by remember { mutableStateOf("English") }
 
     val isDarkTheme = com.aiic.app.core.theme.LocalIsDarkTheme.current
     val onToggleTheme = com.aiic.app.core.theme.LocalThemeToggle.current
@@ -79,15 +82,16 @@ fun SettingsScreen(
                 Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                     listOf("English", "Hindi", "Spanish", "French", "German", "Japanese", "Korean", "Chinese").forEach { lang ->
                         Row(
+                            // Update language on click
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .clip(AIICTheme.shapes.small)
                                 .background(
-                                    if (selectedLanguage == lang) AIICTheme.colors.primary.copy(alpha = 0.1f)
+                                    if (state.language == lang) AIICTheme.colors.primary.copy(alpha = 0.1f)
                                     else Color.Transparent
                                 )
                                 .clickable {
-                                    selectedLanguage = lang
+                                    viewModel.onAction(SettingsAction.UpdateLanguage(lang))
                                     showLanguageDialog = false
                                 }
                                 .padding(horizontal = 16.dp, vertical = 12.dp),
@@ -96,8 +100,8 @@ fun SettingsScreen(
                             Text(
                                 text = lang,
                                 style = AIICTheme.typography.bodyLarge,
-                                color = if (selectedLanguage == lang) AIICTheme.colors.primary else AIICTheme.colors.textPrimary,
-                                fontWeight = if (selectedLanguage == lang) FontWeight.Bold else FontWeight.Normal,
+                                color = if (state.language == lang) AIICTheme.colors.primary else AIICTheme.colors.textPrimary,
+                                fontWeight = if (state.language == lang) FontWeight.Bold else FontWeight.Normal,
                             )
                         }
                     }
@@ -153,15 +157,15 @@ fun SettingsScreen(
             SettingsToggle(
                 icon = Icons.Rounded.Notifications,
                 label = "Notifications",
-                checked = notificationsEnabled,
-                onCheckedChange = { notificationsEnabled = it },
+                checked = state.notificationsEnabled,
+                onCheckedChange = { viewModel.onAction(SettingsAction.UpdateNotifications(it)) },
                 color = AIICTheme.colors.primary,
             )
             SettingsToggle(
                 icon = Icons.Rounded.Vibration,
                 label = "Haptic Feedback",
-                checked = hapticEnabled,
-                onCheckedChange = { hapticEnabled = it },
+                checked = state.hapticEnabled,
+                onCheckedChange = { viewModel.onAction(SettingsAction.UpdateHaptics(it)) },
                 color = AIICTheme.colors.accent,
             )
         }
@@ -180,7 +184,7 @@ fun SettingsScreen(
             SettingsNavItem(
                 icon = Icons.Rounded.Language,
                 label = "Language",
-                detail = selectedLanguage,
+                detail = state.language,
                 color = AIICTheme.colors.tertiary,
                 onClick = { showLanguageDialog = true }
             )
