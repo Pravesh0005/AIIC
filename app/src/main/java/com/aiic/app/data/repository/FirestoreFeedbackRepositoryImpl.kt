@@ -27,7 +27,7 @@ class FirestoreFeedbackRepositoryImpl @Inject constructor(
                 .await()
             NetworkResult.Success(Unit)
         } catch (e: Exception) {
-            NetworkResult.Error(e.message ?: "Failed to save answer feedback")
+            NetworkResult.Error(message = e.message ?: "Failed to save answer feedback")
         }
     }
 
@@ -47,9 +47,9 @@ class FirestoreFeedbackRepositoryImpl @Inject constructor(
                     return NetworkResult.Success(dto.toDomain())
                 }
             }
-            NetworkResult.Error("Feedback not found")
+            NetworkResult.Error(message = "Feedback not found")
         } catch (e: Exception) {
-            NetworkResult.Error(e.message ?: "Failed to get feedback")
+            NetworkResult.Error(message = e.message ?: "Failed to get feedback")
         }
     }
 
@@ -64,7 +64,7 @@ class FirestoreFeedbackRepositoryImpl @Inject constructor(
             val feedbacks = snapshot.documents.mapNotNull { it.toObject(AnswerFeedbackDto::class.java)?.toDomain() }
 
             if (feedbacks.isEmpty()) {
-                return NetworkResult.Error("No feedbacks found to summarize")
+                return NetworkResult.Error(message = "No feedbacks found to summarize")
             }
 
             val avgScore = feedbacks.map { it.overallScore }.average().toInt()
@@ -92,7 +92,7 @@ class FirestoreFeedbackRepositoryImpl @Inject constructor(
 
             NetworkResult.Success(summary)
         } catch (e: Exception) {
-            NetworkResult.Error(e.message ?: "Failed to generate summary")
+            NetworkResult.Error(message = e.message ?: "Failed to generate summary")
         }
     }
 
@@ -109,10 +109,10 @@ class FirestoreFeedbackRepositoryImpl @Inject constructor(
             if (dto != null) {
                 NetworkResult.Success(dto.toDomain())
             } else {
-                NetworkResult.Error("Session summary not found")
+                NetworkResult.Error(message = "Session summary not found")
             }
         } catch (e: Exception) {
-            NetworkResult.Error(e.message ?: "Failed to get session summary")
+            NetworkResult.Error(message = e.message ?: "Failed to get session summary")
         }
     }
 }
