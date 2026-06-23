@@ -19,7 +19,7 @@ class ScoreAnswerUseCase @Inject constructor(
     ): NetworkResult<AnswerFeedback> {
         // Fast deterministic scoring could go here before AI invocation
         if (answerText.length < 10) {
-            return NetworkResult.Error("Answer too short to evaluate.")
+            return NetworkResult.Error(message = "Answer too short to evaluate.")
         }
         
         return analyzeAnswerUseCase(sessionId, questionId, question, answerText, targetRole, resumeContext)
