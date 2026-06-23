@@ -79,6 +79,6 @@ class SubmitAnswerAndEvaluateUseCase @Inject constructor(
             }
         }
         
-        return timeoutResult ?: NetworkResult.Error("AI Evaluation timed out.")
+        return timeoutResult ?: NetworkResult.Error(message = "AI Evaluation timed out.")
     }
 }
