@@ -7,87 +7,100 @@ import com.aiic.app.domain.model.Recommendation
 import com.aiic.app.domain.model.ResumeAnalysis
 import com.aiic.app.domain.repository.GenerativeAiRepository
 import com.google.ai.client.generativeai.GenerativeModel
+import com.google.ai.client.generativeai.type.generationConfig
 import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeoutOrNull
 import java.util.UUID
 import javax.inject.Inject
-import com.google.ai.client.generativeai.type.generationConfig
-import com.google.ai.client.generativeai.type.RequestOptions
 
 class GeminiGenerativeAiRepository @Inject constructor() : GenerativeAiRepository {
 
-    private val apiKey = com.aiic.app.BuildConfig.GEMINI_API_KEY
+    private val geminiKey = com.aiic.app.BuildConfig.GEMINI_API_KEY
+    private val groqKey = com.aiic.app.BuildConfig.GROQ_API_KEY
     private val gson = Gson()
 
+    /**
+     * Primary: Groq (fast, reliable, 12s timeout)
+     * Fallback: Gemini (slower, sometimes hangs)
+     * Never blocks forever.
+     */
     private suspend fun generateContentWithFallback(prompt: String): String {
-        try {
-            val generativeModel = GenerativeModel(
-                modelName = "gemini-1.5-flash",
-                apiKey = apiKey,
-                generationConfig = generationConfig {
-                    temperature = 0.85f
-                },
-                requestOptions = RequestOptions(timeout = 15000L)
-            )
-            val response = generativeModel.generateContent(prompt)
-            val text = response.text
-            if (!text.isNullOrBlank()) {
-                return text
-            }
-        } catch (e: Exception) {
-            // Log or ignore to try fallback
-        }
+        // Try Groq first — it's faster and more reliable
+        val groqResult = tryGroq(prompt)
+        if (!groqResult.isNullOrBlank()) return groqResult
 
-        // Fallback to Groq
-        val groqResponse = tryGroqFallback(prompt)
-        if (!groqResponse.isNullOrBlank()) {
-            return groqResponse
-        }
+        // Fallback to Gemini with strict timeout
+        val geminiResult = tryGemini(prompt)
+        if (!geminiResult.isNullOrBlank()) return geminiResult
 
-        throw Exception("Both Gemini and Groq fallback failed to generate content.")
+        throw Exception("Both AI providers failed. Check API keys and network.")
     }
 
-    private suspend fun tryGroqFallback(prompt: String): String? {
-        val groqKey = com.aiic.app.BuildConfig.GROQ_API_KEY
+    private suspend fun tryGroq(prompt: String): String? {
         if (groqKey.isBlank()) return null
-        
         return withContext(Dispatchers.IO) {
-            try {
-                val url = java.net.URL("https://api.groq.com/openai/v1/chat/completions")
-                val connection = url.openConnection() as java.net.HttpURLConnection
-                connection.connectTimeout = 15000 // 15 seconds
-                connection.readTimeout = 20000 // 20 seconds
-                connection.requestMethod = "POST"
-                connection.setRequestProperty("Content-Type", "application/json")
-                connection.setRequestProperty("Authorization", "Bearer $groqKey")
-                connection.doOutput = true
-                
-                val body = mapOf(
-                    "model" to "llama3-70b-8192",
-                    "messages" to listOf(
-                        mapOf("role" to "user", "content" to prompt)
+            withTimeoutOrNull(12000L) {
+                try {
+                    val url = java.net.URL("https://api.groq.com/openai/v1/chat/completions")
+                    val connection = url.openConnection() as java.net.HttpURLConnection
+                    connection.connectTimeout = 8000
+                    connection.readTimeout = 10000
+                    connection.requestMethod = "POST"
+                    connection.setRequestProperty("Content-Type", "application/json")
+                    connection.setRequestProperty("Authorization", "Bearer $groqKey")
+                    connection.doOutput = true
+
+                    val body = mapOf(
+                        "model" to "llama3-70b-8192",
+                        "messages" to listOf(
+                            mapOf("role" to "user", "content" to prompt)
+                        ),
+                        "temperature" to 0.9,
+                        "max_tokens" to 2048
                     )
-                )
-                val bodyStr = gson.toJson(body)
-                
-                connection.outputStream.use { os ->
-                    val input = bodyStr.toByteArray(Charsets.UTF_8)
-                    os.write(input, 0, input.size)
-                }
-                
-                if (connection.responseCode in 200..299) {
-                    val responseStr = connection.inputStream.bufferedReader().use { it.readText() }
-                    val root = gson.fromJson(responseStr, Map::class.java)
-                    val choices = root["choices"] as? List<*>
-                    val firstChoice = choices?.firstOrNull() as? Map<*, *>
-                    val message = firstChoice?.get("message") as? Map<*, *>
-                    message?.get("content") as? String
-                } else {
+                    val bodyStr = gson.toJson(body)
+
+                    connection.outputStream.use { os ->
+                        val input = bodyStr.toByteArray(Charsets.UTF_8)
+                        os.write(input, 0, input.size)
+                    }
+
+                    if (connection.responseCode in 200..299) {
+                        val responseStr = connection.inputStream.bufferedReader().use { it.readText() }
+                        val root = gson.fromJson(responseStr, Map::class.java)
+                        val choices = root["choices"] as? List<*>
+                        val firstChoice = choices?.firstOrNull() as? Map<*, *>
+                        val message = firstChoice?.get("message") as? Map<*, *>
+                        message?.get("content") as? String
+                    } else {
+                        null
+                    }
+                } catch (e: Exception) {
                     null
                 }
-            } catch (e: Exception) {
-                null
+            }
+        }
+    }
+
+    private suspend fun tryGemini(prompt: String): String? {
+        if (geminiKey.isBlank()) return null
+        return withContext(Dispatchers.IO) {
+            withTimeoutOrNull(12000L) {
+                try {
+                    val generativeModel = GenerativeModel(
+                        modelName = "gemini-1.5-flash",
+                        apiKey = geminiKey,
+                        generationConfig = generationConfig {
+                            temperature = 0.85f
+                        }
+                    )
+                    val response = generativeModel.generateContent(prompt)
+                    response.text?.takeIf { it.isNotBlank() }
+                } catch (e: Exception) {
+                    null
+                }
             }
         }
     }

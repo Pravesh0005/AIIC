@@ -12,6 +12,8 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 data class EditProfileState(
+    val name: String = "",
+    val gender: String = "",
     val targetRole: String = "",
     val targetCompany: String = "",
     val education: String = "",
@@ -21,6 +23,8 @@ data class EditProfileState(
 )
 
 sealed interface EditProfileAction {
+    data class UpdateName(val name: String) : EditProfileAction
+    data class UpdateGender(val gender: String) : EditProfileAction
     data class UpdateRole(val role: String) : EditProfileAction
     data class UpdateCompany(val company: String) : EditProfileAction
     data class UpdateEducation(val education: String) : EditProfileAction
@@ -49,6 +53,8 @@ class EditProfileViewModel @Inject constructor(
                     val profile = result.data
                     updateState {
                         copy(
+                            name = profile.name,
+                            gender = profile.gender,
                             targetRole = profile.targetRole,
                             targetCompany = profile.targetCompany,
                             education = profile.education,
@@ -67,6 +73,8 @@ class EditProfileViewModel @Inject constructor(
 
     override fun onAction(action: EditProfileAction) {
         when (action) {
+            is EditProfileAction.UpdateName -> updateState { copy(name = action.name) }
+            is EditProfileAction.UpdateGender -> updateState { copy(gender = action.gender) }
             is EditProfileAction.UpdateRole -> updateState { copy(targetRole = action.role) }
             is EditProfileAction.UpdateCompany -> updateState { copy(targetCompany = action.company) }
             is EditProfileAction.UpdateEducation -> updateState { copy(education = action.education) }
@@ -81,6 +89,8 @@ class EditProfileViewModel @Inject constructor(
         viewModelScope.launch {
             updateState { copy(isSaving = true) }
             val updates = buildMap<String, Any> {
+                put("name", currentState.name)
+                put("gender", currentState.gender)
                 put("targetRole", currentState.targetRole)
                 put("targetCompany", currentState.targetCompany)
                 put("education", currentState.education)

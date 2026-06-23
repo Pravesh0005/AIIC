@@ -5,6 +5,7 @@ data class UserProfile(
     val name: String = "",
     val email: String = "",
     val profilePhotoUrl: String = "",
+    val gender: String = "",
     val targetRole: String = "",
     val targetCompany: String = "",
     val education: String = "",
