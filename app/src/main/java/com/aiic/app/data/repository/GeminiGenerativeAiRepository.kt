@@ -41,12 +41,12 @@ class GeminiGenerativeAiRepository @Inject constructor() : GenerativeAiRepositor
     private suspend fun tryGroq(prompt: String): String? {
         if (groqKey.isBlank()) return null
         return withContext(Dispatchers.IO) {
-            withTimeoutOrNull(12000L) {
+            withTimeoutOrNull(6000L) {
                 try {
                     val url = java.net.URL("https://api.groq.com/openai/v1/chat/completions")
                     val connection = url.openConnection() as java.net.HttpURLConnection
-                    connection.connectTimeout = 8000
-                    connection.readTimeout = 10000
+                    connection.connectTimeout = 3000
+                    connection.readTimeout = 5000
                     connection.requestMethod = "POST"
                     connection.setRequestProperty("Content-Type", "application/json")
                     connection.setRequestProperty("Authorization", "Bearer $groqKey")
@@ -57,8 +57,9 @@ class GeminiGenerativeAiRepository @Inject constructor() : GenerativeAiRepositor
                         "messages" to listOf(
                             mapOf("role" to "user", "content" to prompt)
                         ),
-                        "temperature" to 0.9,
-                        "max_tokens" to 2048
+                        "temperature" to 0.7, // Lower temp for more deterministic JSON
+                        "max_tokens" to 2048,
+                        "response_format" to mapOf("type" to "json_object")
                     )
                     val bodyStr = gson.toJson(body)
 
@@ -87,13 +88,14 @@ class GeminiGenerativeAiRepository @Inject constructor() : GenerativeAiRepositor
     private suspend fun tryGemini(prompt: String): String? {
         if (geminiKey.isBlank()) return null
         return withContext(Dispatchers.IO) {
-            withTimeoutOrNull(12000L) {
+            withTimeoutOrNull(6000L) {
                 try {
                     val generativeModel = GenerativeModel(
                         modelName = "gemini-1.5-flash",
                         apiKey = geminiKey,
                         generationConfig = generationConfig {
-                            temperature = 0.85f
+                            temperature = 0.7f
+                            responseMimeType = "application/json"
                         }
                     )
                     val response = generativeModel.generateContent(prompt)
