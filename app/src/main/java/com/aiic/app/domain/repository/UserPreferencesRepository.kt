@@ -7,4 +7,6 @@ interface UserPreferencesRepository {
     fun isOnboardingCompleted(): Flow<Boolean>
     suspend fun setLoggedIn(loggedIn: Boolean)
     fun isLoggedIn(): Flow<Boolean>
+    suspend fun setLanguage(language: String)
+    fun getLanguage(): Flow<String>
 }

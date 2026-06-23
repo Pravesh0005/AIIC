@@ -22,4 +22,10 @@ class UserPreferencesRepositoryImpl @Inject constructor(
 
     override fun isLoggedIn(): Flow<Boolean> =
         preferencesManager.isLoggedIn()
+
+    override suspend fun setLanguage(language: String) =
+        preferencesManager.setLanguage(language)
+
+    override fun getLanguage(): Flow<String> =
+        preferencesManager.getLanguage()
 }
