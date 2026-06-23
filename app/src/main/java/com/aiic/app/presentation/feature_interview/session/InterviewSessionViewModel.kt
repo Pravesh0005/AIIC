@@ -13,6 +13,7 @@ import com.aiic.app.domain.usecase.SubmitAnswerAndEvaluateUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeoutOrNull
 import javax.inject.Inject
 
 data class InterviewSessionState(
@@ -22,7 +23,7 @@ data class InterviewSessionState(
     val questionNumber: Int = 1,
     val totalQuestions: Int = 5,
     val currentAnswerInput: String = "",
-    val timeRemainingSeconds: Int = 0, // Set to limit if desired
+    val timeRemainingSeconds: Int = 0,
     val isEvaluating: Boolean = false,
     val sessionComplete: Boolean = false,
     val error: String? = null
@@ -32,6 +33,7 @@ sealed interface InterviewSessionAction {
     data class UpdateAnswerInput(val answer: String) : InterviewSessionAction
     data object SubmitAnswer : InterviewSessionAction
     data object QuitSession : InterviewSessionAction
+    data object DismissError : InterviewSessionAction
 }
 
 @HiltViewModel
@@ -43,7 +45,6 @@ class InterviewSessionViewModel @Inject constructor(
     private val completeInterviewUseCase: CompleteInterviewUseCase
 ) : BaseViewModel<InterviewSessionState, InterviewSessionAction>(InterviewSessionState()) {
 
-    // Internal question queue
     private val pendingQuestions = mutableListOf<InterviewQuestion>()
 
     init {
@@ -55,16 +56,15 @@ class InterviewSessionViewModel @Inject constructor(
     private fun loadSession(sessionId: String) {
         viewModelScope.launch {
             updateState { copy(isLoading = true, error = null) }
-            
-            // In a real scenario we'd query session info for total questions
+
             when (val result = questionRepository.getQuestionsForSession(sessionId)) {
                 is NetworkResult.Success -> {
                     val questions = result.data.sortedBy { it.order }
                     pendingQuestions.addAll(questions)
-                    
+
                     if (pendingQuestions.isNotEmpty()) {
                         val firstQ = pendingQuestions.removeAt(0)
-                        updateState { 
+                        updateState {
                             copy(
                                 isLoading = false,
                                 currentQuestion = firstQ,
@@ -99,40 +99,53 @@ class InterviewSessionViewModel @Inject constructor(
                     sendEvent(UiEvent.NavigateBack)
                 }
             }
+            InterviewSessionAction.DismissError -> {
+                updateState { copy(error = null) }
+            }
         }
     }
 
     private fun submitCurrentAnswer() {
         val question = currentState.currentQuestion ?: return
         val answer = currentState.currentAnswerInput.trim()
-        
+
         if (answer.isBlank()) {
             updateState { copy(error = "Please provide an answer before submitting.") }
             return
         }
 
+        // Prevent double-submit
+        if (currentState.isEvaluating) return
+
         updateState { copy(isEvaluating = true, error = null) }
-        
+
         viewModelScope.launch {
-            // Simulated Response Time (could track real time with timer)
-            val responseTimeMs = 30000L 
-            
-            when (val evalResult = submitAnswerAndEvaluateUseCase(currentState.sessionId, question, answer, responseTimeMs)) {
-                is NetworkResult.Success -> {
-                    val followUp = evalResult.data
-                    if (followUp != null) {
-                        // Insert follow-up at the front of the queue
-                        pendingQuestions.add(0, followUp)
-                        // Adjust total questions
-                        updateState { copy(totalQuestions = currentState.totalQuestions + 1) }
-                    }
-                    
+            val responseTimeMs = (currentState.timeRemainingSeconds * 1000).toLong()
+
+            // HARD 25-second timeout — UI will NEVER stay stuck
+            val evalResult = withTimeoutOrNull(25000L) {
+                submitAnswerAndEvaluateUseCase(currentState.sessionId, question, answer, responseTimeMs)
+            }
+
+            when {
+                evalResult == null -> {
+                    // Timeout hit — skip evaluation, move forward
+                    updateState { copy(error = "Evaluation timed out. Moving to next question.") }
                     moveToNextQuestion()
                 }
-                is NetworkResult.Error -> {
-                    updateState { copy(isEvaluating = false, error = evalResult.message) }
+                evalResult is NetworkResult.Success -> {
+                    val followUp = evalResult.data
+                    if (followUp != null) {
+                        pendingQuestions.add(0, followUp)
+                        updateState { copy(totalQuestions = currentState.totalQuestions + 1) }
+                    }
+                    moveToNextQuestion()
                 }
-                else -> {}
+                evalResult is NetworkResult.Error -> {
+                    // Error from AI — show it but still move forward so user isn't stuck
+                    updateState { copy(error = "Evaluation issue: ${evalResult.message}. Moving forward.") }
+                    moveToNextQuestion()
+                }
             }
         }
     }
@@ -142,35 +155,46 @@ class InterviewSessionViewModel @Inject constructor(
             finishSession()
         } else {
             val nextQ = pendingQuestions.removeAt(0)
-            updateState { 
+            updateState {
                 copy(
                     currentQuestion = nextQ,
                     questionNumber = currentState.questionNumber + 1,
                     currentAnswerInput = "",
                     isEvaluating = false
-                ) 
+                )
             }
         }
     }
 
     private fun finishSession() {
         viewModelScope.launch {
-            updateState { copy(isEvaluating = true) } // Show loader while calculating score
-            when (val completeResult = completeInterviewUseCase(currentState.sessionId)) {
-                is NetworkResult.Success -> {
+            updateState { copy(isEvaluating = true) }
+
+            // Timeout the completion too — never block
+            val completeResult = withTimeoutOrNull(15000L) {
+                completeInterviewUseCase(currentState.sessionId)
+            }
+
+            when {
+                completeResult == null -> {
+                    // Even if scoring fails, let user proceed
                     updateState { copy(sessionComplete = true, isEvaluating = false) }
                     sendEvent(UiEvent.Navigate("interview_summary/${currentState.sessionId}"))
                 }
-                is NetworkResult.Error -> {
-                    updateState { copy(isEvaluating = false, error = completeResult.message) }
+                completeResult is NetworkResult.Success -> {
+                    updateState { copy(sessionComplete = true, isEvaluating = false) }
+                    sendEvent(UiEvent.Navigate("interview_summary/${currentState.sessionId}"))
                 }
-                else -> {}
+                completeResult is NetworkResult.Error -> {
+                    // Still navigate to summary even on error
+                    updateState { copy(sessionComplete = true, isEvaluating = false, error = completeResult.message) }
+                    sendEvent(UiEvent.Navigate("interview_summary/${currentState.sessionId}"))
+                }
             }
         }
     }
 
     private fun startTimer() {
-        // Simple placeholder for timer logic
         viewModelScope.launch {
             var time = 0
             while (!currentState.sessionComplete) {
