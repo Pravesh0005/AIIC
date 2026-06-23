@@ -90,6 +90,7 @@ fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel(),
     onNavigateToResume: () -> Unit = {},
     onNavigateToInterviewSetup: () -> Unit = {},
+    onNavigateToEditProfile: () -> Unit = {},
     onNavigateToLogin: () -> Unit = {},
     onNavigateToDummy: (String) -> Unit = {}
 ) {
@@ -158,7 +159,7 @@ fun HomeScreen(
                 2 -> com.aiic.app.presentation.feature_profile.ProfileScreen(
                     userName = state.userName,
                     userEmail = state.userEmail,
-                    onNavigateToEditProfile = { onNavigateToDummy("Edit Profile") },
+                    onNavigateToEditProfile = onNavigateToEditProfile,
                     onNavigateToSettings = { selectedNav = 3 },
                     onNavigateToDummy = onNavigateToDummy,
                     onSignOut = onNavigateToLogin

@@ -139,6 +139,7 @@ fun AIICNavHost(navController: NavHostController = rememberNavController()) {
             HomeScreen(
                 onNavigateToResume = { navController.navigate(AppRoutes.ResumeDashboard.route) },
                 onNavigateToInterviewSetup = { navController.navigate(AppRoutes.InterviewSetup.route) },
+                onNavigateToEditProfile = { navController.navigate(AppRoutes.EditProfile.route) },
                 onNavigateToLogin = { 
                     navController.navigate(AppRoutes.Login.route) {
                         popUpTo(AppRoutes.Home.route) { inclusive = true }
