@@ -129,18 +129,15 @@ class InterviewSessionViewModel @Inject constructor(
         viewModelScope.launch {
             val responseTimeMs = (currentState.timeRemainingSeconds * 1000).toLong()
 
-            // HARD 10-second timeout — UI will NEVER stay stuck
-            val evalResult = withTimeoutOrNull(10000L) {
+            // HARD 25-second timeout
+            val evalResult = withTimeoutOrNull(25000L) {
                 submitAnswerAndEvaluateUseCase(currentState.sessionId, question, answer, responseTimeMs, currentState.targetRole)
             }
 
             when {
                 evalResult == null -> {
-                    // Timeout hit — skip evaluation, move forward
-                    updateState { copy(error = "Evaluation timed out. Moving to next question.") }
-                    val currentQId = question.questionId
-                    moveToNextQuestion()
-                    sendEvent(UiEvent.Navigate("answer_feedback/${currentQId}"))
+                    // Timeout hit — allow user to retry
+                    updateState { copy(error = "Evaluation timed out. Please try submitting again.", isEvaluating = false) }
                 }
                 evalResult is NetworkResult.Success -> {
                     val followUp = evalResult.data
@@ -153,11 +150,8 @@ class InterviewSessionViewModel @Inject constructor(
                     sendEvent(UiEvent.Navigate("answer_feedback/${currentQId}"))
                 }
                 evalResult is NetworkResult.Error -> {
-                    // Error from AI — show it but still move forward so user isn't stuck
-                    updateState { copy(error = "Evaluation issue: ${evalResult.message}. Moving forward.") }
-                    val currentQId = question.questionId
-                    moveToNextQuestion()
-                    sendEvent(UiEvent.Navigate("answer_feedback/${currentQId}"))
+                    // Error from AI — allow user to retry
+                    updateState { copy(error = "Evaluation issue: ${evalResult.message}. Please try submitting again.", isEvaluating = false) }
                 }
             }
         }

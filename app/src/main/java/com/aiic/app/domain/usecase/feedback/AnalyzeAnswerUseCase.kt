@@ -36,7 +36,25 @@ class AnalyzeAnswerUseCase @Inject constructor(
             // 2. Call AI
             val aiResponse = generativeAiRepository.generateText(prompt)
             if (aiResponse is NetworkResult.Error) {
-                return@withContext NetworkResult.Error(message = aiResponse.message ?: "AI Evaluation failed")
+                val fallbackFeedback = AnswerFeedback(
+                    feedbackId = "fb_${System.currentTimeMillis()}",
+                    sessionId = sessionId,
+                    questionId = questionId,
+                    answerText = answerText,
+                    overallScore = 0,
+                    technicalScore = 0,
+                    communicationScore = 0,
+                    relevanceScore = 0,
+                    structureScore = 0,
+                    confidenceScore = 0,
+                    strengths = emptyList(),
+                    weaknesses = emptyList(),
+                    improvementSuggestions = listOf("We encountered an error analyzing this answer. Please continue with the next question."),
+                    interviewerPerspective = "Error during AI evaluation: ${aiResponse.message}",
+                    followUpQuestions = emptyList()
+                )
+                feedbackRepository.saveAnswerFeedback(fallbackFeedback)
+                return@withContext NetworkResult.Success(fallbackFeedback)
             }
 
             val jsonString = (aiResponse as NetworkResult.Success).data ?: ""
@@ -76,7 +94,25 @@ class AnalyzeAnswerUseCase @Inject constructor(
             NetworkResult.Success(feedback)
         } catch (e: Exception) {
             e.printStackTrace()
-            NetworkResult.Error(message = "Failed to analyze answer: ${e.message}")
+            val fallbackFeedback = AnswerFeedback(
+                feedbackId = "fb_${System.currentTimeMillis()}",
+                sessionId = sessionId,
+                questionId = questionId,
+                answerText = answerText,
+                overallScore = 0,
+                technicalScore = 0,
+                communicationScore = 0,
+                relevanceScore = 0,
+                structureScore = 0,
+                confidenceScore = 0,
+                strengths = emptyList(),
+                weaknesses = emptyList(),
+                improvementSuggestions = listOf("We encountered an error analyzing this answer. Please continue with the next question."),
+                interviewerPerspective = "Error during AI evaluation: ${e.message}",
+                followUpQuestions = emptyList()
+            )
+            feedbackRepository.saveAnswerFeedback(fallbackFeedback)
+            NetworkResult.Success(fallbackFeedback)
         }
     }
 }

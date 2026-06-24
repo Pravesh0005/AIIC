@@ -25,7 +25,7 @@ class SubmitAnswerAndEvaluateUseCase @Inject constructor(
         resumeContext: String = ""
     ): NetworkResult<InterviewQuestion?> {
         // Run AI requests concurrently
-        val timeoutResult = withTimeoutOrNull(10000L) {
+        val timeoutResult = withTimeoutOrNull(20000L) {
             coroutineScope {
                 val evalDeferred = async<NetworkResult<com.aiic.app.domain.model.AnswerFeedback>> {
                     com.aiic.app.domain.usecase.feedback.AnalyzeAnswerUseCase(

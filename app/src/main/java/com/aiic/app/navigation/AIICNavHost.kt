@@ -210,9 +210,42 @@ fun AIICNavHost(navController: NavHostController = rememberNavController()) {
             com.aiic.app.presentation.feature_resume.analysis.ResumeAnalysisScreen(
                 resumeId = resumeId,
                 onNavigateBack = { navController.popBackStack() },
-                onNavigateToATS = { id -> navController.navigate(AppRoutes.Dummy.createRoute("ATS Insights")) },
-                onNavigateToSkills = { id -> navController.navigate(AppRoutes.Dummy.createRoute("Skills Breakdown")) },
-                onNavigateToRecommendations = { id -> navController.navigate(AppRoutes.Dummy.createRoute("AI Recommendations")) }
+                onNavigateToATS = { id -> navController.navigate(AppRoutes.ATSScore.createRoute(id)) },
+                onNavigateToSkills = { id -> navController.navigate(AppRoutes.SkillBreakdown.createRoute(id)) },
+                onNavigateToRecommendations = { id -> navController.navigate(AppRoutes.Recommendations.createRoute(id)) }
+            )
+        }
+        
+        composable(
+            route = AppRoutes.ATSScore.route,
+            arguments = listOf(androidx.navigation.navArgument("resumeId") { type = androidx.navigation.NavType.StringType })
+        ) { backStackEntry ->
+            val resumeId = backStackEntry.arguments?.getString("resumeId")
+            com.aiic.app.presentation.feature_resume.analysis.ATSScoreScreen(
+                resumeId = resumeId,
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
+
+        composable(
+            route = AppRoutes.SkillBreakdown.route,
+            arguments = listOf(androidx.navigation.navArgument("resumeId") { type = androidx.navigation.NavType.StringType })
+        ) { backStackEntry ->
+            val resumeId = backStackEntry.arguments?.getString("resumeId")
+            com.aiic.app.presentation.feature_resume.analysis.SkillBreakdownScreen(
+                resumeId = resumeId,
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
+
+        composable(
+            route = AppRoutes.Recommendations.route,
+            arguments = listOf(androidx.navigation.navArgument("resumeId") { type = androidx.navigation.NavType.StringType })
+        ) { backStackEntry ->
+            val resumeId = backStackEntry.arguments?.getString("resumeId")
+            com.aiic.app.presentation.feature_resume.analysis.RecommendationsScreen(
+                resumeId = resumeId,
+                onNavigateBack = { navController.popBackStack() }
             )
         }
 
