@@ -190,17 +190,17 @@ fun SettingsScreen(
             )
             SettingsNavItem(
                 icon = Icons.Rounded.Storage,
-                label = "Data & Storage",
+                label = "Data & Storage (Disabled)",
                 detail = null,
-                color = AIICTheme.colors.warning,
-                onClick = { onNavigateToDummy("Data & Storage") }
+                color = AIICTheme.colors.textDisabled,
+                onClick = { /* Disabled */ }
             )
             SettingsNavItem(
                 icon = Icons.Rounded.Lock,
-                label = "Privacy & Security",
+                label = "Privacy & Security (Disabled)",
                 detail = null,
-                color = AIICTheme.colors.secondary,
-                onClick = { onNavigateToDummy("Privacy & Security") }
+                color = AIICTheme.colors.textDisabled,
+                onClick = { /* Disabled */ }
             )
         }
 
@@ -217,17 +217,17 @@ fun SettingsScreen(
         Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
             SettingsNavItem(
                 icon = Icons.Rounded.SupportAgent,
-                label = "Help & Support",
+                label = "Help & Support (Disabled)",
                 detail = null,
-                color = AIICTheme.colors.primary,
-                onClick = { onNavigateToDummy("Help & Support") }
+                color = AIICTheme.colors.textDisabled,
+                onClick = { /* Disabled */ }
             )
             SettingsNavItem(
                 icon = Icons.Rounded.Info,
-                label = "About AIIC",
+                label = "About AIIC (Disabled)",
                 detail = "v1.0.0",
-                color = AIICTheme.colors.textTertiary,
-                onClick = { onNavigateToDummy("About AIIC") }
+                color = AIICTheme.colors.textDisabled,
+                onClick = { /* Disabled */ }
             )
         }
 

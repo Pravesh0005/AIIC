@@ -74,7 +74,7 @@ fun EditProfileScreen(
     var visibleItems by remember { mutableIntStateOf(0) }
 
     LaunchedEffect(Unit) {
-        repeat(5) {
+        repeat(6) {
             delay(120)
             visibleItems++
         }
@@ -137,8 +137,60 @@ fun EditProfileScreen(
                     .padding(top = 16.dp, bottom = 40.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                // Personal Information
+                val imagePickerLauncher = androidx.activity.compose.rememberLauncherForActivityResult(
+                    contract = androidx.activity.result.contract.ActivityResultContracts.GetContent()
+                ) { uri: android.net.Uri? ->
+                    uri?.let { viewModel.onAction(EditProfileAction.UpdateProfilePhoto(it.toString())) }
+                }
+
                 AnimatedVisibility(visibleItems > 0, enter = fadeIn() + slideInVertically { 30 }) {
+                    Box(
+                        modifier = Modifier
+                            .size(100.dp)
+                            .clip(androidx.compose.foundation.shape.CircleShape)
+                            .background(
+                                brush = androidx.compose.ui.graphics.Brush.linearGradient(
+                                    listOf(AIICTheme.colors.primary, AIICTheme.colors.accent)
+                                )
+                            )
+                            .clickable { imagePickerLauncher.launch("image/*") },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        if (state.profilePhotoUrl.isNotBlank()) {
+                            coil.compose.AsyncImage(
+                                model = state.profilePhotoUrl,
+                                contentDescription = "Profile Photo",
+                                modifier = Modifier.fillMaxSize(),
+                                contentScale = androidx.compose.ui.layout.ContentScale.Crop
+                            )
+                        } else {
+                            Text(
+                                text = state.name.take(1).uppercase(),
+                                style = AIICTheme.typography.displaySmall,
+                                color = androidx.compose.ui.graphics.Color.White,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .background(androidx.compose.ui.graphics.Color.Black.copy(alpha = 0.3f)),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                Icons.Rounded.Edit,
+                                contentDescription = "Change Photo",
+                                tint = androidx.compose.ui.graphics.Color.White,
+                                modifier = Modifier.size(24.dp)
+                            )
+                        }
+                    }
+                }
+                
+                Spacer(Modifier.height(24.dp))
+
+                // Personal Information
+                AnimatedVisibility(visibleItems > 1, enter = fadeIn() + slideInVertically { 30 }) {
                     PremiumCard(modifier = Modifier.fillMaxWidth()) {
                         Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
                             Text(
@@ -193,7 +245,7 @@ fun EditProfileScreen(
                 Spacer(Modifier.height(16.dp))
 
                 // Career Goals
-                AnimatedVisibility(visibleItems > 1, enter = fadeIn() + slideInVertically { 30 }) {
+                AnimatedVisibility(visibleItems > 2, enter = fadeIn() + slideInVertically { 30 }) {
                     PremiumCard(modifier = Modifier.fillMaxWidth()) {
                         Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
                             Text(
@@ -225,7 +277,7 @@ fun EditProfileScreen(
                 Spacer(Modifier.height(16.dp))
 
                 // Background
-                AnimatedVisibility(visibleItems > 2, enter = fadeIn() + slideInVertically { 30 }) {
+                AnimatedVisibility(visibleItems > 3, enter = fadeIn() + slideInVertically { 30 }) {
                     PremiumCard(modifier = Modifier.fillMaxWidth()) {
                         Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
                             Text(
@@ -256,7 +308,7 @@ fun EditProfileScreen(
 
                 Spacer(Modifier.height(32.dp))
 
-                AnimatedVisibility(visibleItems > 3, enter = fadeIn() + slideInVertically { 30 }) {
+                AnimatedVisibility(visibleItems > 4, enter = fadeIn() + slideInVertically { 30 }) {
                     PremiumButton(
                         text = if (state.isSaving) "Saving..." else "Save Changes",
                         onClick = { viewModel.onAction(EditProfileAction.SaveProfile) },

@@ -18,6 +18,7 @@ data class EditProfileState(
     val targetCompany: String = "",
     val education: String = "",
     val skills: String = "",
+    val profilePhotoUrl: String = "",
     val isLoading: Boolean = true,
     val isSaving: Boolean = false,
 )
@@ -29,6 +30,7 @@ sealed interface EditProfileAction {
     data class UpdateCompany(val company: String) : EditProfileAction
     data class UpdateEducation(val education: String) : EditProfileAction
     data class UpdateSkills(val skills: String) : EditProfileAction
+    data class UpdateProfilePhoto(val url: String) : EditProfileAction
     data object SaveProfile : EditProfileAction
     data object Cancel : EditProfileAction
 }
@@ -59,6 +61,7 @@ class EditProfileViewModel @Inject constructor(
                             targetCompany = profile.targetCompany,
                             education = profile.education,
                             skills = profile.skills.joinToString(", "),
+                            profilePhotoUrl = profile.profilePhotoUrl,
                             isLoading = false
                         )
                     }
@@ -79,6 +82,7 @@ class EditProfileViewModel @Inject constructor(
             is EditProfileAction.UpdateCompany -> updateState { copy(targetCompany = action.company) }
             is EditProfileAction.UpdateEducation -> updateState { copy(education = action.education) }
             is EditProfileAction.UpdateSkills -> updateState { copy(skills = action.skills) }
+            is EditProfileAction.UpdateProfilePhoto -> updateState { copy(profilePhotoUrl = action.url) }
             EditProfileAction.SaveProfile -> saveProfile()
             EditProfileAction.Cancel -> sendEvent(UiEvent.Navigate("back"))
         }
@@ -95,6 +99,7 @@ class EditProfileViewModel @Inject constructor(
                 put("targetCompany", currentState.targetCompany)
                 put("education", currentState.education)
                 put("skills", currentState.skills.split(",").map { it.trim() }.filter { it.isNotBlank() })
+                put("profilePhotoUrl", currentState.profilePhotoUrl)
                 put("lastActiveAt", System.currentTimeMillis())
             }
             when (val result = updateUserProfileUseCase(uid, updates)) {

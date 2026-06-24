@@ -87,7 +87,7 @@ fun ProfileScreen(
                                 listOf(AIICTheme.colors.primary, AIICTheme.colors.accent)
                             )
                         )
-                        .clickable { onNavigateToDummy("Change Avatar") },
+                        .clickable { onNavigateToEditProfile() },
                     contentAlignment = Alignment.Center,
                 ) {
                     Text(
@@ -102,7 +102,7 @@ fun ProfileScreen(
                         .size(32.dp)
                         .clip(CircleShape)
                         .background(AIICTheme.colors.surfaceElevated)
-                        .clickable { onNavigateToDummy("Change Avatar") },
+                        .clickable { onNavigateToEditProfile() },
                     contentAlignment = Alignment.Center,
                 ) {
                     Icon(
@@ -128,7 +128,7 @@ fun ProfileScreen(
         Spacer(Modifier.height(32.dp))
 
         PremiumCard(
-            modifier = Modifier.clickable { onNavigateToDummy("Upgrade to Pro") }
+            modifier = Modifier.clickable { /* Disabled for stabilization */ }
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
@@ -168,7 +168,7 @@ fun ProfileScreen(
 
         Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
             ProfileMenuItem(Icons.Rounded.Edit, "Edit Profile", AIICTheme.colors.primary, onClick = onNavigateToEditProfile)
-            ProfileMenuItem(Icons.Rounded.WorkspacePremium, "Achievements", AIICTheme.colors.tertiary, onClick = { onNavigateToDummy("Achievements") })
+            ProfileMenuItem(Icons.Rounded.WorkspacePremium, "Achievements (Disabled)", AIICTheme.colors.textDisabled, onClick = { /* Disabled */ })
             ProfileMenuItem(Icons.Rounded.Shield, "Privacy & Security", AIICTheme.colors.secondary, onClick = onNavigateToSettings)
             ProfileMenuItem(Icons.Rounded.Logout, "Sign Out", AIICTheme.colors.error, onClick = onSignOut)
         }

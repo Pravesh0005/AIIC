@@ -384,22 +384,22 @@ private fun QuickActions(
                 onClick = { onNavigateToResume() }
             )
             FeatureCard(
-                icon = { Icon(Icons.Rounded.TrendingUp, null, tint = AIICTheme.colors.secondary, modifier = Modifier.size(22.dp)) },
-                title = "Career Roadmap",
-                description = "Generate your personalized AI career path",
-                onClick = { onNavigateToDummy("Career Roadmap") }
+                icon = { Icon(Icons.Rounded.TrendingUp, null, tint = AIICTheme.colors.textDisabled, modifier = Modifier.size(22.dp)) },
+                title = "Career Roadmap (Disabled)",
+                description = "Feature currently disabled",
+                onClick = { /* Disabled */ }
             )
             FeatureCard(
-                icon = { Icon(Icons.Rounded.LocalFireDepartment, null, tint = AIICTheme.colors.warning, modifier = Modifier.size(22.dp)) },
-                title = "Daily Challenges",
-                description = "Solve quick algorithmic puzzles",
-                onClick = { onNavigateToDummy("Daily Challenges") }
+                icon = { Icon(Icons.Rounded.LocalFireDepartment, null, tint = AIICTheme.colors.textDisabled, modifier = Modifier.size(22.dp)) },
+                title = "Daily Challenges (Disabled)",
+                description = "Feature currently disabled",
+                onClick = { /* Disabled */ }
             )
             FeatureCard(
-                icon = { Icon(Icons.Rounded.PlayArrow, null, tint = AIICTheme.colors.tertiary, modifier = Modifier.size(22.dp)) },
-                title = "Voice Interview Mode",
-                description = "Real-time spoken technical interview",
-                onClick = { onNavigateToDummy("Voice Interview Mode") }
+                icon = { Icon(Icons.Rounded.PlayArrow, null, tint = AIICTheme.colors.textDisabled, modifier = Modifier.size(22.dp)) },
+                title = "Voice Interview Mode (Disabled)",
+                description = "Feature currently disabled",
+                onClick = { /* Disabled */ }
             )
         }
     }
