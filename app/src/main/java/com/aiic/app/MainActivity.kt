@@ -1,26 +1,39 @@
 package com.aiic.app
 
+import android.content.Context
+import android.content.res.Configuration
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.aiic.app.core.theme.AIICTheme
+import com.aiic.app.core.theme.LocalIsDarkTheme
+import com.aiic.app.core.theme.LocalThemeToggle
 import com.aiic.app.navigation.AIICNavHost
 import dagger.hilt.android.AndroidEntryPoint
-
-import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import com.aiic.app.core.theme.LocalThemeToggle
-import com.aiic.app.core.theme.LocalIsDarkTheme
-import android.content.Context
+import java.util.Locale
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+
+    override fun attachBaseContext(newBase: Context) {
+        // Apply saved locale before Activity creates its resources
+        val prefs = newBase.getSharedPreferences("aiic_prefs", Context.MODE_PRIVATE)
+        val savedLang = prefs.getString("app_language", "English") ?: "English"
+        val locale = mapLanguageToLocale(savedLang)
+        val config = Configuration(newBase.resources.configuration)
+        config.setLocale(locale)
+        super.attachBaseContext(newBase.createConfigurationContext(config))
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
         enableEdgeToEdge()
@@ -46,6 +59,21 @@ class MainActivity : ComponentActivity() {
                         AIICNavHost()
                     }
                 }
+            }
+        }
+    }
+
+    companion object {
+        fun mapLanguageToLocale(language: String): Locale {
+            return when (language.lowercase()) {
+                "hindi" -> Locale("hi", "IN")
+                "spanish" -> Locale("es")
+                "french" -> Locale("fr")
+                "german" -> Locale("de")
+                "japanese" -> Locale("ja")
+                "korean" -> Locale("ko")
+                "chinese" -> Locale("zh")
+                else -> Locale("en")
             }
         }
     }
