@@ -6,6 +6,7 @@ import com.aiic.app.domain.model.InterviewConfig
 import com.aiic.app.domain.model.InterviewQuestion
 import com.aiic.app.domain.model.InterviewType
 import com.aiic.app.domain.model.InterviewDifficulty
+import com.aiic.app.domain.model.QuestionCategory
 import com.aiic.app.domain.repository.GenerativeAiRepository
 import com.aiic.app.domain.repository.InterviewQuestionRepository
 import java.util.UUID
@@ -27,46 +28,30 @@ class FirestoreInterviewQuestionRepository @Inject constructor(
         val roleSpecificGuidance = getRoleSpecificGuidance(config.role, config.interviewType)
         val difficultyGuidance = getDifficultyGuidance(config.difficulty)
 
-        val prompt = """
-You are an expert technical interviewer at a top-tier company.
-Generate exactly ${config.questionCount} interview questions for the role: "${config.role}".
-
-INTERVIEW TYPE: ${config.interviewType.name}
-DIFFICULTY: ${config.difficulty.name}
-SESSION ID: ${UUID.randomUUID()} (use this for uniqueness)
-
-CANDIDATE RESUME/CONTEXT:
-${resumeContext.ifBlank { "No resume provided. Ask general role-specific questions." }}
-
-$roleSpecificGuidance
-
-$difficultyGuidance
-
-CRITICAL RULES:
-1. Questions MUST be specific and technical, not generic like "tell me about yourself" or "describe a challenge".
-2. For MIXED interviews: at least 60% must be deeply technical (coding, architecture, system design) and the rest behavioral.
-3. For TECHNICAL interviews: 100% must be technical — algorithms, system design, language-specific, framework-specific.
-4. For BEHAVIORAL interviews: ask situation-specific behavioral questions relevant to the role, not generic HR questions.
-5. If resume context is provided, ask questions about specific technologies, projects, or skills mentioned.
-6. Each question must be unique and substantially different from the others.
-7. DO NOT ask any of these previously asked questions:
-${if (pastQuestions.isNotBlank()) "- $pastQuestions" else "(none)"}
-
-OUTPUT FORMAT:
-Return ONLY the questions, one per line. No numbering, no bullets, no formatting.
-""".trimIndent()
+        val prompt = buildInterviewPrompt(config, resumeContext, pastQuestions, roleSpecificGuidance, difficultyGuidance)
 
         val aiResult = generativeAiRepository.generateText(prompt)
 
         val aiResponse = aiResult.getOrNull()
         return if (aiResponse != null) {
             val generatedLines = aiResponse.split("\n")
-                .map { it.replace(Regex("^\\d+\\.\\s*"), "").replace(Regex("^[-*]\\s*"), "").trim() }
-                .filter { it.length > 10 } // Filter out empty/tiny lines
+                .map { it.replace(Regex("^\\d+\\.\\s*"), "").trim() }
+                .filter { it.length > 10 }
             val questions = generatedLines.take(config.questionCount).mapIndexed { index, content ->
+                val category = when {
+                    content.startsWith("[TECHNICAL]", ignoreCase = true) -> QuestionCategory.TECHNICAL
+                    content.startsWith("[BEHAVIORAL]", ignoreCase = true) -> QuestionCategory.BEHAVIORAL
+                    content.startsWith("[PROJECT]", ignoreCase = true) -> QuestionCategory.PROJECT_BASED
+                    content.startsWith("[HR]", ignoreCase = true) -> QuestionCategory.HR_GENERAL
+                    else -> QuestionCategory.TECHNICAL
+                }
+                val cleanContent = content
+                    .replace(Regex("^\\[(TECHNICAL|BEHAVIORAL|PROJECT|HR)\\]\\s*", RegexOption.IGNORE_CASE), "")
+                    .replace(Regex("^[-*]\\s*"), "").trim()
                 InterviewQuestion(
                     questionId = UUID.randomUUID().toString(),
-                    content = content,
+                    content = cleanContent,
+                    category = category,
                     order = index + 1
                 )
             }
@@ -325,5 +310,61 @@ Avoid generic behavioral questions. Be specific and practical.
             InterviewType.BEHAVIORAL, InterviewType.HR -> behavioralPool + technicalPool.take(3)
             InterviewType.MIXED -> technicalPool + behavioralPool
         }
+    }
+
+    private fun buildInterviewPrompt(
+        config: InterviewConfig,
+        resumeContext: String,
+        pastQuestions: String,
+        roleSpecificGuidance: String,
+        difficultyGuidance: String
+    ): String {
+        val categoryInstruction = when (config.interviewType) {
+            InterviewType.MIXED -> {
+                val totalQ = config.questionCount
+                val techCount = (totalQ * 0.4).toInt().coerceAtLeast(1)
+                val behavioralCount = (totalQ * 0.3).toInt().coerceAtLeast(1)
+                val projectCount = (totalQ * 0.2).toInt().coerceAtLeast(1)
+                val hrCount = (totalQ - techCount - behavioralCount - projectCount).coerceAtLeast(0)
+                """
+CATEGORY DISTRIBUTION (MANDATORY):
+- Exactly $techCount questions prefixed with [TECHNICAL] — deep technical/architecture questions
+- Exactly $behavioralCount questions prefixed with [BEHAVIORAL] — situation-specific behavioral questions
+- Exactly $projectCount questions prefixed with [PROJECT] — project/hands-on experience questions
+- ${if (hrCount > 0) "Exactly $hrCount questions prefixed with [HR] — culture/HR questions" else "No HR questions needed"}
+"""
+            }
+            InterviewType.TECHNICAL -> "\nAll questions must be prefixed with [TECHNICAL]. Every question must be deeply technical.\n"
+            InterviewType.BEHAVIORAL -> "\nAll questions must be prefixed with [BEHAVIORAL]. Ask situation-specific behavioral questions.\n"
+            InterviewType.HR -> "\nAll questions must be prefixed with [HR]. Ask HR and culture-fit questions.\n"
+        }
+
+        return """
+You are an expert technical interviewer at a top-tier company.
+Generate exactly ${config.questionCount} interview questions for the role: "${config.role}".
+
+INTERVIEW TYPE: ${config.interviewType.name}
+DIFFICULTY: ${config.difficulty.name}
+
+CANDIDATE RESUME/CONTEXT:
+${resumeContext.ifBlank { "No resume provided. Ask general role-specific questions." }}
+
+$roleSpecificGuidance
+$difficultyGuidance
+$categoryInstruction
+
+CRITICAL RULES:
+1. Each question MUST start with its category tag: [TECHNICAL], [BEHAVIORAL], [PROJECT], or [HR].
+2. Questions must be specific and role-relevant, not generic.
+3. For MIXED interviews: strictly follow the category distribution above.
+4. DO NOT ask generic HR questions like "tell me about yourself" in MIXED mode.
+5. Each question must be unique.
+6. DO NOT repeat these previously asked questions:
+${if (pastQuestions.isNotBlank()) "- $pastQuestions" else "(none)"}
+
+OUTPUT FORMAT:
+Return ONLY the questions, one per line, each starting with its category tag.
+Example: [TECHNICAL] How does Hilt dependency injection work in Android?
+""".trimIndent()
     }
 }
