@@ -92,6 +92,9 @@ fun HomeScreen(
     onNavigateToInterviewSetup: () -> Unit = {},
     onNavigateToEditProfile: () -> Unit = {},
     onNavigateToLogin: () -> Unit = {},
+    onNavigateToAnalytics: () -> Unit = {},
+    onNavigateToSettings: () -> Unit = {},
+    onNavigateToProfile: () -> Unit = {},
     onNavigateToDummy: (String) -> Unit = {}
 ) {
     val state by viewModel.state.collectAsState()
@@ -150,11 +153,14 @@ fun HomeScreen(
                         onNavigateToProfile = { selectedNav = 2 },
                         onNavigateToResume = onNavigateToResume,
                         onNavigateToInterviewSetup = onNavigateToInterviewSetup,
-                        onNavigateToDummy = onNavigateToDummy
+                        onNavigateToAnalytics = { selectedNav = 1 },
+                        onNavigateToSettings = onNavigateToSettings
                     )
                 1 -> com.aiic.app.presentation.feature_analytics.AnalyticsScreen(
                     interviewsCompleted = state.interviewsCompleted,
-                    readinessScore = state.readinessScore
+                    readinessScore = state.readinessScore,
+                    hoursOfPractice = state.hoursOfPractice,
+                    streakDays = state.streakDays
                 )
                 2 -> com.aiic.app.presentation.feature_profile.ProfileScreen(
                     userName = state.userName,
@@ -167,7 +173,7 @@ fun HomeScreen(
                 3 -> com.aiic.app.presentation.feature_settings.SettingsScreen(
                     onNavigateToDummy = onNavigateToDummy,
                     onLogout = { viewModel.onAction(HomeAction.Logout) },
-                    onNavigateBack = {}
+                    onNavigateBack = { selectedNav = 2 }
                 )
             }
         }
@@ -182,7 +188,8 @@ private fun HomeContent(
     onNavigateToProfile: () -> Unit,
     onNavigateToResume: () -> Unit,
     onNavigateToInterviewSetup: () -> Unit,
-    onNavigateToDummy: (String) -> Unit
+    onNavigateToAnalytics: () -> Unit,
+    onNavigateToSettings: () -> Unit
 ) {
     LazyColumn(
         modifier = Modifier
@@ -193,7 +200,7 @@ private fun HomeContent(
     ) {
         item { HeroSection(state, onNavigateToProfile, onNavigateToResume, onNavigateToInterviewSetup) }
         item { StatsRow(state) }
-        item { QuickActions(onNavigateToResume, onNavigateToInterviewSetup, onNavigateToDummy) }
+        item { QuickActions(onNavigateToResume, onNavigateToInterviewSetup, onNavigateToAnalytics, onNavigateToSettings) }
     }
 }
 
@@ -362,7 +369,8 @@ private fun StatsRow(state: HomeState) {
 private fun QuickActions(
     onNavigateToResume: () -> Unit,
     onNavigateToInterviewSetup: () -> Unit,
-    onNavigateToDummy: (String) -> Unit
+    onNavigateToAnalytics: () -> Unit,
+    onNavigateToSettings: () -> Unit
 ) {
     Column {
         SectionHeader(title = "Quick Actions", subtitle = "Jump right in")
@@ -384,22 +392,22 @@ private fun QuickActions(
                 onClick = { onNavigateToResume() }
             )
             FeatureCard(
-                icon = { Icon(Icons.Rounded.TrendingUp, null, tint = AIICTheme.colors.textDisabled, modifier = Modifier.size(22.dp)) },
-                title = "Career Roadmap (Disabled)",
-                description = "Feature currently disabled",
-                onClick = { /* Disabled */ }
+                icon = { Icon(Icons.Rounded.TrendingUp, null, tint = AIICTheme.colors.secondary, modifier = Modifier.size(22.dp)) },
+                title = "Analytics & Insights",
+                description = "Track your interview performance",
+                onClick = { onNavigateToAnalytics() }
             )
             FeatureCard(
-                icon = { Icon(Icons.Rounded.LocalFireDepartment, null, tint = AIICTheme.colors.textDisabled, modifier = Modifier.size(22.dp)) },
-                title = "Daily Challenges (Disabled)",
-                description = "Feature currently disabled",
-                onClick = { /* Disabled */ }
+                icon = { Icon(Icons.Rounded.LocalFireDepartment, null, tint = AIICTheme.colors.warning, modifier = Modifier.size(22.dp)) },
+                title = "Settings",
+                description = "Language, theme, privacy & more",
+                onClick = { onNavigateToSettings() }
             )
             FeatureCard(
                 icon = { Icon(Icons.Rounded.PlayArrow, null, tint = AIICTheme.colors.textDisabled, modifier = Modifier.size(22.dp)) },
-                title = "Voice Interview Mode (Disabled)",
-                description = "Feature currently disabled",
-                onClick = { /* Disabled */ }
+                title = "Voice Interview Mode",
+                description = "Coming in Day 6 update",
+                onClick = { /* Reserved for Day 6 — Voice Interview */ }
             )
         }
     }
