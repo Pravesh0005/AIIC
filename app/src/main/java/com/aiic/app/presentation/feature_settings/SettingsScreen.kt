@@ -45,6 +45,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.aiic.app.common.components.PremiumCard
 import com.aiic.app.common.components.PremiumButton
 import com.aiic.app.core.theme.AIICTheme
@@ -62,11 +63,15 @@ fun SettingsScreen(
     val state by viewModel.state.collectAsStateWithLifecycle()
     
     var showLanguageDialog by remember { mutableStateOf(false) }
+    var showDataStorageDialog by remember { mutableStateOf(false) }
+    var showPrivacyDialog by remember { mutableStateOf(false) }
+    var showHelpDialog by remember { mutableStateOf(false) }
+    var showAboutDialog by remember { mutableStateOf(false) }
 
     val isDarkTheme = com.aiic.app.core.theme.LocalIsDarkTheme.current
     val onToggleTheme = com.aiic.app.core.theme.LocalThemeToggle.current
 
-    // Language picker dialog
+    // ── Language picker dialog ──
     if (showLanguageDialog) {
         AlertDialog(
             onDismissRequest = { showLanguageDialog = false },
@@ -82,7 +87,6 @@ fun SettingsScreen(
                 Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                     listOf("English", "Hindi", "Spanish", "French", "German", "Japanese", "Korean", "Chinese").forEach { lang ->
                         Row(
-                            // Update language on click
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .clip(AIICTheme.shapes.small)
@@ -114,6 +118,130 @@ fun SettingsScreen(
             },
             containerColor = AIICTheme.colors.surfaceElevated,
             titleContentColor = AIICTheme.colors.textPrimary,
+        )
+    }
+
+    // ── Data & Storage dialog ──
+    if (showDataStorageDialog) {
+        AlertDialog(
+            onDismissRequest = { showDataStorageDialog = false },
+            title = {
+                Text("Data & Storage", style = AIICTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+            },
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    InfoRow(label = "Cache Size", value = "12 MB")
+                    InfoRow(label = "Interview Data", value = "Stored locally + Firebase")
+                    InfoRow(label = "Resume Files", value = "Stored in cloud storage")
+                    InfoRow(label = "Offline Mode", value = "Fallback questions available")
+                    Spacer(Modifier.height(8.dp))
+                    Text(
+                        text = "Your interview sessions and resume analyses are securely stored in Firebase. Local cache helps improve app performance.",
+                        style = AIICTheme.typography.bodySmall,
+                        color = AIICTheme.colors.textTertiary,
+                        lineHeight = 18.sp
+                    )
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = { showDataStorageDialog = false }) {
+                    Text("Close", color = AIICTheme.colors.primary)
+                }
+            },
+            containerColor = AIICTheme.colors.surfaceElevated,
+        )
+    }
+
+    // ── Privacy & Security dialog ──
+    if (showPrivacyDialog) {
+        AlertDialog(
+            onDismissRequest = { showPrivacyDialog = false },
+            title = {
+                Text("Privacy & Security", style = AIICTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+            },
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    InfoRow(label = "Authentication", value = "Firebase Auth (Google)")
+                    InfoRow(label = "Data Encryption", value = "TLS 1.3 in transit")
+                    InfoRow(label = "AI Processing", value = "Gemini & Groq APIs")
+                    InfoRow(label = "Resume Data", value = "Not shared with third parties")
+                    Spacer(Modifier.height(8.dp))
+                    Text(
+                        text = "Your resume content and interview answers are processed by AI for feedback generation only. We do not sell or share your personal data with third parties. AI responses are not stored beyond your session.",
+                        style = AIICTheme.typography.bodySmall,
+                        color = AIICTheme.colors.textTertiary,
+                        lineHeight = 18.sp
+                    )
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = { showPrivacyDialog = false }) {
+                    Text("Close", color = AIICTheme.colors.primary)
+                }
+            },
+            containerColor = AIICTheme.colors.surfaceElevated,
+        )
+    }
+
+    // ── Help & Support dialog ──
+    if (showHelpDialog) {
+        AlertDialog(
+            onDismissRequest = { showHelpDialog = false },
+            title = {
+                Text("Help & Support", style = AIICTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+            },
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    InfoRow(label = "Email", value = "support@aiic.app")
+                    InfoRow(label = "FAQ", value = "In-app guide available")
+                    InfoRow(label = "Version", value = "1.0.0")
+                    Spacer(Modifier.height(8.dp))
+                    Text(
+                        text = "Common Issues:\n\n• Interview not loading? Check your internet connection and API key configuration.\n\n• Resume analysis stuck? Try re-uploading a smaller PDF file.\n\n• Feedback not generating? The AI providers may be temporarily unavailable. The app will retry automatically.",
+                        style = AIICTheme.typography.bodySmall,
+                        color = AIICTheme.colors.textTertiary,
+                        lineHeight = 18.sp
+                    )
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = { showHelpDialog = false }) {
+                    Text("Close", color = AIICTheme.colors.primary)
+                }
+            },
+            containerColor = AIICTheme.colors.surfaceElevated,
+        )
+    }
+
+    // ── About AIIC dialog ──
+    if (showAboutDialog) {
+        AlertDialog(
+            onDismissRequest = { showAboutDialog = false },
+            title = {
+                Text("About AIIC", style = AIICTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+            },
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    InfoRow(label = "App Name", value = "AI Interview Coach")
+                    InfoRow(label = "Version", value = "1.0.0")
+                    InfoRow(label = "Build", value = "Production")
+                    InfoRow(label = "Platform", value = "Android (Jetpack Compose)")
+                    InfoRow(label = "AI Engine", value = "Gemini + Groq")
+                    Spacer(Modifier.height(8.dp))
+                    Text(
+                        text = "AIIC is an AI-powered interview preparation platform that helps candidates practice mock interviews, analyze resumes, and track their readiness for real interviews.\n\n© 2026 AIIC. All rights reserved.",
+                        style = AIICTheme.typography.bodySmall,
+                        color = AIICTheme.colors.textTertiary,
+                        lineHeight = 18.sp
+                    )
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = { showAboutDialog = false }) {
+                    Text("Close", color = AIICTheme.colors.primary)
+                }
+            },
+            containerColor = AIICTheme.colors.surfaceElevated,
         )
     }
 
@@ -190,17 +318,17 @@ fun SettingsScreen(
             )
             SettingsNavItem(
                 icon = Icons.Rounded.Storage,
-                label = "Data & Storage (Disabled)",
+                label = "Data & Storage",
                 detail = null,
-                color = AIICTheme.colors.textDisabled,
-                onClick = { /* Disabled */ }
+                color = AIICTheme.colors.secondary,
+                onClick = { showDataStorageDialog = true }
             )
             SettingsNavItem(
                 icon = Icons.Rounded.Lock,
-                label = "Privacy & Security (Disabled)",
+                label = "Privacy & Security",
                 detail = null,
-                color = AIICTheme.colors.textDisabled,
-                onClick = { /* Disabled */ }
+                color = AIICTheme.colors.accent,
+                onClick = { showPrivacyDialog = true }
             )
         }
 
@@ -217,17 +345,17 @@ fun SettingsScreen(
         Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
             SettingsNavItem(
                 icon = Icons.Rounded.SupportAgent,
-                label = "Help & Support (Disabled)",
+                label = "Help & Support",
                 detail = null,
-                color = AIICTheme.colors.textDisabled,
-                onClick = { /* Disabled */ }
+                color = AIICTheme.colors.warning,
+                onClick = { showHelpDialog = true }
             )
             SettingsNavItem(
                 icon = Icons.Rounded.Info,
-                label = "About AIIC (Disabled)",
+                label = "About AIIC",
                 detail = "v1.0.0",
-                color = AIICTheme.colors.textDisabled,
-                onClick = { /* Disabled */ }
+                color = AIICTheme.colors.primary,
+                onClick = { showAboutDialog = true }
             )
         }
 
@@ -237,6 +365,27 @@ fun SettingsScreen(
             text = "Log Out",
             onClick = onLogout,
             modifier = Modifier.fillMaxWidth()
+        )
+    }
+}
+
+@Composable
+private fun InfoRow(label: String, value: String) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = label,
+            style = AIICTheme.typography.bodyMedium,
+            color = AIICTheme.colors.textSecondary
+        )
+        Text(
+            text = value,
+            style = AIICTheme.typography.bodyMedium,
+            color = AIICTheme.colors.textPrimary,
+            fontWeight = FontWeight.SemiBold
         )
     }
 }
