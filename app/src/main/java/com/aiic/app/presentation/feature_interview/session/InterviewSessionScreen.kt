@@ -32,7 +32,6 @@ import com.aiic.app.core.theme.AIICTheme
 fun InterviewSessionScreen(
     onNavigateBack: () -> Unit,
     onNavigateToSummary: (String) -> Unit,
-    onNavigateToFeedback: (String) -> Unit,
     viewModel: InterviewSessionViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsState()
@@ -45,8 +44,6 @@ fun InterviewSessionScreen(
                 is com.aiic.app.core.base.UiEvent.Navigate -> {
                     if (event.route.startsWith("interview_summary")) {
                         onNavigateToSummary(event.route)
-                    } else if (event.route.startsWith("answer_feedback")) {
-                        onNavigateToFeedback(event.route)
                     }
                 }
                 else -> {}

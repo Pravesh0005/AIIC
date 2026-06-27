@@ -283,8 +283,7 @@ fun AIICNavHost(navController: NavHostController = rememberNavController()) {
         ) { 
             com.aiic.app.presentation.feature_interview.session.InterviewSessionScreen(
                 onNavigateBack = { navController.popBackStack() },
-                onNavigateToSummary = { route -> navController.navigate(route) { popUpTo(AppRoutes.InterviewSetup.route) { inclusive = true } } },
-                onNavigateToFeedback = { route -> navController.navigate(route) }
+                onNavigateToSummary = { route -> navController.navigate(route) { popUpTo(AppRoutes.InterviewSetup.route) { inclusive = true } } }
             )
         }
 
