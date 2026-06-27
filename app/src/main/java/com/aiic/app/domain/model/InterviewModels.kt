@@ -12,6 +12,10 @@ enum class SessionStatus {
     IN_PROGRESS, COMPLETED, ABANDONED
 }
 
+enum class QuestionCategory {
+    TECHNICAL, BEHAVIORAL, PROJECT_BASED, HR_GENERAL
+}
+
 data class InterviewConfig(
     val role: String,
     val interviewType: InterviewType,
@@ -39,6 +43,7 @@ data class InterviewQuestion(
     val sessionId: String = "",
     val order: Int = 0,
     val content: String = "",
+    val category: QuestionCategory = QuestionCategory.TECHNICAL,
     val isFollowUp: Boolean = false,
     val parentQuestionId: String? = null
 )
