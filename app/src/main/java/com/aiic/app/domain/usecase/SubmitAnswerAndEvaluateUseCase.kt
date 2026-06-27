@@ -8,10 +8,11 @@ import com.aiic.app.domain.repository.InterviewAnswerRepository
 import com.aiic.app.domain.repository.InterviewQuestionRepository
 import javax.inject.Inject
 
-import kotlinx.coroutines.async
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.withTimeoutOrNull
-
+/**
+ * Lightweight per-answer submission.
+ * Saves the answer immediately and returns fast.
+ * Heavy AI evaluation is deferred to CompleteInterviewUseCase at session end.
+ */
 class SubmitAnswerAndEvaluateUseCase @Inject constructor(
     private val answerRepository: InterviewAnswerRepository,
     private val questionRepository: InterviewQuestionRepository
@@ -24,66 +25,24 @@ class SubmitAnswerAndEvaluateUseCase @Inject constructor(
         targetRole: String = "General Candidate",
         resumeContext: String = ""
     ): NetworkResult<InterviewQuestion?> {
-        // Run AI requests concurrently
-        val timeoutResult = withTimeoutOrNull(20000L) {
-            coroutineScope {
-                val evalDeferred = async<NetworkResult<com.aiic.app.domain.model.AnswerFeedback>> {
-                    com.aiic.app.domain.usecase.feedback.AnalyzeAnswerUseCase(
-                        com.aiic.app.data.repository.GeminiGenerativeAiRepository(), // In a real scenario, inject this properly
-                        com.aiic.app.data.repository.FirestoreFeedbackRepositoryImpl(com.google.firebase.firestore.FirebaseFirestore.getInstance())
-                    ).invoke(sessionId, currentQuestion.questionId, currentQuestion.content, answerContent, targetRole, resumeContext)
-                }
-                
-                val followUpDeferred = async<NetworkResult<InterviewQuestion?>> {
-                    questionRepository.generateFollowUpQuestion(currentQuestion.content, answerContent)
-                }
-                
-                val evalResult = evalDeferred.await()
-                val followUpResult = followUpDeferred.await()
-    
-                var score = 0f
-                var feedbackStr = ""
-                
-                val evalResponse = evalResult.getOrNull()
-                if (evalResponse != null) {
-                    score = evalResponse.overallScore.toFloat()
-                    feedbackStr = evalResponse.interviewerPerspective
-                }
-    
-                // 2. Save the answer
-                val answer = InterviewAnswer(
-                    answerId = "ans_${System.currentTimeMillis()}",
-                    questionId = currentQuestion.questionId,
-                    sessionId = sessionId,
-                    content = answerContent,
-                    responseTimeMs = responseTimeMs,
-                    aiEvaluationScore = score,
-                    aiFeedback = feedbackStr
-                )
-                
-                val submitResult = answerRepository.submitAnswer(answer)
-                if (submitResult.getOrNull() == null) {
-                    return@coroutineScope NetworkResult.Error(message = "Failed to save answer")
-                }
-    
-                // 3. Determine if Follow-up is needed
-                val followUpData = followUpResult.getOrNull()
-                if (followUpData != null) {
-                    val followUpQuestion = followUpData.copy(
-                        sessionId = sessionId,
-                        parentQuestionId = currentQuestion.questionId,
-                        isFollowUp = true
-                    )
-                    // Save the follow-up question
-                    questionRepository.saveQuestions(listOf(followUpQuestion))
-                    return@coroutineScope NetworkResult.Success(followUpQuestion)
-                }
-    
-                // Returns null indicating no follow up generated.
-                return@coroutineScope NetworkResult.Success(null)
-            }
-        }
+        // 1. Save the answer immediately — no AI call, fast response
+        val answer = InterviewAnswer(
+            answerId = "ans_${System.currentTimeMillis()}",
+            questionId = currentQuestion.questionId,
+            sessionId = sessionId,
+            content = answerContent,
+            responseTimeMs = responseTimeMs,
+            aiEvaluationScore = 0f, // Will be populated at session end
+            aiFeedback = "" // Will be populated at session end
+        )
         
-        return timeoutResult ?: NetworkResult.Error(message = "AI Evaluation timed out.")
+        val submitResult = answerRepository.submitAnswer(answer)
+        if (submitResult.getOrNull() == null) {
+            return NetworkResult.Error(message = "Failed to save answer")
+        }
+
+        // 2. No per-answer AI evaluation — just move to next question
+        // Heavy analysis happens in CompleteInterviewUseCase at session end
+        return NetworkResult.Success(null)
     }
 }
