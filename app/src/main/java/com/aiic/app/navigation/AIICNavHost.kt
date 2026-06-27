@@ -145,6 +145,9 @@ fun AIICNavHost(navController: NavHostController = rememberNavController()) {
                         popUpTo(AppRoutes.Home.route) { inclusive = true }
                     }
                 },
+                onNavigateToAnalytics = { /* Handled in-tab via HomeScreen bottom nav */ },
+                onNavigateToSettings = { navController.navigate(AppRoutes.Settings.route) },
+                onNavigateToProfile = { /* Handled in-tab via HomeScreen bottom nav */ },
                 onNavigateToDummy = { title -> navController.navigate(AppRoutes.Dummy.createRoute(title)) }
             )
         }
@@ -165,6 +168,12 @@ fun AIICNavHost(navController: NavHostController = rememberNavController()) {
 
         composable(AppRoutes.Settings.route) {
             SettingsScreen(
+                onNavigateBack = { navController.popBackStack() },
+                onLogout = {
+                    navController.navigate(AppRoutes.Login.route) {
+                        popUpTo(AppRoutes.Home.route) { inclusive = true }
+                    }
+                },
                 onNavigateToDummy = { title -> navController.navigate(AppRoutes.Dummy.createRoute(title)) }
             )
         }
