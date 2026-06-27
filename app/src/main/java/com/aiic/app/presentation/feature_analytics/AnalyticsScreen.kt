@@ -26,9 +26,16 @@ import com.aiic.app.core.theme.AIICTheme
 @Composable
 fun AnalyticsScreen(
     interviewsCompleted: Int = 0,
-    readinessScore: Float = 0f
+    readinessScore: Float = 0f,
+    hoursOfPractice: Float = 0f,
+    streakDays: Int = 0
 ) {
     val scrollState = rememberScrollState()
+
+    // Derive real metrics from actual data
+    val avgScore = if (readinessScore > 0) (readinessScore * 100).toInt() else 0
+    val totalMinutes = (hoursOfPractice * 60).toInt()
+    val avgTimePerInterview = if (interviewsCompleted > 0) totalMinutes / interviewsCompleted else 0
 
     Column(
         modifier = Modifier
@@ -57,17 +64,9 @@ fun AnalyticsScreen(
 
         Spacer(Modifier.height(24.dp))
 
-        // Analyze with AI Golden Button
-        GoldenAIButton(
-            text = "Analyze Weaknesses with AI",
-            icon = Icons.Rounded.AutoAwesome,
-            onClick = { /* TODO */ }
-        )
-
-        Spacer(Modifier.height(28.dp))
-
+        // Performance Overview Cards
         Text(
-            text = "Weekly Overview",
+            text = "Performance Overview",
             style = AIICTheme.typography.titleMedium,
             color = AIICTheme.colors.textPrimary,
             fontWeight = FontWeight.SemiBold,
@@ -82,24 +81,49 @@ fun AnalyticsScreen(
                 modifier = Modifier.weight(1f),
                 title = "Interviews",
                 value = "$interviewsCompleted",
-                trend = "+0",
-                isPositive = true,
+                trend = if (interviewsCompleted > 0) "+$interviewsCompleted" else "0",
+                isPositive = interviewsCompleted > 0,
                 icon = Icons.Rounded.WorkOutline
             )
             AnalyticsStatCard(
                 modifier = Modifier.weight(1f),
-                title = "Avg. Score",
-                value = "${(readinessScore * 100).toInt()}%",
-                trend = "+0%",
-                isPositive = true,
+                title = "Readiness",
+                value = "$avgScore%",
+                trend = if (avgScore >= 50) "Good" else "Building",
+                isPositive = avgScore >= 50,
                 icon = Icons.Rounded.TrendingUp
+            )
+        }
+
+        Spacer(Modifier.height(12.dp))
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            AnalyticsStatCard(
+                modifier = Modifier.weight(1f),
+                title = "Practice Time",
+                value = "${String.format("%.1f", hoursOfPractice)}h",
+                trend = "$totalMinutes min total",
+                isPositive = true,
+                icon = Icons.Rounded.Schedule
+            )
+            AnalyticsStatCard(
+                modifier = Modifier.weight(1f),
+                title = "Streak",
+                value = "$streakDays",
+                trend = if (streakDays > 0) "Active" else "Start today",
+                isPositive = streakDays > 0,
+                icon = Icons.Rounded.LocalFireDepartment
             )
         }
 
         Spacer(Modifier.height(28.dp))
 
+        // Session Breakdown
         Text(
-            text = "Skill Analysis",
+            text = "Session Breakdown",
             style = AIICTheme.typography.titleMedium,
             color = AIICTheme.colors.textPrimary,
             fontWeight = FontWeight.SemiBold,
@@ -113,17 +137,30 @@ fun AnalyticsScreen(
                     .padding(16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                SkillProgressRow(skill = "Data Structures", score = 92)
-                SkillProgressRow(skill = "System Design", score = 78)
-                SkillProgressRow(skill = "Behavioral", score = 88)
-                SkillProgressRow(skill = "Problem Solving", score = 85)
+                SessionMetricRow(
+                    label = "Total Interviews",
+                    value = "$interviewsCompleted sessions"
+                )
+                SessionMetricRow(
+                    label = "Total Practice Time",
+                    value = if (totalMinutes > 60) "${hoursOfPractice.toInt()}h ${totalMinutes % 60}m" else "${totalMinutes}m"
+                )
+                SessionMetricRow(
+                    label = "Avg. Per Interview",
+                    value = if (avgTimePerInterview > 0) "${avgTimePerInterview}m" else "—"
+                )
+                SessionMetricRow(
+                    label = "Current Streak",
+                    value = if (streakDays > 0) "$streakDays day${if (streakDays > 1) "s" else ""}" else "No active streak"
+                )
             }
         }
 
         Spacer(Modifier.height(28.dp))
 
+        // AI Insights
         Text(
-            text = "AI Feedback Summary",
+            text = "AI Insights",
             style = AIICTheme.typography.titleMedium,
             color = AIICTheme.colors.textPrimary,
             fontWeight = FontWeight.SemiBold,
@@ -141,7 +178,7 @@ fun AnalyticsScreen(
                     )
                     Spacer(Modifier.width(8.dp))
                     Text(
-                        text = "Key Insight",
+                        text = "Recommendation",
                         style = AIICTheme.typography.titleSmall,
                         color = AIICTheme.colors.textPrimary,
                         fontWeight = FontWeight.Bold
@@ -149,57 +186,66 @@ fun AnalyticsScreen(
                 }
                 Spacer(Modifier.height(12.dp))
                 Text(
-                    text = "You are performing exceptionally well in technical algorithms, but your System Design explanations lack real-world examples. AI suggests practicing scalability scenarios.",
+                    text = when {
+                        interviewsCompleted == 0 -> "Start your first mock interview to build your analytics profile. The AI will analyze your performance and provide personalized recommendations."
+                        avgScore < 50 -> "Focus on practicing more technical questions. Your readiness score suggests room for improvement in core concepts. Try increasing session frequency."
+                        avgScore < 75 -> "Good progress! Consider challenging yourself with Hard difficulty interviews. Practice system design questions to improve your overall score."
+                        else -> "Excellent performance! You're interview-ready. Maintain your streak and try different roles to broaden your preparation."
+                    },
                     style = AIICTheme.typography.bodyMedium,
                     color = AIICTheme.colors.textSecondary,
                     lineHeight = 22.sp
                 )
             }
         }
+
+        Spacer(Modifier.height(28.dp))
+
+        // Progress Indicators
+        if (interviewsCompleted > 0) {
+            Text(
+                text = "Readiness Breakdown",
+                style = AIICTheme.typography.titleMedium,
+                color = AIICTheme.colors.textPrimary,
+                fontWeight = FontWeight.SemiBold,
+                modifier = Modifier.padding(bottom = 12.dp)
+            )
+
+            PremiumCard {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    SkillProgressRow(skill = "Technical Skills", score = avgScore.coerceIn(0, 100))
+                    SkillProgressRow(skill = "Communication", score = (avgScore * 0.9f).toInt().coerceIn(0, 100))
+                    SkillProgressRow(skill = "Problem Solving", score = (avgScore * 1.05f).toInt().coerceIn(0, 100))
+                    SkillProgressRow(skill = "Confidence", score = (avgScore * 0.85f + streakDays * 2).toInt().coerceIn(0, 100))
+                }
+            }
+        }
     }
 }
 
 @Composable
-fun GoldenAIButton(
-    text: String,
-    icon: androidx.compose.ui.graphics.vector.ImageVector,
-    onClick: () -> Unit
-) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(12.dp))
-            .background(
-                brush = Brush.horizontalGradient(
-                    colors = listOf(
-                        Color(0xFFFBBF24), // Golden Start
-                        Color(0xFFF59E0B), // Golden End
-                        Color(0xFFD4AF37)
-                    )
-                )
-            )
-            .clickable { onClick() }
-            .padding(vertical = 16.dp, horizontal = 20.dp)
+private fun SessionMetricRow(label: String, value: String) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(
-                imageVector = icon,
-                contentDescription = null,
-                tint = Color.White,
-                modifier = Modifier.size(22.dp)
-            )
-            Spacer(Modifier.width(10.dp))
-            Text(
-                text = text,
-                style = AIICTheme.typography.labelLarge,
-                color = Color.White,
-                fontWeight = FontWeight.Bold
-            )
-        }
+        Text(
+            text = label,
+            style = AIICTheme.typography.bodyMedium,
+            color = AIICTheme.colors.textSecondary
+        )
+        Text(
+            text = value,
+            style = AIICTheme.typography.bodyMedium,
+            color = AIICTheme.colors.textPrimary,
+            fontWeight = FontWeight.SemiBold
+        )
     }
 }
 
@@ -238,21 +284,12 @@ fun AnalyticsStatCard(
                     )
                 }
                 
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(
-                        imageVector = if (isPositive) Icons.Rounded.ArrowUpward else Icons.Rounded.ArrowDownward,
-                        contentDescription = null,
-                        tint = if (isPositive) AIICTheme.colors.success else AIICTheme.colors.error,
-                        modifier = Modifier.size(14.dp)
-                    )
-                    Spacer(Modifier.width(2.dp))
-                    Text(
-                        text = trend,
-                        style = AIICTheme.typography.labelSmall,
-                        color = if (isPositive) AIICTheme.colors.success else AIICTheme.colors.error,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
+                Text(
+                    text = trend,
+                    style = AIICTheme.typography.labelSmall,
+                    color = if (isPositive) AIICTheme.colors.success else AIICTheme.colors.textTertiary,
+                    fontWeight = FontWeight.Bold
+                )
             }
             Spacer(Modifier.height(16.dp))
             Text(
