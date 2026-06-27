@@ -27,7 +27,8 @@ data class InterviewSessionState(
     val timeRemainingSeconds: Int = 0,
     val isEvaluating: Boolean = false,
     val sessionComplete: Boolean = false,
-    val error: String? = null
+    val error: String? = null,
+    val answeredCount: Int = 0
 )
 
 sealed interface InterviewSessionAction {
@@ -129,36 +130,35 @@ class InterviewSessionViewModel @Inject constructor(
         viewModelScope.launch {
             val responseTimeMs = (currentState.timeRemainingSeconds * 1000).toLong()
 
-            // HARD 25-second timeout
-            val evalResult = withTimeoutOrNull(25000L) {
-                submitAnswerAndEvaluateUseCase(currentState.sessionId, question, answer, responseTimeMs, currentState.targetRole)
+            // Lightweight save — no heavy AI call per answer
+            val saveResult = withTimeoutOrNull(10000L) {
+                submitAnswerAndEvaluateUseCase(
+                    currentState.sessionId, question, answer, responseTimeMs, currentState.targetRole
+                )
             }
 
             when {
-                evalResult == null -> {
-                    // Timeout hit — allow user to retry
-                    updateState { copy(error = "Evaluation timed out. Please try submitting again.", isEvaluating = false) }
+                saveResult == null -> {
+                    updateState { copy(error = "Save timed out. Please try again.", isEvaluating = false) }
                 }
-                evalResult is NetworkResult.Success -> {
-                    val followUp = evalResult.data
-                    if (followUp != null) {
-                        pendingQuestions.add(0, followUp)
-                        updateState { copy(totalQuestions = currentState.totalQuestions + 1) }
-                    }
-                    val currentQId = question.questionId
+                saveResult is NetworkResult.Success -> {
+                    // Answer saved successfully — move to next question immediately
+                    // NO per-answer feedback navigation — batch analysis at session end
                     moveToNextQuestion()
-                    sendEvent(UiEvent.Navigate("answer_feedback/${currentQId}"))
                 }
-                evalResult is NetworkResult.Error -> {
-                    // Error from AI — allow user to retry
-                    updateState { copy(error = "Evaluation issue: ${evalResult.message}. Please try submitting again.", isEvaluating = false) }
+                saveResult is NetworkResult.Error -> {
+                    updateState { copy(error = "Save failed: ${saveResult.message}", isEvaluating = false) }
                 }
             }
         }
     }
 
     private fun moveToNextQuestion() {
+        val newAnsweredCount = currentState.answeredCount + 1
+        
         if (pendingQuestions.isEmpty()) {
+            // All questions answered — run batch analysis at session end
+            updateState { copy(answeredCount = newAnsweredCount) }
             finishSession()
         } else {
             val nextQ = pendingQuestions.removeAt(0)
@@ -167,7 +167,8 @@ class InterviewSessionViewModel @Inject constructor(
                     currentQuestion = nextQ,
                     questionNumber = currentState.questionNumber + 1,
                     currentAnswerInput = "",
-                    isEvaluating = false
+                    isEvaluating = false,
+                    answeredCount = newAnsweredCount
                 )
             }
         }
@@ -177,27 +178,14 @@ class InterviewSessionViewModel @Inject constructor(
         viewModelScope.launch {
             updateState { copy(isEvaluating = true) }
 
-            // Timeout the completion too — never block
-            val completeResult = withTimeoutOrNull(15000L) {
+            // Batch AI analysis at session end — this is where the heavy evaluation runs
+            val completeResult = withTimeoutOrNull(30000L) {
                 completeInterviewUseCase(currentState.sessionId)
             }
 
-            when {
-                completeResult == null -> {
-                    // Even if scoring fails, let user proceed
-                    updateState { copy(sessionComplete = true, isEvaluating = false) }
-                    sendEvent(UiEvent.Navigate("interview_summary/${currentState.sessionId}"))
-                }
-                completeResult is NetworkResult.Success -> {
-                    updateState { copy(sessionComplete = true, isEvaluating = false) }
-                    sendEvent(UiEvent.Navigate("interview_summary/${currentState.sessionId}"))
-                }
-                completeResult is NetworkResult.Error -> {
-                    // Still navigate to summary even on error
-                    updateState { copy(sessionComplete = true, isEvaluating = false, error = completeResult.message) }
-                    sendEvent(UiEvent.Navigate("interview_summary/${currentState.sessionId}"))
-                }
-            }
+            // Always navigate to summary — even if analysis fails
+            updateState { copy(sessionComplete = true, isEvaluating = false) }
+            sendEvent(UiEvent.Navigate("interview_summary/${currentState.sessionId}"))
         }
     }
 
