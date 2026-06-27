@@ -11,6 +11,7 @@ sealed class AppRoutes(val route: String) {
     data object Profile : AppRoutes("profile")
     data object EditProfile : AppRoutes("edit_profile")
     data object Settings : AppRoutes("settings")
+    data object Analytics : AppRoutes("analytics")
 
     // Resume Platform
     data object ResumeDashboard : AppRoutes("resume_dashboard")
