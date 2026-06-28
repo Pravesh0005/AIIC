@@ -83,6 +83,7 @@ private val navItems = listOf(
     NavItem("Home", Icons.Filled.Home, Icons.Outlined.Home),
     NavItem("Analytics", Icons.Filled.Analytics, Icons.Outlined.Analytics),
     NavItem("Profile", Icons.Filled.Person, Icons.Outlined.Person),
+    NavItem("Settings", Icons.Filled.Settings, Icons.Outlined.Settings),
 )
 
 @Composable
@@ -94,8 +95,7 @@ fun HomeScreen(
     onNavigateToLogin: () -> Unit = {},
     onNavigateToAnalytics: () -> Unit = {},
     onNavigateToSettings: () -> Unit = {},
-    onNavigateToProfile: () -> Unit = {},
-    onNavigateToDummy: (String) -> Unit = {}
+    onNavigateToProfile: () -> Unit = {}
 ) {
     val state by viewModel.state.collectAsState()
     var selectedNav by rememberSaveable { mutableIntStateOf(0) }
@@ -167,11 +167,9 @@ fun HomeScreen(
                     userEmail = state.userEmail,
                     onNavigateToEditProfile = onNavigateToEditProfile,
                     onNavigateToSettings = { selectedNav = 3 },
-                    onNavigateToDummy = onNavigateToDummy,
                     onSignOut = onNavigateToLogin
                 )
                 3 -> com.aiic.app.presentation.feature_settings.SettingsScreen(
-                    onNavigateToDummy = onNavigateToDummy,
                     onLogout = { viewModel.onAction(HomeAction.Logout) },
                     onNavigateBack = { selectedNav = 2 }
                 )
