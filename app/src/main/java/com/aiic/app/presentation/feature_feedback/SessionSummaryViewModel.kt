@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeoutOrNull
 import javax.inject.Inject
 
 sealed class SessionSummaryUiState {
@@ -28,14 +29,31 @@ class SessionSummaryViewModel @Inject constructor(
     val uiState: StateFlow<SessionSummaryUiState> = _uiState.asStateFlow()
 
     fun loadSummary(sessionId: String) {
+        if (sessionId.isBlank()) {
+            _uiState.value = SessionSummaryUiState.Error("Invalid session")
+            return
+        }
+
         _uiState.value = SessionSummaryUiState.Loading
         viewModelScope.launch {
-            when (val result = getSessionSummaryUseCase(sessionId)) {
-                is NetworkResult.Success -> {
+            // 20 second timeout — never hang forever
+            val result = withTimeoutOrNull(20000L) {
+                getSessionSummaryUseCase(sessionId)
+            }
+
+            when {
+                result == null -> {
+                    _uiState.value = SessionSummaryUiState.Error(
+                        "Analysis timed out. Your answers are saved — tap Retry to try again."
+                    )
+                }
+                result is NetworkResult.Success -> {
                     _uiState.value = SessionSummaryUiState.Success(result.data!!)
                 }
-                is NetworkResult.Error -> {
-                    _uiState.value = SessionSummaryUiState.Error(result.message ?: "Failed to generate summary")
+                result is NetworkResult.Error -> {
+                    _uiState.value = SessionSummaryUiState.Error(
+                        "Your answers are saved but the summary couldn't be generated. Tap Retry."
+                    )
                 }
             }
         }
