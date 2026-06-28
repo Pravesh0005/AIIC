@@ -16,6 +16,7 @@ import com.google.firebase.storage.UploadTask
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import java.util.UUID
 import javax.inject.Inject
@@ -53,7 +54,7 @@ class FirestoreResumeRepository @Inject constructor(
         }
 
         // Await completion in a coroutine
-        kotlinx.coroutines.launch {
+        launch {
             try {
                 currentUploadTask?.await()
                 trySend(NetworkResult.Success(UploadProgress(fileSize, fileSize)))
