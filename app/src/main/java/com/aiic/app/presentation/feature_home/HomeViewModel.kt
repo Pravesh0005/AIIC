@@ -10,6 +10,7 @@ import javax.inject.Inject
 data class HomeState(
     val userName: String = "User",
     val userEmail: String = "",
+    val profilePhotoUrl: String = "",
     val readinessScore: Float = 0.0f,
     val interviewsCompleted: Int = 0,
     val streakDays: Int = 0,
@@ -50,6 +51,7 @@ class HomeViewModel @Inject constructor(
                         updateState {
                             copy(
                                 userName = profile.name.ifBlank { userName },
+                                profilePhotoUrl = profile.profilePhotoUrl,
                                 readinessScore = profile.readinessScore,
                                 interviewsCompleted = profile.interviewCount,
                                 streakDays = 1, // Simulated active streak

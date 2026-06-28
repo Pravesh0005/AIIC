@@ -9,4 +9,5 @@ interface UserRepository {
     suspend fun getUserProfile(uid: String): NetworkResult<UserProfile>
     suspend fun updateUserProfile(uid: String, updates: Map<String, Any>): NetworkResult<Unit>
     fun observeUserProfile(uid: String): Flow<UserProfile?>
+    suspend fun uploadProfilePhoto(uid: String, uri: android.net.Uri): NetworkResult<String>
 }

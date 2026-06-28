@@ -102,4 +102,15 @@ class FirestoreUserRepository @Inject constructor(
         "createdAt" to createdAt,
         "lastActiveAt" to lastActiveAt,
     )
+
+    override suspend fun uploadProfilePhoto(uid: String, uri: android.net.Uri): NetworkResult<String> {
+        return try {
+            val storageRef = com.google.firebase.storage.FirebaseStorage.getInstance().reference.child("profiles/$uid/avatar.jpg")
+            storageRef.putFile(uri).await()
+            val downloadUrl = storageRef.downloadUrl.await().toString()
+            NetworkResult.Success(downloadUrl)
+        } catch (e: Exception) {
+            NetworkResult.Error(code = 500, message = e.localizedMessage ?: "Failed to upload photo", throwable = e)
+        }
+    }
 }

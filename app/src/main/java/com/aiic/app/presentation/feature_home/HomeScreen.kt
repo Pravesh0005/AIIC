@@ -165,6 +165,7 @@ fun HomeScreen(
                 2 -> com.aiic.app.presentation.feature_profile.ProfileScreen(
                     userName = state.userName,
                     userEmail = state.userEmail,
+                    profilePhotoUrl = state.profilePhotoUrl,
                     onNavigateToEditProfile = onNavigateToEditProfile,
                     onNavigateToSettings = { selectedNav = 3 },
                     onSignOut = onNavigateToLogin
@@ -252,12 +253,21 @@ private fun HeroSection(
                         .clickable { onNavigateToProfile() },
                     contentAlignment = Alignment.Center,
                 ) {
-                    Text(
-                        text = state.userName.take(1).uppercase(),
-                        style = AIICTheme.typography.titleSmall,
-                        color = Color.White,
-                        fontWeight = FontWeight.Bold,
-                    )
+                    if (state.profilePhotoUrl.isNotBlank()) {
+                        coil.compose.AsyncImage(
+                            model = state.profilePhotoUrl,
+                            contentDescription = "Profile Photo",
+                            modifier = Modifier.fillMaxSize(),
+                            contentScale = androidx.compose.ui.layout.ContentScale.Crop
+                        )
+                    } else {
+                        Text(
+                            text = state.userName.take(1).uppercase(),
+                            style = AIICTheme.typography.titleSmall,
+                            color = Color.White,
+                            fontWeight = FontWeight.Bold,
+                        )
+                    }
                 }
             }
         }

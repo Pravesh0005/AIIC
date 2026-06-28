@@ -53,6 +53,7 @@ import com.aiic.app.core.theme.AIICTheme
 fun ProfileScreen(
     userName: String = "User",
     userEmail: String = "",
+    profilePhotoUrl: String = "",
     onNavigateToEditProfile: () -> Unit = {},
     onNavigateToSettings: () -> Unit = {},
     onSignOut: () -> Unit = {}
@@ -188,12 +189,21 @@ fun ProfileScreen(
                         .clickable { onNavigateToEditProfile() },
                     contentAlignment = Alignment.Center,
                 ) {
-                    Text(
-                        text = userName.firstOrNull()?.uppercase() ?: "U",
-                        style = AIICTheme.typography.displaySmall,
-                        color = Color.White,
-                        fontWeight = FontWeight.Bold,
-                    )
+                    if (profilePhotoUrl.isNotBlank()) {
+                        coil.compose.AsyncImage(
+                            model = profilePhotoUrl,
+                            contentDescription = "Profile Photo",
+                            modifier = Modifier.fillMaxSize(),
+                            contentScale = androidx.compose.ui.layout.ContentScale.Crop
+                        )
+                    } else {
+                        Text(
+                            text = userName.firstOrNull()?.uppercase() ?: "U",
+                            style = AIICTheme.typography.displaySmall,
+                            color = Color.White,
+                            fontWeight = FontWeight.Bold,
+                        )
+                    }
                 }
                 Box(
                     modifier = Modifier

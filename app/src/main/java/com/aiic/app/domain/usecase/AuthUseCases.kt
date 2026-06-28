@@ -114,3 +114,10 @@ class GoogleSignInUseCase @Inject constructor(
         return result
     }
 }
+
+class UploadProfilePhotoUseCase @Inject constructor(
+    private val userRepository: UserRepository,
+) {
+    suspend operator fun invoke(uid: String, uri: android.net.Uri): NetworkResult<String> =
+        userRepository.uploadProfilePhoto(uid, uri)
+}

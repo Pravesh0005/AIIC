@@ -20,13 +20,26 @@ class RealPdfExtractionRepository @Inject constructor(
                 val storageRef = storage.reference.child("resumes/$userId/$resumeId.pdf")
                 
                 // Download file into memory (10MB limit is enough for Resumes)
-                val bytes = storageRef.getBytes(10 * 1024 * 1024).await()
+                // Add retry logic for eventual consistency
+                var bytes: ByteArray? = null
+                var retryCount = 0
+                while (bytes == null && retryCount < 5) {
+                    try {
+                        bytes = storageRef.getBytes(10 * 1024 * 1024).await()
+                    } catch (e: Exception) {
+                        retryCount++
+                        if (retryCount >= 5) throw e
+                        kotlinx.coroutines.delay(1000)
+                    }
+                }
                 
                 var extractedText = ""
-                PDDocument.load(bytes).use { document ->
-                    val stripper = PDFTextStripper()
-                    // Extract text from the whole document
-                    extractedText = stripper.getText(document)
+                if (bytes != null) {
+                    PDDocument.load(bytes).use { document ->
+                        val stripper = PDFTextStripper()
+                        // Extract text from the whole document
+                        extractedText = stripper.getText(document)
+                    }
                 }
 
                 if (extractedText.isBlank()) {

@@ -7,6 +7,7 @@ import com.aiic.app.core.base.UiEvent
 import com.aiic.app.domain.repository.AuthRepository
 import com.aiic.app.domain.usecase.GetCurrentUserUseCase
 import com.aiic.app.domain.usecase.UpdateUserProfileUseCase
+import com.aiic.app.domain.usecase.UploadProfilePhotoUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -40,6 +41,7 @@ class EditProfileViewModel @Inject constructor(
     private val authRepository: AuthRepository,
     private val getCurrentUserUseCase: GetCurrentUserUseCase,
     private val updateUserProfileUseCase: UpdateUserProfileUseCase,
+    private val uploadProfilePhotoUseCase: UploadProfilePhotoUseCase,
 ) : BaseViewModel<EditProfileState, EditProfileAction>(EditProfileState()) {
 
     init {
@@ -92,6 +94,23 @@ class EditProfileViewModel @Inject constructor(
         val uid = authRepository.getCurrentSession()?.uid ?: return
         viewModelScope.launch {
             updateState { copy(isSaving = true) }
+            
+            var finalPhotoUrl = currentState.profilePhotoUrl
+            if (finalPhotoUrl.startsWith("content://")) {
+                val uri = android.net.Uri.parse(finalPhotoUrl)
+                when (val uploadResult = uploadProfilePhotoUseCase(uid, uri)) {
+                    is NetworkResult.Success -> {
+                        finalPhotoUrl = uploadResult.data
+                        updateState { copy(profilePhotoUrl = finalPhotoUrl) }
+                    }
+                    is NetworkResult.Error -> {
+                        sendEvent(UiEvent.ShowSnackbar("Failed to upload photo: ${uploadResult.message}"))
+                        updateState { copy(isSaving = false) }
+                        return@launch
+                    }
+                }
+            }
+
             val updates = buildMap<String, Any> {
                 put("name", currentState.name)
                 put("gender", currentState.gender)
@@ -99,7 +118,7 @@ class EditProfileViewModel @Inject constructor(
                 put("targetCompany", currentState.targetCompany)
                 put("education", currentState.education)
                 put("skills", currentState.skills.split(",").map { it.trim() }.filter { it.isNotBlank() })
-                put("profilePhotoUrl", currentState.profilePhotoUrl)
+                put("profilePhotoUrl", finalPhotoUrl)
                 put("lastActiveAt", System.currentTimeMillis())
             }
             when (val result = updateUserProfileUseCase(uid, updates)) {
