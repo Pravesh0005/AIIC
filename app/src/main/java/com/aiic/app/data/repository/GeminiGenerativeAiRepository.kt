@@ -1,5 +1,6 @@
 package com.aiic.app.data.repository
 
+import android.util.Log
 import com.aiic.app.core.base.NetworkResult
 import com.aiic.app.domain.ai.prompt.ResumeAnalysisPromptBuilder
 import com.aiic.app.domain.model.AtsScoreDetails
@@ -28,9 +29,6 @@ class GeminiGenerativeAiRepository @Inject constructor() : GenerativeAiRepositor
         if (!result.isNullOrBlank()) return result
         throw Exception("Groq AI provider failed. Check API key and network connection.")
     }
-
-import android.util.Log
-
     private suspend fun callGroq(prompt: String): String? {
         if (groqKey.isBlank()) {
             Log.e("AIIC_DEBUG", "callGroq: API Key is blank")
