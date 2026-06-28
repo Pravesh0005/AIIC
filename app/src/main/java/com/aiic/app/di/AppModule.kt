@@ -102,9 +102,15 @@ object AppModule {
 
     @Provides @Singleton
     fun provideFeedbackRepository(
-        firestore: FirebaseFirestore
+        firestore: FirebaseFirestore,
+        answerRepository: com.aiic.app.domain.repository.InterviewAnswerRepository,
+        questionRepository: com.aiic.app.domain.repository.InterviewQuestionRepository,
+        sessionRepository: com.aiic.app.domain.repository.InterviewSessionRepository,
+        generativeAiRepository: com.aiic.app.domain.repository.GenerativeAiRepository
     ): com.aiic.app.domain.repository.FeedbackRepository =
-        com.aiic.app.data.repository.FirestoreFeedbackRepositoryImpl(firestore)
+        com.aiic.app.data.repository.FirestoreFeedbackRepositoryImpl(
+            firestore, answerRepository, questionRepository, sessionRepository, generativeAiRepository
+        )
 
     // Infrastructure
     @Provides @Singleton
