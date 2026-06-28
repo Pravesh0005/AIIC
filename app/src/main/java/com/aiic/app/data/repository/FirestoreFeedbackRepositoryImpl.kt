@@ -53,7 +53,6 @@ class FirestoreFeedbackRepositoryImpl @Inject constructor(
                 .collection("feedbacks")
                 .document(feedback.feedbackId)
                 .set(dto)
-                .await()
         } catch (_: Exception) {
             // Firestore sync failed — that's OK, we have local data
         }
@@ -273,14 +272,13 @@ Return ONLY valid JSON, no markdown.
         )
     }
 
-    private suspend fun trySyncSummaryToFirestore(summary: SessionSummary) {
+    private fun trySyncSummaryToFirestore(summary: SessionSummary) {
         try {
             firestore.collection("sessions")
                 .document(summary.sessionId)
                 .collection("summary")
                 .document("final")
                 .set(summary.toDto())
-                .await()
         } catch (_: Exception) {
             // Background sync — don't block UI
         }
