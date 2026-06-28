@@ -55,7 +55,6 @@ fun ProfileScreen(
     userEmail: String = "",
     onNavigateToEditProfile: () -> Unit = {},
     onNavigateToSettings: () -> Unit = {},
-    onNavigateToDummy: (String) -> Unit = {},
     onSignOut: () -> Unit = {}
 ) {
     val scrollState = rememberScrollState()
