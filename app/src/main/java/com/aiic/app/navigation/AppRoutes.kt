@@ -49,9 +49,6 @@ sealed class AppRoutes(val route: String) {
         fun createRoute(answerId: String) = "answer_feedback/$answerId"
     }
     
-    data object Dummy : AppRoutes("dummy/{title}") {
-        fun createRoute(title: String) = "dummy/$title"
-    }
 
     companion object {
         const val AUTH_GRAPH = "auth_graph"

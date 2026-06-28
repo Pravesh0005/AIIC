@@ -147,16 +147,14 @@ fun AIICNavHost(navController: NavHostController = rememberNavController()) {
                 },
                 onNavigateToAnalytics = { /* Handled in-tab via HomeScreen bottom nav */ },
                 onNavigateToSettings = { navController.navigate(AppRoutes.Settings.route) },
-                onNavigateToProfile = { /* Handled in-tab via HomeScreen bottom nav */ },
-                onNavigateToDummy = { title -> navController.navigate(AppRoutes.Dummy.createRoute(title)) }
+                onNavigateToProfile = { /* Handled in-tab via HomeScreen bottom nav */ }
             )
         }
 
         composable(AppRoutes.Profile.route) {
             ProfileScreen(
                 onNavigateToEditProfile = { navController.navigate(AppRoutes.EditProfile.route) },
-                onNavigateToSettings = { navController.navigate(AppRoutes.Settings.route) },
-                onNavigateToDummy = { title -> navController.navigate(AppRoutes.Dummy.createRoute(title)) }
+                onNavigateToSettings = { navController.navigate(AppRoutes.Settings.route) }
             )
         }
         
@@ -173,8 +171,7 @@ fun AIICNavHost(navController: NavHostController = rememberNavController()) {
                     navController.navigate(AppRoutes.Login.route) {
                         popUpTo(AppRoutes.Home.route) { inclusive = true }
                     }
-                },
-                onNavigateToDummy = { title -> navController.navigate(AppRoutes.Dummy.createRoute(title)) }
+                }
             )
         }
 
@@ -309,17 +306,6 @@ fun AIICNavHost(navController: NavHostController = rememberNavController()) {
             val answerId = backStackEntry.arguments?.getString("answerId") ?: ""
             com.aiic.app.presentation.feature_feedback.AnswerFeedbackScreen(
                 answerId = answerId,
-                onNavigateBack = { navController.popBackStack() }
-            )
-        }
-
-        composable(
-            route = AppRoutes.Dummy.route,
-            arguments = listOf(androidx.navigation.navArgument("title") { type = androidx.navigation.NavType.StringType })
-        ) { backStackEntry ->
-            val title = backStackEntry.arguments?.getString("title") ?: "Feature"
-            com.aiic.app.presentation.feature_dummy.DummyScreen(
-                title = title,
                 onNavigateBack = { navController.popBackStack() }
             )
         }
