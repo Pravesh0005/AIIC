@@ -89,6 +89,7 @@ class FirestoreFeedbackRepositoryImpl @Inject constructor(
     }
 
     override suspend fun generateAndSaveSessionSummary(sessionId: String): NetworkResult<SessionSummary> {
+        android.util.Log.d("AIIC_DEBUG", "Entering generateAndSaveSessionSummary for sessionId: $sessionId")
         // Check cache first
         summaryCache[sessionId]?.let { return NetworkResult.Success(it) }
 
@@ -105,43 +106,50 @@ class FirestoreFeedbackRepositoryImpl @Inject constructor(
             val questionsResult = questionRepository.getQuestionsForSession(sessionId)
             val questions = questionsResult.getOrNull() ?: emptyList()
 
+            android.util.Log.d("AIIC_DEBUG", "generateAndSaveSessionSummary: Fetched ${answers.size} answers, ${questions.size} questions")
+
             if (answers.isEmpty()) {
+                android.util.Log.d("AIIC_DEBUG", "generateAndSaveSessionSummary: Answers empty, returning basic summary")
                 // No answers saved — generate a basic summary from session data
                 val basicSummary = SessionSummary(
                     sessionId = sessionId,
-                    averageScore = session?.score?.toInt() ?: 0,
+                    averageScore = 0,
                     strongAreas = listOf("Session completed"),
                     weakAreas = listOf("No detailed analysis available"),
-                    priorityImprovements = listOf("Practice more with different question types"),
-                    roleReadiness = if ((session?.score ?: 0f) >= 60f) "Almost Ready" else "Needs Practice"
+                    priorityImprovements = listOf("You did not provide any answers."),
+                    roleReadiness = "Evaluation Unavailable"
                 )
                 summaryCache[sessionId] = basicSummary
                 return NetworkResult.Success(basicSummary)
             }
 
             // 4. Try AI-powered summary via Groq
+            android.util.Log.d("AIIC_DEBUG", "generateAndSaveSessionSummary: Calling tryAiSummary")
             val aiSummary = tryAiSummary(sessionId, session?.role ?: "Software Engineer", questions, answers)
             if (aiSummary != null) {
+                android.util.Log.d("AIIC_DEBUG", "generateAndSaveSessionSummary: tryAiSummary succeeded, returning AI summary")
                 summaryCache[sessionId] = aiSummary
                 trySyncSummaryToFirestore(aiSummary)
                 return NetworkResult.Success(aiSummary)
             }
 
             // 5. Fallback: Build summary locally without AI
+            android.util.Log.e("AIIC_DEBUG", "generateAndSaveSessionSummary: tryAiSummary failed, calling buildLocalSummary fallback")
             val localSummary = buildLocalSummary(sessionId, session?.role ?: "Unknown", session?.score ?: 0f, answers, questions)
             summaryCache[sessionId] = localSummary
             trySyncSummaryToFirestore(localSummary)
             NetworkResult.Success(localSummary)
 
         } catch (e: Exception) {
+            android.util.Log.e("AIIC_DEBUG", "generateAndSaveSessionSummary: Exception caught", e)
             // Ultimate fallback — never show raw exception to user
             val fallbackSummary = SessionSummary(
                 sessionId = sessionId,
                 averageScore = 0,
-                strongAreas = listOf("Interview completed successfully"),
-                weakAreas = listOf("Detailed analysis unavailable"),
-                priorityImprovements = listOf("Try again when online for full AI analysis"),
-                roleReadiness = "Needs Practice"
+                strongAreas = listOf("Session completed"),
+                weakAreas = listOf("AI evaluation unavailable"),
+                priorityImprovements = listOf("Please check your internet connection and API key."),
+                roleReadiness = "Evaluation Unavailable"
             )
             summaryCache[sessionId] = fallbackSummary
             NetworkResult.Success(fallbackSummary)
@@ -183,6 +191,7 @@ class FirestoreFeedbackRepositoryImpl @Inject constructor(
         answers: List<InterviewAnswer>
     ): SessionSummary? {
         try {
+            android.util.Log.d("AIIC_DEBUG", "Entering tryAiSummary for sessionId: $sessionId")
             val qaPairs = questions.mapIndexed { index, q ->
                 val answer = answers.find { it.questionId == q.questionId }
                 "Q${index + 1}: ${q.content}\nA${index + 1}: ${answer?.content ?: "(no answer)"}"
@@ -208,14 +217,22 @@ Be specific to the actual answers given. Do not be generic.
 Return ONLY valid JSON, no markdown.
 """.trimIndent()
 
-            val aiResult = generativeAiRepository.generateText(prompt)
-            val responseText = aiResult.getOrNull() ?: return null
+            android.util.Log.d("AIIC_DEBUG", "tryAiSummary: Prompt built, calling generateJson")
+            val aiResult = generativeAiRepository.generateJson(prompt)
+            val responseText = aiResult.getOrNull()
+            
+            if (responseText == null) {
+                android.util.Log.e("AIIC_DEBUG", "tryAiSummary: Groq generateJson returned null/Error")
+                return null
+            }
 
             val cleanJson = responseText.replace("```json", "").replace("```", "").trim()
+            android.util.Log.d("AIIC_DEBUG", "tryAiSummary: Parsing JSON: $cleanJson")
+            
             val parsed = gson.fromJson(cleanJson, Map::class.java)
 
             @Suppress("UNCHECKED_CAST")
-            return SessionSummary(
+            val summary = SessionSummary(
                 sessionId = sessionId,
                 averageScore = (parsed["averageScore"] as? Number)?.toInt() ?: 50,
                 strongAreas = (parsed["strongAreas"] as? List<String>) ?: listOf("Completed interview"),
@@ -223,7 +240,11 @@ Return ONLY valid JSON, no markdown.
                 priorityImprovements = (parsed["priorityImprovements"] as? List<String>) ?: listOf("Practice more"),
                 roleReadiness = (parsed["roleReadiness"] as? String) ?: "Needs Practice"
             )
-        } catch (_: Exception) {
+            
+            android.util.Log.d("AIIC_DEBUG", "tryAiSummary: Successfully parsed SessionSummary with score: ${summary.averageScore}")
+            return summary
+        } catch (e: Exception) {
+            android.util.Log.e("AIIC_DEBUG", "tryAiSummary: Exception caught during JSON parsing or execution", e)
             return null
         }
     }
@@ -235,40 +256,13 @@ Return ONLY valid JSON, no markdown.
         answers: List<InterviewAnswer>,
         questions: List<com.aiic.app.domain.model.InterviewQuestion>
     ): SessionSummary {
-        val answeredCount = answers.size
-        val totalQuestions = questions.size
-        val avgResponseTime = if (answers.isNotEmpty()) answers.map { it.responseTimeMs }.average() else 0.0
-
-        val strongAreas = mutableListOf<String>()
-        val weakAreas = mutableListOf<String>()
-        val improvements = mutableListOf<String>()
-
-        if (answeredCount == totalQuestions) strongAreas.add("Completed all $totalQuestions questions")
-        else weakAreas.add("Only answered $answeredCount of $totalQuestions questions")
-
-        val avgLen = answers.map { it.content.length }.average()
-        if (avgLen > 100) strongAreas.add("Detailed and thorough answers")
-        else weakAreas.add("Answers could be more detailed")
-
-        if (avgResponseTime > 0 && avgResponseTime < 120000) strongAreas.add("Good response speed")
-        
-        strongAreas.add("Practice session for $role completed")
-        improvements.add("Review answers and identify areas for deeper technical knowledge")
-        improvements.add("Practice explaining your thought process step by step")
-
-        val readiness = when {
-            score >= 80f -> "Ready"
-            score >= 50f -> "Almost Ready"
-            else -> "Needs Practice"
-        }
-
         return SessionSummary(
             sessionId = sessionId,
             averageScore = score.toInt(),
-            strongAreas = strongAreas.take(4),
-            weakAreas = weakAreas.ifEmpty { listOf("No major issues detected") },
-            priorityImprovements = improvements.take(4),
-            roleReadiness = readiness
+            strongAreas = listOf("Session completed"),
+            weakAreas = listOf("AI evaluation unavailable"),
+            priorityImprovements = listOf("Please check your internet connection and API key."),
+            roleReadiness = "Evaluation Unavailable"
         )
     }
 

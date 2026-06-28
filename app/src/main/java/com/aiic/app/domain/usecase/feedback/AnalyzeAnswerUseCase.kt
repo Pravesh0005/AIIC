@@ -1,5 +1,6 @@
 package com.aiic.app.domain.usecase.feedback
 
+import android.util.Log
 import com.aiic.app.core.base.NetworkResult
 import com.aiic.app.domain.ai.prompt.FeedbackPromptBuilder
 import com.aiic.app.domain.model.AnswerFeedback
@@ -24,6 +25,7 @@ class AnalyzeAnswerUseCase @Inject constructor(
         targetRole: String,
         resumeContext: String
     ): NetworkResult<AnswerFeedback> = withContext(Dispatchers.IO) {
+        Log.d("AIIC_DEBUG", "Entering AnalyzeAnswerUseCase for questionId: $questionId, sessionId: $sessionId")
         try {
             // 1. Build Prompt
             val prompt = FeedbackPromptBuilder.buildAnswerEvaluationPrompt(
@@ -34,8 +36,10 @@ class AnalyzeAnswerUseCase @Inject constructor(
             )
 
             // 2. Call AI
-            val aiResponse = generativeAiRepository.generateText(prompt)
+            Log.d("AIIC_DEBUG", "AnalyzeAnswerUseCase: Sending prompt to GenerativeAiRepository (generateJson)")
+            val aiResponse = generativeAiRepository.generateJson(prompt)
             if (aiResponse is NetworkResult.Error) {
+                Log.e("AIIC_DEBUG", "AnalyzeAnswerUseCase: Groq returned error: ${aiResponse.message}")
                 val fallbackFeedback = AnswerFeedback(
                     feedbackId = "fb_${System.currentTimeMillis()}",
                     sessionId = sessionId,
@@ -61,6 +65,7 @@ class AnalyzeAnswerUseCase @Inject constructor(
             
             // Clean JSON string (remove markdown blocks if AI ignored instructions)
             val cleanJson = jsonString.replace("```json", "").replace("```", "").trim()
+            Log.d("AIIC_DEBUG", "AnalyzeAnswerUseCase: Clean JSON String to parse: $cleanJson")
 
             // 3. Parse Response
             val parsedMap = gson.fromJson(cleanJson, Map::class.java)
@@ -84,16 +89,20 @@ class AnalyzeAnswerUseCase @Inject constructor(
                 followUpQuestions = parsedMap["followUpQuestions"] as? List<String> ?: emptyList()
             )
 
+            Log.d("AIIC_DEBUG", "AnalyzeAnswerUseCase: Parsed AnswerFeedback overallScore = ${feedback.overallScore}")
+
             // 4. Save to Repository
             val saveResult = feedbackRepository.saveAnswerFeedback(feedback)
             if (saveResult is NetworkResult.Error) {
+                Log.e("AIIC_DEBUG", "AnalyzeAnswerUseCase: Failed to save AnswerFeedback to repository")
                 // Return success anyway, since we have the feedback for UI, but maybe log error
                 return@withContext NetworkResult.Success(feedback)
             }
 
+            Log.d("AIIC_DEBUG", "Leaving AnalyzeAnswerUseCase successfully")
             NetworkResult.Success(feedback)
         } catch (e: Exception) {
-            e.printStackTrace()
+            Log.e("AIIC_DEBUG", "AnalyzeAnswerUseCase: Exception during evaluation", e)
             val fallbackFeedback = AnswerFeedback(
                 feedbackId = "fb_${System.currentTimeMillis()}",
                 sessionId = sessionId,

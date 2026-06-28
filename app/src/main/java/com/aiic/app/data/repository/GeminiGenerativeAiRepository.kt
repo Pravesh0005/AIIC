@@ -29,12 +29,19 @@ class GeminiGenerativeAiRepository @Inject constructor() : GenerativeAiRepositor
         throw Exception("Groq AI provider failed. Check API key and network connection.")
     }
 
+import android.util.Log
+
     private suspend fun callGroq(prompt: String): String? {
-        if (groqKey.isBlank()) return null
+        if (groqKey.isBlank()) {
+            Log.e("AIIC_DEBUG", "callGroq: API Key is blank")
+            return null
+        }
         return withContext(Dispatchers.IO) {
             withTimeoutOrNull(15000L) {
                 try {
+                    Log.d("AIIC_DEBUG", "Entering callGroq - Groq Model: llama3-70b-8192")
                     val url = java.net.URL("https://api.groq.com/openai/v1/chat/completions")
+                    Log.d("AIIC_DEBUG", "callGroq: HTTP URL: $url")
                     val connection = url.openConnection() as java.net.HttpURLConnection
                     connection.connectTimeout = 5000
                     connection.readTimeout = 12000
@@ -53,27 +60,39 @@ class GeminiGenerativeAiRepository @Inject constructor() : GenerativeAiRepositor
                     )
                     val bodyStr = gson.toJson(body)
 
+                    val startTime = System.currentTimeMillis()
                     connection.outputStream.use { os ->
                         val input = bodyStr.toByteArray(Charsets.UTF_8)
                         os.write(input, 0, input.size)
                     }
 
-                    if (connection.responseCode in 200..299) {
+                    val status = connection.responseCode
+                    Log.d("AIIC_DEBUG", "callGroq: HTTP Status: $status, Execution Time: ${System.currentTimeMillis() - startTime}ms")
+                    
+                    if (status in 200..299) {
                         val responseStr = connection.inputStream.bufferedReader().use { it.readText() }
+                        Log.d("AIIC_DEBUG", "callGroq: HTTP Response: $responseStr")
                         val root = gson.fromJson(responseStr, Map::class.java)
                         val choices = root["choices"] as? List<*>
                         val firstChoice = choices?.firstOrNull() as? Map<*, *>
                         val message = firstChoice?.get("message") as? Map<*, *>
-                        message?.get("content") as? String
+                        val content = message?.get("content") as? String
+                        Log.d("AIIC_DEBUG", "Leaving callGroq - Parsed content success")
+                        content
                     } else {
                         val errorStr = try {
                             connection.errorStream?.bufferedReader()?.use { it.readText() } ?: ""
                         } catch (_: Exception) { "" }
+                        Log.e("AIIC_DEBUG", "callGroq: Failed HTTP Status $status, Error: $errorStr")
                         null
                     }
                 } catch (e: Exception) {
+                    Log.e("AIIC_DEBUG", "callGroq: Exception caught", e)
                     null
                 }
+            } ?: run {
+                Log.e("AIIC_DEBUG", "callGroq: Timeout after 15000ms")
+                null
             }
         }
     }
@@ -82,11 +101,16 @@ class GeminiGenerativeAiRepository @Inject constructor() : GenerativeAiRepositor
      * Groq call with JSON response format enforced.
      */
     private suspend fun callGroqJson(prompt: String): String? {
-        if (groqKey.isBlank()) return null
+        if (groqKey.isBlank()) {
+            Log.e("AIIC_DEBUG", "callGroqJson: API Key is blank")
+            return null
+        }
         return withContext(Dispatchers.IO) {
             withTimeoutOrNull(15000L) {
                 try {
+                    Log.d("AIIC_DEBUG", "Entering callGroqJson - Groq Model: llama3-70b-8192")
                     val url = java.net.URL("https://api.groq.com/openai/v1/chat/completions")
+                    Log.d("AIIC_DEBUG", "callGroqJson: HTTP URL: $url")
                     val connection = url.openConnection() as java.net.HttpURLConnection
                     connection.connectTimeout = 5000
                     connection.readTimeout = 12000
@@ -106,24 +130,39 @@ class GeminiGenerativeAiRepository @Inject constructor() : GenerativeAiRepositor
                     )
                     val bodyStr = gson.toJson(body)
 
+                    val startTime = System.currentTimeMillis()
                     connection.outputStream.use { os ->
                         val input = bodyStr.toByteArray(Charsets.UTF_8)
                         os.write(input, 0, input.size)
                     }
 
-                    if (connection.responseCode in 200..299) {
+                    val status = connection.responseCode
+                    Log.d("AIIC_DEBUG", "callGroqJson: HTTP Status: $status, Execution Time: ${System.currentTimeMillis() - startTime}ms")
+
+                    if (status in 200..299) {
                         val responseStr = connection.inputStream.bufferedReader().use { it.readText() }
+                        Log.d("AIIC_DEBUG", "callGroqJson: HTTP Response: $responseStr")
                         val root = gson.fromJson(responseStr, Map::class.java)
                         val choices = root["choices"] as? List<*>
                         val firstChoice = choices?.firstOrNull() as? Map<*, *>
                         val message = firstChoice?.get("message") as? Map<*, *>
-                        message?.get("content") as? String
+                        val content = message?.get("content") as? String
+                        Log.d("AIIC_DEBUG", "Leaving callGroqJson - Parsed JSON string success")
+                        content
                     } else {
+                        val errorStr = try {
+                            connection.errorStream?.bufferedReader()?.use { it.readText() } ?: ""
+                        } catch (_: Exception) { "" }
+                        Log.e("AIIC_DEBUG", "callGroqJson: Failed HTTP Status $status, Error: $errorStr")
                         null
                     }
                 } catch (e: Exception) {
+                    Log.e("AIIC_DEBUG", "callGroqJson: Exception caught", e)
                     null
                 }
+            } ?: run {
+                Log.e("AIIC_DEBUG", "callGroqJson: Timeout after 15000ms")
+                null
             }
         }
     }
@@ -181,6 +220,20 @@ class GeminiGenerativeAiRepository @Inject constructor() : GenerativeAiRepositor
                 NetworkResult.Success(responseText)
             } catch (e: Exception) {
                 NetworkResult.Error(message = "AI Processing Error: ${e.message}")
+            }
+        }
+    }
+
+    override suspend fun generateJson(prompt: String): NetworkResult<String> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val responseText = callGroqJson(prompt)
+                if (responseText.isNullOrBlank()) {
+                    return@withContext NetworkResult.Error(message = "AI JSON Processing Error: Empty response from Groq.")
+                }
+                NetworkResult.Success(responseText)
+            } catch (e: Exception) {
+                NetworkResult.Error(message = "AI JSON Processing Error: ${e.message}")
             }
         }
     }

@@ -38,7 +38,13 @@ object AppModule {
     fun provideFirebaseFirestore(): FirebaseFirestore = FirebaseFirestore.getInstance()
 
     @Provides @Singleton
-    fun provideFirebaseStorage(): FirebaseStorage = FirebaseStorage.getInstance()
+    fun provideFirebaseStorage(): FirebaseStorage {
+        return try {
+            FirebaseStorage.getInstance("gs://aiic-9af92.appspot.com")
+        } catch (e: Exception) {
+            FirebaseStorage.getInstance() // fallback
+        }
+    }
 
     // Local
     @Provides @Singleton

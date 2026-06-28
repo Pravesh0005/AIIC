@@ -38,22 +38,30 @@ class FirestoreResumeRepository @Inject constructor(
         fileSize: Long
     ): Flow<NetworkResult<UploadProgress>> = callbackFlow {
         val storageRef = storage.reference.child("resumes/$userId/$resumeId.pdf")
+        val metadata = com.google.firebase.storage.StorageMetadata.Builder()
+            .setContentType("application/pdf")
+            .build()
 
-        currentUploadTask = storageRef.putFile(fileUri)
+        currentUploadTask = storageRef.putFile(fileUri, metadata)
 
+        // Listen for progress updates
         currentUploadTask?.addOnProgressListener { snapshot ->
             val transferred = snapshot.bytesTransferred
             val total = snapshot.totalByteCount
-            // Prevent emitting a 100% complete state from the progress listener to avoid race conditions
             val safeTransferred = if (total > 0 && transferred >= total) total - 1 else transferred
             trySend(NetworkResult.Success(UploadProgress(safeTransferred, total)))
-        }?.addOnSuccessListener {
-            // Provide a final progress event to ensure completion is registered before moving to next step
-            trySend(NetworkResult.Success(UploadProgress(fileSize, fileSize)))
-            close()
-        }?.addOnFailureListener { e ->
-            trySend(NetworkResult.Error(code = 500, message = e.localizedMessage ?: "Upload failed", throwable = e))
-            close()
+        }
+
+        // Await completion in a coroutine
+        kotlinx.coroutines.launch {
+            try {
+                currentUploadTask?.await()
+                trySend(NetworkResult.Success(UploadProgress(fileSize, fileSize)))
+                close()
+            } catch (e: Exception) {
+                trySend(NetworkResult.Error(code = 500, message = e.localizedMessage ?: "Upload failed", throwable = e))
+                close()
+            }
         }
 
         awaitClose { 

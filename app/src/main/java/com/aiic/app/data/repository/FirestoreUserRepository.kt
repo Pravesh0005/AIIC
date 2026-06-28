@@ -23,7 +23,7 @@ class FirestoreUserRepository @Inject constructor(
 
     override suspend fun createUserProfile(profile: UserProfile): NetworkResult<Unit> {
         return try {
-            usersCollection.document(profile.uid).set(profile.toMap(), SetOptions.merge())
+            usersCollection.document(profile.uid).set(profile.toMap(), SetOptions.merge()).await()
             NetworkResult.Success(Unit)
         } catch (e: Exception) {
             NetworkResult.Error(code = 500, message = e.localizedMessage ?: "Failed to create profile", throwable = e)
@@ -45,7 +45,7 @@ class FirestoreUserRepository @Inject constructor(
 
     override suspend fun updateUserProfile(uid: String, updates: Map<String, Any>): NetworkResult<Unit> {
         return try {
-            usersCollection.document(uid).set(updates, SetOptions.merge())
+            usersCollection.document(uid).set(updates, SetOptions.merge()).await()
             NetworkResult.Success(Unit)
         } catch (e: Exception) {
             NetworkResult.Error(code = 500, message = e.localizedMessage ?: "Failed to update profile", throwable = e)
@@ -106,7 +106,10 @@ class FirestoreUserRepository @Inject constructor(
     override suspend fun uploadProfilePhoto(uid: String, uri: android.net.Uri): NetworkResult<String> {
         return try {
             val storageRef = com.google.firebase.storage.FirebaseStorage.getInstance().reference.child("profiles/$uid/avatar.jpg")
-            storageRef.putFile(uri).await()
+            val metadata = com.google.firebase.storage.StorageMetadata.Builder()
+                .setContentType("image/jpeg")
+                .build()
+            storageRef.putFile(uri, metadata).await()
             val downloadUrl = storageRef.downloadUrl.await().toString()
             NetworkResult.Success(downloadUrl)
         } catch (e: Exception) {
