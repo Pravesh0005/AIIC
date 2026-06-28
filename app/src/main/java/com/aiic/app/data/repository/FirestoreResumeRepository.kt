@@ -57,7 +57,10 @@ class FirestoreResumeRepository @Inject constructor(
         }
 
         awaitClose { 
-            currentUploadTask?.cancel()
+            val task = currentUploadTask
+            if (task != null && !task.isComplete && !task.isSuccessful) {
+                task.cancel()
+            }
             currentUploadTask = null 
         }
     }
