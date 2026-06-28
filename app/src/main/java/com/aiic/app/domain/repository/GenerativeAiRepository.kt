@@ -7,7 +7,7 @@ interface GenerativeAiRepository {
     
     /**
      * Analyzes raw text using the Intelligence Engine prompt system to return a structured ResumeAnalysis.
-     * This abstracts the underlying generative AI implementation (e.g. Gemini).
+     * Powered by Groq AI.
      */
     suspend fun generateResumeAnalysis(
         userId: String,
