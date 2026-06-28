@@ -23,7 +23,7 @@ class FirestoreUserRepository @Inject constructor(
 
     override suspend fun createUserProfile(profile: UserProfile): NetworkResult<Unit> {
         return try {
-            usersCollection.document(profile.uid).set(profile.toMap(), SetOptions.merge()).await()
+            usersCollection.document(profile.uid).set(profile.toMap(), SetOptions.merge())
             NetworkResult.Success(Unit)
         } catch (e: Exception) {
             NetworkResult.Error(code = 500, message = e.localizedMessage ?: "Failed to create profile", throwable = e)
@@ -45,7 +45,7 @@ class FirestoreUserRepository @Inject constructor(
 
     override suspend fun updateUserProfile(uid: String, updates: Map<String, Any>): NetworkResult<Unit> {
         return try {
-            usersCollection.document(uid).set(updates, SetOptions.merge()).await()
+            usersCollection.document(uid).set(updates, SetOptions.merge())
             NetworkResult.Success(Unit)
         } catch (e: Exception) {
             NetworkResult.Error(code = 500, message = e.localizedMessage ?: "Failed to update profile", throwable = e)
