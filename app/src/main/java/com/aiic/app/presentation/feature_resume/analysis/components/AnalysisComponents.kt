@@ -50,15 +50,15 @@ fun ATSScoreCard(score: Int, classification: String, modifier: Modifier = Modifi
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Box(
-                modifier = Modifier.size(120.dp),
+                modifier = Modifier.size(140.dp),
                 contentAlignment = Alignment.Center
             ) {
                 CircularProgressIndicator(
                     progress = { score / 100f },
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier.size(140.dp),
                     color = color,
                     trackColor = AIICTheme.colors.surfaceElevated,
-                    strokeWidth = 8.dp
+                    strokeWidth = 10.dp
                 )
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Text(
