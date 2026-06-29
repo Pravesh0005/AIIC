@@ -55,7 +55,7 @@ fun ATSScoreCard(score: Int, classification: String, modifier: Modifier = Modifi
             ) {
                 CircularProgressIndicator(
                     progress = { score / 100f },
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxSize(),
                     color = color,
                     trackColor = AIICTheme.colors.surfaceElevated,
                     strokeWidth = 8.dp
