@@ -12,6 +12,7 @@ data class UserProfile(
     val skills: List<String> = emptyList(),
     val onboardingCompleted: Boolean = false,
     val interviewCount: Int = 0,
+    val totalPracticeHours: Float = 0f,
     val resumeScore: Float = 0f,
     val readinessScore: Float = 0f,
     val isPremium: Boolean = false,
