@@ -51,8 +51,8 @@ object AppModule {
         FirebaseAuthRepository(auth)
 
     @Provides @Singleton
-    fun provideUserRepository(firestore: FirebaseFirestore): UserRepository =
-        FirestoreUserRepository(firestore)
+    fun provideUserRepository(firestore: FirebaseFirestore, storage: FirebaseStorage): UserRepository =
+        FirestoreUserRepository(firestore, storage)
 
     @Provides @Singleton
     fun provideSessionRepository(prefs: PreferencesManager): SessionRepository =

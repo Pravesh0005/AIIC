@@ -39,11 +39,35 @@ class FirestoreResumeRepository @Inject constructor(
         fileSize: Long
     ): Flow<NetworkResult<UploadProgress>> = callbackFlow {
         val storageRef = storage.reference.child("resumes/$userId/$resumeId.pdf")
+        
+        // Copy to local file to verify readability and size
+        val context = com.google.firebase.FirebaseApp.getInstance().applicationContext
+        val localFile = java.io.File(context.cacheDir, "temp_resume_$resumeId.pdf")
+        try {
+            context.contentResolver.openInputStream(fileUri)?.use { input ->
+                java.io.FileOutputStream(localFile).use { output ->
+                    input.copyTo(output)
+                }
+            }
+        } catch (e: Exception) {
+            trySend(NetworkResult.Error(code = 500, message = "Local file read failed: ${e.localizedMessage}", throwable = e))
+            close()
+            return@callbackFlow
+        }
+        
+        val actualSize = localFile.length()
+        android.util.Log.d("AIIC_STORAGE", "Local resume file size: $actualSize bytes")
+        if (actualSize == 0L) {
+            trySend(NetworkResult.Error(code = 400, message = "Selected PDF is empty (0 bytes)"))
+            close()
+            return@callbackFlow
+        }
+
         val metadata = com.google.firebase.storage.StorageMetadata.Builder()
             .setContentType("application/pdf")
             .build()
 
-        currentUploadTask = storageRef.putFile(fileUri, metadata)
+        currentUploadTask = storageRef.putFile(Uri.fromFile(localFile), metadata)
 
         // Listen for progress updates
         currentUploadTask?.addOnProgressListener { snapshot ->
@@ -57,11 +81,15 @@ class FirestoreResumeRepository @Inject constructor(
         launch {
             try {
                 currentUploadTask?.await()
-                trySend(NetworkResult.Success(UploadProgress(fileSize, fileSize)))
+                android.util.Log.d("AIIC_STORAGE", "Resume putFile fully awaited and successful")
+                trySend(NetworkResult.Success(UploadProgress(actualSize, actualSize)))
                 close()
             } catch (e: Exception) {
-                trySend(NetworkResult.Error(code = 500, message = e.localizedMessage ?: "Upload failed", throwable = e))
+                android.util.Log.e("AIIC_STORAGE", "Resume putFile failed", e)
+                trySend(NetworkResult.Error(code = 500, message = "Upload failed (putFile): ${e.localizedMessage}", throwable = e))
                 close()
+            } finally {
+                localFile.delete()
             }
         }
 
@@ -74,6 +102,8 @@ class FirestoreResumeRepository @Inject constructor(
         return try {
             val storageRef = storage.reference.child("resumes/${resume.userId}/${resume.resumeId}.pdf")
             
+            android.util.Log.d("AIIC_STORAGE", "Starting downloadUrl fetch for resume: ${storageRef.path}")
+            
             // Add retry logic for downloadUrl to handle Google Cloud Storage eventual consistency latency
             var downloadUrl: String? = null
             var retryCount = 0
@@ -82,10 +112,15 @@ class FirestoreResumeRepository @Inject constructor(
                     downloadUrl = storageRef.downloadUrl.await().toString()
                 } catch (e: Exception) {
                     retryCount++
-                    if (retryCount >= 5) throw e
+                    android.util.Log.e("AIIC_STORAGE", "Resume downloadUrl retry $retryCount failed: ${e.message}")
+                    if (retryCount >= 5) {
+                        return NetworkResult.Error(code = 500, message = "URL fetch failed: ${e.localizedMessage}", throwable = e)
+                    }
                     kotlinx.coroutines.delay(1000)
                 }
             }
+            
+            android.util.Log.d("AIIC_STORAGE", "Resume URL fetched successfully: $downloadUrl")
             
             val updatedResume = resume.copy(
                 fileUrl = downloadUrl ?: "",
@@ -96,7 +131,8 @@ class FirestoreResumeRepository @Inject constructor(
             resumesCollection.document(updatedResume.resumeId).set(updatedResume.toMap()).await()
             NetworkResult.Success(updatedResume)
         } catch (e: Exception) {
-            NetworkResult.Error(code = 500, message = e.localizedMessage ?: "Failed to save resume metadata", throwable = e)
+            android.util.Log.e("AIIC_STORAGE", "Overall resume metadata error: ${e.message}", e)
+            NetworkResult.Error(code = 500, message = "Overall error: ${e.localizedMessage}", throwable = e)
         }
     }
 
