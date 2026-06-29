@@ -55,7 +55,7 @@ class HomeViewModel @Inject constructor(
                                 readinessScore = profile.readinessScore,
                                 interviewsCompleted = profile.interviewCount,
                                 streakDays = 1, // Simulated active streak
-                                hoursOfPractice = profile.interviewCount * 0.5f // Approx 30 mins per interview
+                                hoursOfPractice = profile.totalPracticeHours
                             )
                         }
                     }
