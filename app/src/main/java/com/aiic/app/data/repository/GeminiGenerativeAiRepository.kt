@@ -24,6 +24,11 @@ class GeminiGenerativeAiRepository @Inject constructor() : GenerativeAiRepositor
     private val groqKey = com.aiic.app.BuildConfig.GROQ_API_KEY
     private val gson = Gson()
 
+    init {
+        val masked = if (groqKey.length > 8) "${groqKey.take(4)}...${groqKey.takeLast(4)}" else "(empty)"
+        Log.d("AIIC_DEBUG", "GeminiGenerativeAiRepository INIT — key length=${groqKey.length}, masked=$masked, model=llama-3.3-70b-versatile")
+    }
+
     private suspend fun generateContentGroq(prompt: String): String {
         val result = callGroq(prompt)
         if (!result.isNullOrBlank()) return result
@@ -37,7 +42,7 @@ class GeminiGenerativeAiRepository @Inject constructor() : GenerativeAiRepositor
         return withContext(Dispatchers.IO) {
             withTimeoutOrNull(15000L) {
                 try {
-                    Log.d("AIIC_DEBUG", "Entering callGroq - Groq Model: llama3-70b-8192")
+                    Log.d("AIIC_DEBUG", "Entering callGroq - Groq Model: llama-3.3-70b-versatile")
                     val url = java.net.URL("https://api.groq.com/openai/v1/chat/completions")
                     Log.d("AIIC_DEBUG", "callGroq: HTTP URL: $url")
                     val connection = url.openConnection() as java.net.HttpURLConnection
@@ -49,7 +54,7 @@ class GeminiGenerativeAiRepository @Inject constructor() : GenerativeAiRepositor
                     connection.doOutput = true
 
                     val body = mapOf(
-                        "model" to "llama3-70b-8192",
+                        "model" to "llama-3.3-70b-versatile",
                         "messages" to listOf(
                             mapOf("role" to "user", "content" to prompt)
                         ),
@@ -106,7 +111,7 @@ class GeminiGenerativeAiRepository @Inject constructor() : GenerativeAiRepositor
         return withContext(Dispatchers.IO) {
             withTimeoutOrNull(15000L) {
                 try {
-                    Log.d("AIIC_DEBUG", "Entering callGroqJson - Groq Model: llama3-70b-8192")
+                    Log.d("AIIC_DEBUG", "Entering callGroqJson - Groq Model: llama-3.3-70b-versatile")
                     val url = java.net.URL("https://api.groq.com/openai/v1/chat/completions")
                     Log.d("AIIC_DEBUG", "callGroqJson: HTTP URL: $url")
                     val connection = url.openConnection() as java.net.HttpURLConnection
@@ -118,7 +123,7 @@ class GeminiGenerativeAiRepository @Inject constructor() : GenerativeAiRepositor
                     connection.doOutput = true
 
                     val body = mapOf(
-                        "model" to "llama3-70b-8192",
+                        "model" to "llama-3.3-70b-versatile",
                         "messages" to listOf(
                             mapOf("role" to "user", "content" to prompt)
                         ),
