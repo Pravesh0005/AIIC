@@ -105,6 +105,11 @@ class CompleteInterviewUseCase @Inject constructor(
             
             val currentCount = userResult?.interviewCount ?: 0
             val currentReadiness = userResult?.readinessScore ?: 0f
+            val currentHours = userResult?.totalPracticeHours ?: 0f
+            
+            val durationMs = if (session.startedAt > 0) System.currentTimeMillis() - session.startedAt else 0L
+            val durationHours = durationMs / 3600000f
+            val newHours = currentHours + durationHours
             
             val normalizedScore = finalScore / 100f
             val newCount = currentCount + 1
@@ -118,7 +123,8 @@ class CompleteInterviewUseCase @Inject constructor(
 
             userRepository.updateUserProfile(session.userId, mapOf(
                 "readinessScore" to newReadiness,
-                "interviewCount" to newCount
+                "interviewCount" to newCount,
+                "totalPracticeHours" to newHours
             ))
             Log.d("AIIC_DEBUG", "CompleteInterviewUseCase: Updated UserProfile readiness to $newReadiness")
         }
