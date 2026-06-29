@@ -79,9 +79,9 @@ fun ResumeAnalysisScreen(
                     is AnalysisUiState.Success -> {
                         AnalysisDashboardContent(
                             analysis = state.analysis,
-                            onNavigateToATS = { onNavigateToATS(state.analysis.analysisId) },
-                            onNavigateToSkills = { onNavigateToSkills(state.analysis.analysisId) },
-                            onNavigateToRecommendations = { onNavigateToRecommendations(state.analysis.analysisId) },
+                            onNavigateToATS = { onNavigateToATS(state.analysis.resumeId) },
+                            onNavigateToSkills = { onNavigateToSkills(state.analysis.resumeId) },
+                            onNavigateToRecommendations = { onNavigateToRecommendations(state.analysis.resumeId) },
                             onNavigateBack = onNavigateBack
                         )
                     }
