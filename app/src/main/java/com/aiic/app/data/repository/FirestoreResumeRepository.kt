@@ -67,6 +67,23 @@ class FirestoreResumeRepository @Inject constructor(
             .setContentType("application/pdf")
             .build()
 
+        android.util.Log.e("AIIC_FORENSIC", "========================================")
+        android.util.Log.e("AIIC_FORENSIC", "FORENSIC TRACE: UPLOAD RESUME")
+        android.util.Log.e("AIIC_FORENSIC", "URI = $fileUri")
+        android.util.Log.e("AIIC_FORENSIC", "MimeType = application/pdf")
+        android.util.Log.e("AIIC_FORENSIC", "Local Exists = ${localFile.exists()}")
+        android.util.Log.e("AIIC_FORENSIC", "Local CanRead = ${localFile.canRead()}")
+        android.util.Log.e("AIIC_FORENSIC", "Local Size = $actualSize")
+        
+        val fApp = com.google.firebase.FirebaseApp.getInstance()
+        android.util.Log.e("AIIC_FORENSIC", "FirebaseApp options.storageBucket = ${fApp.options.storageBucket}")
+        android.util.Log.e("AIIC_FORENSIC", "FirebaseStorage app.options.storageBucket = ${storage.app.options.storageBucket}")
+        android.util.Log.e("AIIC_FORENSIC", "storage.reference.bucket = ${storage.reference.bucket}")
+        android.util.Log.e("AIIC_FORENSIC", "storage.reference.root.path = ${storage.reference.root.path}")
+        android.util.Log.e("AIIC_FORENSIC", "ref.path = ${storageRef.path}")
+        android.util.Log.e("AIIC_FORENSIC", "ref.bucket = ${storageRef.bucket}")
+        android.util.Log.e("AIIC_FORENSIC", "========================================")
+
         currentUploadTask = storageRef.putFile(Uri.fromFile(localFile), metadata)
 
         // Listen for progress updates
@@ -80,12 +97,23 @@ class FirestoreResumeRepository @Inject constructor(
         // Await completion in a coroutine
         launch {
             try {
+                android.util.Log.e("AIIC_FORENSIC", "Executing putFile().await()...")
                 currentUploadTask?.await()
-                android.util.Log.d("AIIC_STORAGE", "Resume putFile fully awaited and successful")
+                android.util.Log.e("AIIC_FORENSIC", "putFile() SUCCESS!")
                 trySend(NetworkResult.Success(UploadProgress(actualSize, actualSize)))
                 close()
+            } catch (e: com.google.firebase.storage.StorageException) {
+                android.util.Log.e("AIIC_FORENSIC", "putFile() THREW StorageException!")
+                android.util.Log.e("AIIC_FORENSIC", "errorCode = ${e.errorCode}")
+                android.util.Log.e("AIIC_FORENSIC", "httpResultCode = ${e.httpResultCode}")
+                android.util.Log.e("AIIC_FORENSIC", "cause = ${e.cause}")
+                android.util.Log.e("AIIC_FORENSIC", "message = ${e.message}")
+                android.util.Log.e("AIIC_FORENSIC", "target bucket = ${storageRef.bucket}")
+                android.util.Log.e("AIIC_FORENSIC", "target path = ${storageRef.path}")
+                trySend(NetworkResult.Error(code = e.httpResultCode, message = "Upload failed (putFile): ${e.localizedMessage}", throwable = e))
+                close()
             } catch (e: Exception) {
-                android.util.Log.e("AIIC_STORAGE", "Resume putFile failed", e)
+                android.util.Log.e("AIIC_FORENSIC", "putFile() THREW General Exception!", e)
                 trySend(NetworkResult.Error(code = 500, message = "Upload failed (putFile): ${e.localizedMessage}", throwable = e))
                 close()
             } finally {
