@@ -244,34 +244,34 @@ The app is designed to feel like:
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                     AIIC COLOR PALETTE                           │
+│                     AIIC COLOR PALETTE                          │
 ├──────────────┬──────────────┬──────────────┬────────────────────┤
 │   PRIMARY    │  SECONDARY   │    ACCENT    │    BACKGROUND      │
-│   #7C5CFC   │   #00D4AA    │   #FF6B9D   │     #0A0A0F        │
-│  Electric    │    Mint      │    Rose     │    Deep Dark       │
-│  Violet      │   Green      │    Pink     │                    │
+│   #7C5CFC    │   #00D4AA    │   #FF6B9D    │     #0A0A0F        │
+│  Electric    │    Mint      │    Rose      │    Deep Dark       │
+│  Violet      │   Green      │    Pink      │                    │
 ├──────────────┴──────────────┴──────────────┴────────────────────┤
-│                                                                  │
-│   TYPOGRAPHY                                                     │
+│                                                                 │
+│   TYPOGRAPHY                                                    │
 │   ├── Display: Space Grotesk (Bold, -1.5sp tracking)            │
 │   ├── Headlines: Space Grotesk (SemiBold)                       │
 │   ├── Body: Inter (Regular, 16sp)                               │
 │   ├── Labels: Inter (SemiBold, 12sp)                            │
 │   └── Buttons: Inter (SemiBold, 15sp)                           │
-│                                                                  │
-│   SHAPES                                                         │
+│                                                                 │
+│   SHAPES                                                        │
 │   ├── Cards: 20dp rounded                                       │
 │   ├── Buttons: 14dp rounded                                     │
 │   ├── Inputs: 12dp rounded                                      │
 │   └── Pills: 50% rounded                                        │
-│                                                                  │
-│   EFFECTS                                                        │
+│                                                                 │
+│   EFFECTS                                                       │
 │   ├── Glassmorphism (10% white overlay)                         │
 │   ├── Gradient buttons (Violet → Rose)                          │
-│   ├── Soft glow accents                                          │
+│   ├── Soft glow accents                                         │
 │   └── Shimmer loading animations                                │
-│                                                                  │
-└──────────────────────────────────────────────────────────────────┘
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
 ```
 
 ---
