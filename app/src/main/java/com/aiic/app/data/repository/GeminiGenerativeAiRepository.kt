@@ -192,7 +192,7 @@ class GeminiGenerativeAiRepository @Inject constructor() : GenerativeAiRepositor
                 val analysisData = gson.fromJson(cleanJson, AiAnalysisResponse::class.java)
 
                 val finalAnalysis = ResumeAnalysis(
-                    analysisId = UUID.randomUUID().toString(),
+                    analysisId = "${userId}_${resumeId}",
                     resumeId = resumeId,
                     userId = userId,
                     timestamp = System.currentTimeMillis(),
