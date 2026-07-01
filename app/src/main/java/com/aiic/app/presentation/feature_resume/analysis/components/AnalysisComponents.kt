@@ -19,7 +19,6 @@ import androidx.compose.material.icons.rounded.CheckCircle
 import androidx.compose.material.icons.rounded.Error
 import androidx.compose.material.icons.rounded.Lightbulb
 import androidx.compose.material.icons.rounded.Warning
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -44,32 +43,64 @@ fun ATSScoreCard(score: Int, classification: String, modifier: Modifier = Modifi
         else -> AIICTheme.colors.error
     }
 
+    val trackColor = AIICTheme.colors.surfaceElevated
+    val sweepAngle = (score / 100f) * 360f
+
     PremiumCard(modifier = modifier.fillMaxWidth()) {
         Column(
             modifier = Modifier.padding(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Box(
-                modifier = Modifier.size(140.dp),
+                modifier = Modifier.size(160.dp),
                 contentAlignment = Alignment.Center
             ) {
-                CircularProgressIndicator(
-                    progress = { score / 100f },
-                    modifier = Modifier.size(140.dp),
-                    color = color,
-                    trackColor = AIICTheme.colors.surfaceElevated,
-                    strokeWidth = 10.dp
-                )
+                androidx.compose.foundation.Canvas(
+                    modifier = Modifier.size(160.dp)
+                ) {
+                    val strokeWidthPx = 12.dp.toPx()
+                    val arcSize = size.width - strokeWidthPx
+                    val topLeft = androidx.compose.ui.geometry.Offset(strokeWidthPx / 2f, strokeWidthPx / 2f)
+                    val arcSizeObj = androidx.compose.ui.geometry.Size(arcSize, arcSize)
+
+                    // Track
+                    drawArc(
+                        color = trackColor,
+                        startAngle = -90f,
+                        sweepAngle = 360f,
+                        useCenter = false,
+                        topLeft = topLeft,
+                        size = arcSizeObj,
+                        style = androidx.compose.ui.graphics.drawscope.Stroke(
+                            width = strokeWidthPx,
+                            cap = androidx.compose.ui.graphics.StrokeCap.Round
+                        )
+                    )
+
+                    // Progress
+                    drawArc(
+                        color = color,
+                        startAngle = -90f,
+                        sweepAngle = sweepAngle,
+                        useCenter = false,
+                        topLeft = topLeft,
+                        size = arcSizeObj,
+                        style = androidx.compose.ui.graphics.drawscope.Stroke(
+                            width = strokeWidthPx,
+                            cap = androidx.compose.ui.graphics.StrokeCap.Round
+                        )
+                    )
+                }
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Text(
                         text = "$score",
-                        style = AIICTheme.typography.headlineLarge,
+                        style = AIICTheme.typography.displayMedium,
                         color = AIICTheme.colors.textPrimary,
                         fontWeight = FontWeight.Bold
                     )
                     Text(
                         text = "/100",
-                        style = AIICTheme.typography.bodySmall,
+                        style = AIICTheme.typography.bodyMedium,
                         color = AIICTheme.colors.textSecondary
                     )
                 }
