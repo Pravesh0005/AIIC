@@ -21,35 +21,49 @@ class FirestoreResumeAnalysisRepository @Inject constructor(
 
     override suspend fun getAnalysis(userId: String, resumeId: String): NetworkResult<ResumeAnalysis> {
         return try {
-            val snapshot = firestore.collection(collectionPath)
-                .whereEqualTo("userId", userId)
-                .whereEqualTo("resumeId", resumeId)
+            // Use deterministic document ID to avoid compound query (no composite index needed)
+            val docId = "${userId}_${resumeId}"
+            android.util.Log.d("AIIC_ANALYSIS", "getAnalysis: Looking up document ID = $docId")
+            
+            val document = firestore.collection(collectionPath)
+                .document(docId)
                 .get()
                 .await()
 
-            if (snapshot.isEmpty) {
+            if (!document.exists()) {
+                android.util.Log.d("AIIC_ANALYSIS", "getAnalysis: No analysis found for docId=$docId")
                 NetworkResult.Error(message = "No analysis found for this resume.")
             } else {
-                val dto = snapshot.documents.first().toObject(ResumeAnalysisDto::class.java)
+                val dto = document.toObject(ResumeAnalysisDto::class.java)
                 if (dto != null) {
+                    android.util.Log.d("AIIC_ANALYSIS", "getAnalysis: Successfully loaded analysis, score=${dto.overallScore}")
                     NetworkResult.Success(dto.toDomain())
                 } else {
+                    android.util.Log.e("AIIC_ANALYSIS", "getAnalysis: Failed to parse DTO from document")
                     NetworkResult.Error(message = "Failed to parse resume analysis data.")
                 }
             }
         } catch (e: Exception) {
+            android.util.Log.e("AIIC_ANALYSIS", "getAnalysis: Exception: ${e.message}", e)
             NetworkResult.Error(message = e.message ?: "An unknown error occurred while fetching analysis.")
         }
     }
 
     override suspend fun saveAnalysis(analysis: ResumeAnalysis): NetworkResult<Unit> {
         return try {
+            // Use deterministic document ID: userId_resumeId
+            val docId = "${analysis.userId}_${analysis.resumeId}"
+            android.util.Log.d("AIIC_ANALYSIS", "saveAnalysis: Saving to document ID = $docId")
+            
             firestore.collection(collectionPath)
-                .document(analysis.analysisId)
+                .document(docId)
                 .set(analysis.toDto())
                 .await()
+            
+            android.util.Log.d("AIIC_ANALYSIS", "saveAnalysis: Successfully saved analysis, score=${analysis.overallScore}")
             NetworkResult.Success(Unit)
         } catch (e: Exception) {
+            android.util.Log.e("AIIC_ANALYSIS", "saveAnalysis: Exception: ${e.message}", e)
             NetworkResult.Error(message = e.message ?: "An unknown error occurred while saving analysis.")
         }
     }
