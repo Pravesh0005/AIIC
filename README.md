@@ -280,17 +280,17 @@ The app is designed to feel like:
 
 | Component | Description |
 |-----------|-------------|
-| `PremiumButton` | Gradient button with loading spinner |
-| `GlassCard` | Translucent glassmorphism card |
-| `ScoreCard` | Metric display with accent color |
-| `FeatureCard` | Icon + title + description row |
-| `AIICTextField` | Custom input with password toggle & validation |
-| `SectionHeader` | Title + subtitle + action link |
-| `LoadingShimmer` | Animated placeholder skeleton |
-| `EmptyStateView` | Empty content placeholder |
-| `ErrorStateView` | Error display with retry button |
-| `AppLogo` | Gradient circle with "AI" text |
-| `GradientText` | Text with gradient brush fill |
+| `PremiumButton`  | Gradient button with loading spinner           |
+| `GlassCard`      | Translucent glassmorphism card                 |
+| `ScoreCard`      | Metric display with accent color               |
+| `FeatureCard`    | Icon + title + description row                 |
+| `AIICTextField`  | Custom input with password toggle & validation |
+| `SectionHeader`  | Title + subtitle + action link                 |
+| `LoadingShimmer` | Animated placeholder skeleton                  |
+| `EmptyStateView` | Empty content placeholder                      |
+| `ErrorStateView` | Error display with retry button                |
+| `AppLogo`        | Gradient circle with "AI" text                 |
+| `GradientText`   | Text with gradient brush fill                  |
 
 ---
 
