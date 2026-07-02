@@ -278,8 +278,8 @@ The app is designed to feel like:
 
 ## 🧩 Reusable Components
 
-| Component | Description |
-|-----------|-------------|
+|    Component     |                  Description                   |
+|------------------|------------------------------------------------|
 | `PremiumButton`  | Gradient button with loading spinner           |
 | `GlassCard`      | Translucent glassmorphism card                 |
 | `ScoreCard`      | Metric display with accent color               |
