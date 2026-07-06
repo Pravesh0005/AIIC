@@ -29,6 +29,7 @@ import com.aiic.app.presentation.feature_resume.analysis.RecommendationsScreen
 import com.aiic.app.presentation.feature_resume.analysis.ResumeInsightsScreen
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import com.aiic.app.presentation.feature_analytics.AnalyticsDashboardScreen
 
 private const val ANIM_DURATION = 400
 
@@ -145,7 +146,7 @@ fun AIICNavHost(navController: NavHostController = rememberNavController()) {
                         popUpTo(AppRoutes.Home.route) { inclusive = true }
                     }
                 },
-                onNavigateToAnalytics = { /* Handled in-tab via HomeScreen bottom nav */ },
+                onNavigateToAnalytics = { navController.navigate(AppRoutes.Analytics.route) },
                 onNavigateToSettings = { navController.navigate(AppRoutes.Settings.route) },
                 onNavigateToProfile = { /* Handled in-tab via HomeScreen bottom nav */ }
             )
@@ -262,6 +263,23 @@ fun AIICNavHost(navController: NavHostController = rememberNavController()) {
             )
         }
 
+        // Analytics Dashboard
+        composable(AppRoutes.Analytics.route) {
+            AnalyticsDashboardScreen(
+                onNavigateBack = { navController.popBackStack() },
+                onNavigateToReport = { sessionId ->
+                    navController.navigate(AppRoutes.InterviewReport.createRoute(sessionId))
+                }
+            )
+        }
+
+        // Interview Tips / Mastery
+        composable(AppRoutes.InterviewTips.route) {
+            com.aiic.app.presentation.feature_tips.InterviewTipsScreen(
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
+
         // --- Day 4: AI Mock Interview Engine ---
         composable(AppRoutes.InterviewSetup.route) {
             com.aiic.app.presentation.feature_interview.setup.InterviewSetupScreen(
@@ -295,6 +313,9 @@ fun AIICNavHost(navController: NavHostController = rememberNavController()) {
                     navController.navigate(AppRoutes.Home.route) {
                         popUpTo(AppRoutes.Home.route) { inclusive = true }
                     } 
+                },
+                onNavigateToReport = { sid ->
+                    navController.navigate(AppRoutes.InterviewReport.createRoute(sid))
                 }
             )
         }
@@ -306,6 +327,18 @@ fun AIICNavHost(navController: NavHostController = rememberNavController()) {
             val answerId = backStackEntry.arguments?.getString("answerId") ?: ""
             com.aiic.app.presentation.feature_feedback.AnswerFeedbackScreen(
                 answerId = answerId,
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
+
+        // Comprehensive Interview Report
+        composable(
+            route = AppRoutes.InterviewReport.route,
+            arguments = listOf(androidx.navigation.navArgument("sessionId") { type = androidx.navigation.NavType.StringType })
+        ) { backStackEntry ->
+            val sessionId = backStackEntry.arguments?.getString("sessionId") ?: ""
+            com.aiic.app.presentation.feature_interview.report.InterviewReportScreen(
+                sessionId = sessionId,
                 onNavigateBack = { navController.popBackStack() }
             )
         }

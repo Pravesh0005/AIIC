@@ -12,6 +12,7 @@ sealed class AppRoutes(val route: String) {
     data object EditProfile : AppRoutes("edit_profile")
     data object Settings : AppRoutes("settings")
     data object Analytics : AppRoutes("analytics")
+    data object InterviewTips : AppRoutes("interview_tips")
 
     // Resume Platform
     data object ResumeDashboard : AppRoutes("resume_dashboard")
@@ -43,6 +44,10 @@ sealed class AppRoutes(val route: String) {
     }
     data object InterviewSummary : AppRoutes("interview_summary/{sessionId}") {
         fun createRoute(sessionId: String) = "interview_summary/$sessionId"
+    }
+    
+    data object InterviewReport : AppRoutes("interview_report/{sessionId}") {
+        fun createRoute(sessionId: String) = "interview_report/$sessionId"
     }
     
     data object AnswerFeedback : AppRoutes("answer_feedback/{answerId}") {
