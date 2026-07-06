@@ -119,5 +119,14 @@ dependencies {
     implementation(libs.gson)
     implementation(libs.pdfbox.android)
 
+    // CameraX (Video Interview)
+    implementation(libs.camerax.core)
+    implementation(libs.camerax.camera2)
+    implementation(libs.camerax.lifecycle)
+    implementation(libs.camerax.view)
+
+    // ML Kit Face Detection (Body Language Analysis)
+    implementation(libs.mlkit.face.detection)
+
     debugImplementation(libs.androidx.ui.tooling)
 }
