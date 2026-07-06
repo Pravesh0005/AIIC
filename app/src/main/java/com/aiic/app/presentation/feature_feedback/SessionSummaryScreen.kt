@@ -29,6 +29,7 @@ import com.aiic.app.presentation.feature_feedback.components.ScoreRing
 fun SessionSummaryScreen(
     sessionId: String,
     onNavigateHome: () -> Unit,
+    onNavigateToReport: (String) -> Unit = {},
     viewModel: SessionSummaryViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -232,10 +233,24 @@ fun SessionSummaryScreen(
                         Spacer(Modifier.height(32.dp))
 
                         PremiumButton(
-                            text = "Return to Dashboard",
-                            onClick = onNavigateHome,
+                            text = "View Full Report",
+                            onClick = { onNavigateToReport(sessionId) },
                             modifier = Modifier.fillMaxWidth()
                         )
+
+                        Spacer(Modifier.height(12.dp))
+
+                        OutlinedButton(
+                            onClick = onNavigateHome,
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = ButtonDefaults.outlinedButtonColors(
+                                contentColor = AIICTheme.colors.textSecondary
+                            )
+                        ) {
+                            Icon(Icons.Rounded.Home, contentDescription = null, modifier = Modifier.size(18.dp))
+                            Spacer(Modifier.width(8.dp))
+                            Text("Return to Dashboard")
+                        }
 
                         Spacer(Modifier.height(24.dp))
                     }
