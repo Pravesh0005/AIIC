@@ -27,8 +27,10 @@ class FirestoreInterviewSessionRepository @Inject constructor() : InterviewSessi
             role = config.role,
             interviewType = config.interviewType,
             difficulty = config.difficulty,
+            interviewMode = config.interviewMode,
             questionCount = config.questionCount,
-            status = SessionStatus.IN_PROGRESS
+            status = SessionStatus.IN_PROGRESS,
+            targetCompany = config.targetCompany
         )
         sessions[sessionId] = session
         return NetworkResult.Success(session)

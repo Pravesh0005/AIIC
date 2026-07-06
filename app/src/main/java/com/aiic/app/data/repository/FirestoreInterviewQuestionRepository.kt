@@ -306,8 +306,11 @@ Avoid generic behavioral questions. Be specific and practical.
         )
 
         return when (type) {
-            InterviewType.TECHNICAL -> technicalPool
-            InterviewType.BEHAVIORAL, InterviewType.HR -> behavioralPool + technicalPool.take(3)
+            InterviewType.TECHNICAL, InterviewType.CODING, InterviewType.DATABASE,
+            InterviewType.ANDROID, InterviewType.BACKEND, InterviewType.FRONTEND,
+            InterviewType.AI, InterviewType.MACHINE_LEARNING, InterviewType.CLOUD,
+            InterviewType.DEVOPS, InterviewType.SYSTEM_DESIGN -> technicalPool
+            InterviewType.BEHAVIORAL, InterviewType.HR, InterviewType.LEADERSHIP -> behavioralPool + technicalPool.take(3)
             InterviewType.MIXED -> technicalPool + behavioralPool
         }
     }
@@ -334,8 +337,11 @@ CATEGORY DISTRIBUTION (MANDATORY):
 - ${if (hrCount > 0) "Exactly $hrCount questions prefixed with [HR] — culture/HR questions" else "No HR questions needed"}
 """
             }
-            InterviewType.TECHNICAL -> "\nAll questions must be prefixed with [TECHNICAL]. Every question must be deeply technical.\n"
-            InterviewType.BEHAVIORAL -> "\nAll questions must be prefixed with [BEHAVIORAL]. Ask situation-specific behavioral questions.\n"
+            InterviewType.TECHNICAL, InterviewType.CODING, InterviewType.DATABASE,
+            InterviewType.ANDROID, InterviewType.BACKEND, InterviewType.FRONTEND,
+            InterviewType.AI, InterviewType.MACHINE_LEARNING, InterviewType.CLOUD,
+            InterviewType.DEVOPS, InterviewType.SYSTEM_DESIGN -> "\nAll questions must be prefixed with [TECHNICAL]. Every question must be deeply technical and specific to ${config.interviewType.name}.\n"
+            InterviewType.BEHAVIORAL, InterviewType.LEADERSHIP -> "\nAll questions must be prefixed with [BEHAVIORAL]. Ask situation-specific behavioral and leadership questions.\n"
             InterviewType.HR -> "\nAll questions must be prefixed with [HR]. Ask HR and culture-fit questions.\n"
         }
 
