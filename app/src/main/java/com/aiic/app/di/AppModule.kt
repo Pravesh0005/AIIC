@@ -16,6 +16,8 @@ import com.aiic.app.domain.repository.SessionRepository
 import com.aiic.app.domain.repository.UserRepository
 import com.aiic.app.domain.repository.ResumeRepository
 import com.aiic.app.data.repository.FirestoreResumeRepository
+import com.aiic.app.domain.engine.BodyLanguageAnalyzer
+import com.aiic.app.domain.engine.VoiceAnalysisEngine
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
@@ -111,6 +113,20 @@ object AppModule {
         com.aiic.app.data.repository.FirestoreFeedbackRepositoryImpl(
             firestore, answerRepository, questionRepository, sessionRepository, generativeAiRepository
         )
+
+    // Interview Report Repository
+    @Provides @Singleton
+    fun provideInterviewReportRepository(
+        firestore: FirebaseFirestore
+    ): com.aiic.app.domain.repository.InterviewReportRepository =
+        com.aiic.app.data.repository.FirestoreInterviewReportRepository(firestore)
+
+    // Voice & Camera Analysis Engines
+    @Provides @Singleton
+    fun provideVoiceAnalysisEngine(): VoiceAnalysisEngine = VoiceAnalysisEngine()
+
+    @Provides @Singleton
+    fun provideBodyLanguageAnalyzer(): BodyLanguageAnalyzer = BodyLanguageAnalyzer()
 
     // Infrastructure
     @Provides @Singleton
