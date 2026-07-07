@@ -368,12 +368,24 @@ private fun StatsRow(state: HomeState) {
         item {
             ScoreCard(
                 title = "Practice",
-                score = "${state.hoursOfPractice}h",
-                subtitle = "Total hours",
+                score = formatPracticeTime(state.hoursOfPractice),
+                subtitle = "Total time",
                 modifier = Modifier.width(150.dp),
                 accentColor = AIICTheme.colors.tertiary,
             )
         }
+    }
+}
+
+/** Converts raw float hours to a clean human-readable duration string.
+ *  e.g. 0f → "0 min", 0.5f → "30 min", 1.25f → "1h 15m", 2.0f → "2h" */
+private fun formatPracticeTime(hours: Float): String {
+    if (hours <= 0f) return "0 min"
+    val totalMinutes = (hours * 60).toInt()
+    return when {
+        totalMinutes < 60 -> "${totalMinutes}m"
+        totalMinutes % 60 == 0 -> "${totalMinutes / 60}h"
+        else -> "${totalMinutes / 60}h ${totalMinutes % 60}m"
     }
 }
 
