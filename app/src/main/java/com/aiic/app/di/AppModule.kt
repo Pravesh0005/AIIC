@@ -98,9 +98,10 @@ object AppModule {
 
     @Provides @Singleton
     fun provideInterviewAnswerRepository(
+        firestore: FirebaseFirestore,
         generativeAiRepository: com.aiic.app.domain.repository.GenerativeAiRepository
     ): com.aiic.app.domain.repository.InterviewAnswerRepository =
-        com.aiic.app.data.repository.FirestoreInterviewAnswerRepository(generativeAiRepository)
+        com.aiic.app.data.repository.FirestoreInterviewAnswerRepository(firestore, generativeAiRepository)
 
     @Provides @Singleton
     fun provideFeedbackRepository(
