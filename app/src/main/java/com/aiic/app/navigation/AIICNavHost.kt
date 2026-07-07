@@ -281,7 +281,7 @@ fun AIICNavHost(navController: NavHostController = rememberNavController()) {
             )
         }
 
-        // --- Day 4: AI Mock Interview Engine ---
+        // --- Phase 4: AI Mock Interview Engine ---
         composable(AppRoutes.InterviewSetup.route) {
             com.aiic.app.presentation.feature_interview.setup.InterviewSetupScreen(
                 onNavigateBack = { navController.popBackStack() },
