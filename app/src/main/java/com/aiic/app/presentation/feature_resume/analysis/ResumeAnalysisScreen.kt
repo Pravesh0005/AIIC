@@ -62,8 +62,11 @@ fun ResumeAnalysisScreen(
         ) {
             AnimatedContent(targetState = uiState, label = "analysis_state") { state ->
                 when (state) {
-                    is AnalysisUiState.Idle, is AnalysisUiState.Analyzing, is AnalysisUiState.Retrying -> {
+                    is AnalysisUiState.Idle, is AnalysisUiState.Analyzing -> {
                         AnalyzingState()
+                    }
+                    is AnalysisUiState.Retrying -> {
+                        CheckingCacheState()
                     }
                     is AnalysisUiState.NoResume -> {
                         ErrorState("No resume provided for analysis.", onNavigateBack)
@@ -124,6 +127,28 @@ private fun AnalyzingState() {
         Spacer(Modifier.height(8.dp))
         Text(
             text = "Extracting skills, generating ATS score, and building recommendations.",
+            style = AIICTheme.typography.bodyMedium,
+            color = AIICTheme.colors.textSecondary,
+            textAlign = TextAlign.Center
+        )
+    }
+}
+
+@Composable
+private fun CheckingCacheState() {
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        CircularProgressIndicator(
+            color = AIICTheme.colors.primary,
+            modifier = Modifier.size(32.dp),
+            strokeWidth = 3.dp
+        )
+        Spacer(Modifier.height(16.dp))
+        Text(
+            text = "Loading analysis...",
             style = AIICTheme.typography.bodyMedium,
             color = AIICTheme.colors.textSecondary,
             textAlign = TextAlign.Center
