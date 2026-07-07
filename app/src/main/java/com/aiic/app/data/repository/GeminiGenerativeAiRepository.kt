@@ -40,7 +40,7 @@ class GeminiGenerativeAiRepository @Inject constructor() : GenerativeAiRepositor
             return null
         }
         return withContext(Dispatchers.IO) {
-            withTimeoutOrNull(15000L) {
+            withTimeoutOrNull(30000L) {
                 try {
                     Log.d("AIIC_DEBUG", "Entering callGroq - Groq Model: llama-3.3-70b-versatile")
                     val url = java.net.URL("https://api.groq.com/openai/v1/chat/completions")
@@ -109,7 +109,7 @@ class GeminiGenerativeAiRepository @Inject constructor() : GenerativeAiRepositor
             return null
         }
         return withContext(Dispatchers.IO) {
-            withTimeoutOrNull(15000L) {
+            withTimeoutOrNull(45000L) {
                 try {
                     Log.d("AIIC_DEBUG", "Entering callGroqJson - Groq Model: llama-3.3-70b-versatile")
                     val url = java.net.URL("https://api.groq.com/openai/v1/chat/completions")
@@ -128,7 +128,7 @@ class GeminiGenerativeAiRepository @Inject constructor() : GenerativeAiRepositor
                             mapOf("role" to "user", "content" to prompt)
                         ),
                         "temperature" to 0.7,
-                        "max_tokens" to 2048,
+                        "max_tokens" to 4096,
                         "response_format" to mapOf("type" to "json_object")
                     )
                     val bodyStr = gson.toJson(body)
