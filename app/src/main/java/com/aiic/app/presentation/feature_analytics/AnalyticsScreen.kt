@@ -36,6 +36,13 @@ fun AnalyticsScreen(
     val avgScore = if (readinessScore > 0) (readinessScore * 100).toInt() else 0
     val totalMinutes = (hoursOfPractice * 60).toInt()
     val avgTimePerInterview = if (interviewsCompleted > 0) totalMinutes / interviewsCompleted else 0
+    val practiceDisplay = formatPracticeTime(hoursOfPractice)
+    val practiceTrend = when {
+        totalMinutes == 0 -> "No practice yet"
+        totalMinutes < 60 -> "${totalMinutes} min total"
+        totalMinutes % 60 == 0 -> "${totalMinutes / 60}h total"
+        else -> "${totalMinutes / 60}h ${totalMinutes % 60}m total"
+    }
 
     Column(
         modifier = Modifier
@@ -104,9 +111,9 @@ fun AnalyticsScreen(
             AnalyticsStatCard(
                 modifier = Modifier.weight(1f),
                 title = "Practice Time",
-                value = "${String.format("%.1f", hoursOfPractice)}h",
-                trend = "$totalMinutes min total",
-                isPositive = true,
+                value = practiceDisplay,
+                trend = practiceTrend,
+                isPositive = totalMinutes > 0,
                 icon = Icons.Rounded.Schedule
             )
             AnalyticsStatCard(
@@ -343,5 +350,17 @@ fun SkillProgressRow(skill: String, score: Int) {
                     .background(AIICTheme.colors.primary)
             )
         }
+    }
+}
+
+/** Converts raw float hours to a clean human-readable duration string.
+ *  e.g. 0f -> "0 min", 0.5f -> "30m", 1.25f -> "1h 15m", 2.0f -> "2h" */
+private fun formatPracticeTime(hours: Float): String {
+    if (hours <= 0f) return "0 min"
+    val totalMinutes = (hours * 60).toInt()
+    return when {
+        totalMinutes < 60 -> "${totalMinutes}m"
+        totalMinutes % 60 == 0 -> "${totalMinutes / 60}h"
+        else -> "${totalMinutes / 60}h ${totalMinutes % 60}m"
     }
 }
