@@ -148,7 +148,8 @@ fun AIICNavHost(navController: NavHostController = rememberNavController()) {
                 },
                 onNavigateToAnalytics = { navController.navigate(AppRoutes.Analytics.route) },
                 onNavigateToSettings = { navController.navigate(AppRoutes.Settings.route) },
-                onNavigateToProfile = { /* Handled in-tab via HomeScreen bottom nav */ }
+                onNavigateToProfile = { /* Handled in-tab via HomeScreen bottom nav */ },
+                onNavigateToTips = { navController.navigate(AppRoutes.InterviewTips.route) }
             )
         }
 
