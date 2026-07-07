@@ -22,7 +22,7 @@
 <br/><br/>
 
 <!-- BADGES ROW 3 -->
-<a href="#"><img src="https://img.shields.io/badge/Status-Phase%206%20Complete-10b981?style=for-the-badge&logo=checkmarx&logoColor=white"/></a>
+<a href="#"><img src="https://img.shields.io/badge/Status-Phase%205.2%20Complete-10b981?style=for-the-badge&logo=checkmarx&logoColor=white"/></a>
 <a href="#"><img src="https://img.shields.io/badge/Screens-20%2B%20Premium%20UIs-f59e0b?style=for-the-badge&logo=figma&logoColor=white"/></a>
 <a href="#"><img src="https://img.shields.io/badge/Components-30%2B%20Reusable-8b5cf6?style=for-the-badge&logo=react&logoColor=white"/></a>
 <a href="#"><img src="https://img.shields.io/badge/AI-Groq%20Llama%203.3-00D4AA?style=for-the-badge&logo=google&logoColor=white"/></a>
@@ -70,9 +70,11 @@
 - [📁 Project Structure](#-project-structure)
 - [⚡ Quick Start](#-quick-start)
 - [🗺️ Navigation Flow](#️-navigation-flow)
-- [📊 Phase 1 Progress](#-phase-1-progress)
-- [🔥 Phase 2 Progress](#-phase-2-progress)
-- [🤖 Phase 3 Progress](#-phase-3-progress)
+- [📊 Phase 1 — Foundation & Auth](#-phase-1--foundation--authentication)
+- [🔥 Phase 2 — Resume & AI](#-phase-2--resume-platform--ai-intelligence)
+- [🤖 Phase 3 — Interview & Feedback](#-phase-3--ai-interview--feedback-engine)
+- [📈 Phase 4 — Analytics & Features](#-phase-4--analytics-features--stabilization)
+- [🚀 Phase 5 — Production & Polish](#-phase-5--production-polish--release)
 - [🔮 Roadmap](#-roadmap)
 - [📄 License](#-license)
 
@@ -368,9 +370,10 @@ git clone https://github.com/Pravesh0005/AIIC.git
 
 ---
 
-## 📊 Phase 1 Progress
+## 📊 Phase 1 — Foundation & Authentication
 
 ```diff
++ ✅ Phase 1.1: Project Foundation
 + ✅ Project Setup & Gradle Configuration
 + ✅ Version Catalog (libs.versions.toml)
 + ✅ Premium Dark Color Palette (60+ tokens)
@@ -381,58 +384,52 @@ git clone https://github.com/Pravesh0005/AIIC.git
 + ✅ Navigation Graph with Transitions
 + ✅ BaseViewModel + UiState + UiEvent
 + ✅ Repository Pattern (Domain + Data)
-+ ✅ DataStore Preferences
 + ✅ Splash Screen with Animations
 + ✅ 3-Page Onboarding Flow
-+ ✅ Login Screen (Email + Google)
-+ ✅ Register Screen (Full Form)
-+ ✅ Forgot Password Screen
 + ✅ Home Dashboard Shell
-+ ✅ Profile Screen
-+ ✅ Settings Screen
++ ✅ Profile & Settings Screens
 + ✅ 10+ Reusable Components
-```
-
----
-
-## 🔥 Phase 2 Progress
-
-```diff
++
++ ✅ Phase 1.2: Firebase Auth & Backend
 + ✅ Firebase BOM + Auth + Firestore + Storage + Analytics
-+ ✅ Google Sign-In + CredentialManager dependencies
++ ✅ Google Sign-In + CredentialManager
 + ✅ NetworkResult sealed class for type-safe API responses
-+ ✅ FirebaseAuthRepository (login, register, Google, reset, observe)
-+ ✅ FirestoreUserRepository (CRUD, real-time listener, merge writes)
++ ✅ FirebaseAuthRepository (login, register, Google, reset)
++ ✅ FirestoreUserRepository (CRUD, real-time listener)
 + ✅ SessionRepositoryImpl (DataStore-backed persistence)
 + ✅ 8 Use Cases (Login, Register, Reset, Logout, Google, etc.)
-+ ✅ LoginViewModel with validation + Firebase auth
-+ ✅ RegisterViewModel with 4-field validation + Firestore profile
-+ ✅ Rebuilt all Auth screens with production-grade UX
++ ✅ Production-grade Auth UI (Login, Register, Forgot Password)
 + ✅ AccountSetupScreen — career goals, skills, skip option
 + ✅ Complete Hilt DI module with Firebase singletons
 ```
 
 ---
 
-## 🤖 Phase 3 Progress
+## 🔥 Phase 2 — Resume Platform & AI Intelligence
 
 ```diff
-+ ✅ Phase 3A: Resume Platform Core
++ ✅ Phase 2.1: Resume Platform Core
 + ✅ File Picker Integration (PDF Uploads)
 + ✅ Firestore Resume Document Storage (Version History)
 + ✅ Cloud Storage Resume File Uploading
 + ✅ ResumeDetailScreen (Stats, Metadata, Actions)
-+ ✅ Phase 3B: AI Resume Intelligence Engine
++ ✅ ResumeDashboardScreen & ResumeHistoryScreen
++
++ ✅ Phase 2.2: AI Resume Intelligence Engine
 + ✅ Generative AI SDK Integration (Groq Llama 3.3)
 + ✅ Prompt Engineering Pipeline (Structured JSON constraints)
 + ✅ Real-Time ATS Score Engine
 + ✅ Skill Categorization & Keyword Gap Analysis
 + ✅ Actionable AI Recommendation Cards
++ ✅ Animated State Management (Analyzing, Success, Failed)
 ```
 
-## 🤖 Phase 4 Progress
+---
+
+## 🤖 Phase 3 — AI Interview & Feedback Engine
+
 ```diff
-+ ✅ Phase 4: AI Mock Interview Engine
++ ✅ Phase 3.1: AI Mock Interview Engine
 + ✅ Interview Setup Screen (Role, Difficulty, Configuration)
 + ✅ Interview Session Engine (State Machine for Interviews)
 + ✅ Generative AI Real-Time Answer Evaluation
@@ -440,45 +437,62 @@ git clone https://github.com/Pravesh0005/AIIC.git
 + ✅ Distraction-Free Interview UI with Live Timer
 + ✅ Interview Summary Dashboard
 + ✅ Firestore Session, Question, and Answer Tracking
-```
-
----
-
-## 📈 Phase 5 Progress
-```diff
-+ ✅ Phase 5.1: AI Feedback Engine
++
++ ✅ Phase 3.2: AI Feedback & Evaluation Engine
 + ✅ Real-Time AI Answer Evaluation & Scoring
 + ✅ AnswerFeedbackScreen (Strengths, Weaknesses, Improvements)
 + ✅ Actionable Session Summaries & Score Rings
 + ✅ Deterministic AI JSON Parsing Engine
-+ ✅ Phase 5.2: Analytics Dashboard
-+ ✅ Comprehensive Interview Report Screen
-+ ✅ Analytics Dashboard with performance tracking
-+ ✅ Phase 5.3: Stabilization & Repair
-+ ✅ @Singleton AnswerRepository + Firestore persistence
-+ ✅ Offline-first data model for session summaries
-+ ✅ Groq-Only Architecture for high availability
-+ ✅ Navigation Hardening & dead link removal
-+ ✅ Phase 5.4: ProctorAI Engine
-+ ✅ CameraX + MLKit eye tracking integration
-+ ✅ Interview permission gate system
-+ ✅ Phase 5.5: Interview Tips & Mastery
-+ ✅ Expert strategy cards with daily challenges
++ ✅ Target Role Context Injection
 ```
 
 ---
 
-## 🚀 Phase 6 Progress
+## 📈 Phase 4 — Analytics, Features & Stabilization
+
 ```diff
-+ ✅ Phase 6: Engine Stabilization & PDF Preview
-+ ✅ Native PDF Preview Engine (Android PdfRenderer)
-+ ✅ Pinch-to-zoom & double-tap zoom PDF viewer
++ ✅ Phase 4.1: Analytics Dashboard
++ ✅ Comprehensive Interview Report Screen
++ ✅ Analytics Dashboard with performance tracking
++ ✅ Smart practice time formatting
++
++ ✅ Phase 4.2: ProctorAI Engine (AI Live Interview)
++ ✅ CameraX + MLKit eye tracking integration
++ ✅ Interview permission gate system
++ ✅ AI Live Interview feature card on Home
++
++ ✅ Phase 4.3: Interview Tips & Mastery
++ ✅ Expert strategy cards with daily challenges
++
++ ✅ Phase 4.4: Stabilization & Repair
++ ✅ @Singleton AnswerRepository + Firestore persistence
++ ✅ Offline-first data model for session summaries
++ ✅ Groq-Only Architecture for high availability
++ ✅ Navigation Hardening & dead link removal
++ ✅ Resume Analysis cache-first persistence fix
++ ✅ API timeout & token limit tuning (4096 tokens, 45s)
+```
+
+---
+
+## 🚀 Phase 5 — Production Polish & Release
+
+```diff
++ ✅ Phase 5.1: Native PDF Preview Engine
++ ✅ PdfViewerViewModel with Firebase Storage download
++ ✅ PdfViewerScreen with pinch-to-zoom & double-tap zoom
 + ✅ Inline PDF preview in ResumeDetailScreen
-+ ✅ Smart practice time formatting (no raw float display)
-+ ✅ Resume Analysis persistence fix (cache-first loading)
-+ ✅ AI Live Interview feature card (replaced dead placeholder)
-+ ✅ API timeout & token limit tuning (4096 tokens, 45s timeout)
-+ ✅ Day → Phase naming convention migration
++ ✅ Animated download/rendering states
++
++ ✅ Phase 5.2: Engine Stabilization
++ ✅ Smart practice time formatting (eliminates 0.00802h bug)
++ ✅ Retrying vs Analyzing state separation in Resume Analysis
++ ✅ Phase naming convention migration (Day → Phase)
++
+- ⬚ Phase 5.3: Play Store Release (Upcoming)
+- ⬚ Final UI/UX polish pass
+- ⬚ ProGuard & R8 optimization
+- ⬚ Play Store listing & screenshots
 ```
 
 ---
@@ -486,18 +500,19 @@ git clone https://github.com/Pravesh0005/AIIC.git
 ## 🔮 Roadmap
 
 ```
-Phase 1    ██████████████████████████████ 100% — Foundation ✅
-Phase 2    ██████████████████████████████ 100% — Firebase Auth + Firestore + Session ✅
-Phase 3A   ██████████████████████████████ 100% — Resume Platform Foundation ✅
-Phase 3B   ██████████████████████████████ 100% — AI Resume Intelligence Engine ✅
-Phase 4    ██████████████████████████████ 100% — AI Mock Interview Engine ✅
-Phase 5.1  ██████████████████████████████ 100% — AI Feedback Engine ✅
-Phase 5.2  ██████████████████████████████ 100% — Analytics Dashboard ✅
-Phase 5.3  ██████████████████████████████ 100% — Stabilization & Repair ✅
-Phase 5.4  ██████████████████████████████ 100% — ProctorAI Engine ✅
-Phase 5.5  ██████████████████████████████ 100% — Interview Tips & Mastery ✅
-Phase 6    ██████████████████████████████ 100% — PDF Preview & Engine Stabilization ✅
-Phase 7    ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   0% — Polish & Play Store
+Phase 1.1  ██████████████████████████████ 100% — Project Foundation ✅
+Phase 1.2  ██████████████████████████████ 100% — Firebase Auth & Backend ✅
+Phase 2.1  ██████████████████████████████ 100% — Resume Platform Core ✅
+Phase 2.2  ██████████████████████████████ 100% — AI Resume Intelligence ✅
+Phase 3.1  ██████████████████████████████ 100% — AI Mock Interview Engine ✅
+Phase 3.2  ██████████████████████████████ 100% — AI Feedback Engine ✅
+Phase 4.1  ██████████████████████████████ 100% — Analytics Dashboard ✅
+Phase 4.2  ██████████████████████████████ 100% — ProctorAI Engine ✅
+Phase 4.3  ██████████████████████████████ 100% — Interview Tips & Mastery ✅
+Phase 4.4  ██████████████████████████████ 100% — Stabilization & Repair ✅
+Phase 5.1  ██████████████████████████████ 100% — PDF Preview Engine ✅
+Phase 5.2  ██████████████████████████████ 100% — Engine Stabilization ✅
+Phase 5.3  ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   0% — Play Store Release
 ```
 
 ---
