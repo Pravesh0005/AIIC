@@ -1,26 +1,92 @@
 package com.aiic.app.data.repository
 
+import android.util.Log
 import com.aiic.app.core.base.NetworkResult
 import com.aiic.app.core.base.getOrNull
 import com.aiic.app.domain.model.InterviewAnswer
 import com.aiic.app.domain.repository.GenerativeAiRepository
 import com.aiic.app.domain.repository.InterviewAnswerRepository
+import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class FirestoreInterviewAnswerRepository @Inject constructor(
+    private val firestore: FirebaseFirestore,
     private val generativeAiRepository: GenerativeAiRepository
 ) : InterviewAnswerRepository {
+
+    companion object { private const val TAG = "AIIC_ANS_REPO" }
 
     private val answersCache = mutableListOf<InterviewAnswer>()
 
     override suspend fun submitAnswer(answer: InterviewAnswer): NetworkResult<Unit> {
         answersCache.add(answer)
+        // Also persist to Firestore so AI summary can always read it
+        try {
+            firestore.collection("sessions")
+                .document(answer.sessionId)
+                .collection("answers")
+                .document(answer.answerId)
+                .set(mapOf(
+                    "answerId" to answer.answerId,
+                    "sessionId" to answer.sessionId,
+                    "questionId" to answer.questionId,
+                    "content" to answer.content,
+                    "responseTimeMs" to answer.responseTimeMs,
+                    "aiEvaluationScore" to answer.aiEvaluationScore,
+                    "submittedAt" to System.currentTimeMillis()
+                ))
+            Log.d(TAG, "submitAnswer: persisted to Firestore answerId=${answer.answerId}")
+        } catch (e: Exception) {
+            Log.e(TAG, "submitAnswer: Firestore persist failed (non-critical): ${e.message}")
+        }
         return NetworkResult.Success(Unit)
     }
 
     override suspend fun getAnswersForSession(sessionId: String): NetworkResult<List<InterviewAnswer>> {
+        // Return from in-memory cache first (fastest path)
         val sessionAnswers = answersCache.filter { it.sessionId == sessionId }
-        return NetworkResult.Success(sessionAnswers)
+        if (sessionAnswers.isNotEmpty()) {
+            Log.d(TAG, "getAnswersForSession: Returning ${sessionAnswers.size} answers from cache")
+            return NetworkResult.Success(sessionAnswers)
+        }
+
+        // Fallback: read from Firestore (covers cross-ViewModel / process-restart scenarios)
+        return try {
+            Log.d(TAG, "getAnswersForSession: Cache miss, fetching from Firestore for session=$sessionId")
+            val snapshot = firestore.collection("sessions")
+                .document(sessionId)
+                .collection("answers")
+                .get()
+                .await()
+
+            val firestoreAnswers = snapshot.documents.mapNotNull { doc ->
+                try {
+                    InterviewAnswer(
+                        answerId = doc.getString("answerId") ?: doc.id,
+                        sessionId = doc.getString("sessionId") ?: sessionId,
+                        questionId = doc.getString("questionId") ?: "",
+                        content = doc.getString("content") ?: "",
+                        responseTimeMs = doc.getLong("responseTimeMs") ?: 0L,
+                        aiEvaluationScore = (doc.getDouble("aiEvaluationScore") ?: 0.0).toFloat()
+                    )
+                } catch (e: Exception) {
+                    Log.e(TAG, "getAnswersForSession: Failed to parse doc ${doc.id}: ${e.message}")
+                    null
+                }
+            }
+            Log.d(TAG, "getAnswersForSession: Loaded ${firestoreAnswers.size} answers from Firestore")
+            // Populate cache for subsequent calls
+            answersCache.addAll(firestoreAnswers.filter { fsAnswer ->
+                answersCache.none { it.answerId == fsAnswer.answerId }
+            })
+            NetworkResult.Success(firestoreAnswers)
+        } catch (e: Exception) {
+            Log.e(TAG, "getAnswersForSession: Firestore fallback failed: ${e.message}")
+            NetworkResult.Success(emptyList())
+        }
     }
 
     override suspend fun evaluateAnswer(
