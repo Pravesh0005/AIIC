@@ -36,10 +36,11 @@ import androidx.compose.material.icons.rounded.AutoAwesome
 import androidx.compose.material.icons.rounded.EmojiEvents
 import androidx.compose.material.icons.rounded.LocalFireDepartment
 import androidx.compose.material.icons.rounded.Notifications
-import androidx.compose.material.icons.rounded.PlayArrow
 import androidx.compose.material.icons.rounded.Psychology
 import androidx.compose.material.icons.rounded.QuestionAnswer
 import androidx.compose.material.icons.rounded.TrendingUp
+import androidx.compose.material.icons.rounded.Videocam
+import androidx.compose.material.icons.rounded.Lightbulb
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -95,7 +96,8 @@ fun HomeScreen(
     onNavigateToLogin: () -> Unit = {},
     onNavigateToAnalytics: () -> Unit = {},
     onNavigateToSettings: () -> Unit = {},
-    onNavigateToProfile: () -> Unit = {}
+    onNavigateToProfile: () -> Unit = {},
+    onNavigateToTips: () -> Unit = {}
 ) {
     val state by viewModel.state.collectAsState()
     var selectedNav by rememberSaveable { mutableIntStateOf(0) }
@@ -154,7 +156,8 @@ fun HomeScreen(
                         onNavigateToResume = onNavigateToResume,
                         onNavigateToInterviewSetup = onNavigateToInterviewSetup,
                         onNavigateToAnalytics = { selectedNav = 1 },
-                        onNavigateToSettings = onNavigateToSettings
+                        onNavigateToSettings = onNavigateToSettings,
+                        onNavigateToTips = onNavigateToTips
                     )
                 1 -> com.aiic.app.presentation.feature_analytics.AnalyticsScreen(
                     interviewsCompleted = state.interviewsCompleted,
@@ -188,7 +191,8 @@ private fun HomeContent(
     onNavigateToResume: () -> Unit,
     onNavigateToInterviewSetup: () -> Unit,
     onNavigateToAnalytics: () -> Unit,
-    onNavigateToSettings: () -> Unit
+    onNavigateToSettings: () -> Unit,
+    onNavigateToTips: () -> Unit
 ) {
     LazyColumn(
         modifier = Modifier
@@ -199,7 +203,7 @@ private fun HomeContent(
     ) {
         item { HeroSection(state, onNavigateToProfile, onNavigateToResume, onNavigateToInterviewSetup) }
         item { StatsRow(state) }
-        item { QuickActions(onNavigateToResume, onNavigateToInterviewSetup, onNavigateToAnalytics, onNavigateToSettings) }
+        item { QuickActions(onNavigateToResume, onNavigateToInterviewSetup, onNavigateToAnalytics, onNavigateToSettings, onNavigateToTips) }
     }
 }
 
@@ -378,7 +382,8 @@ private fun QuickActions(
     onNavigateToResume: () -> Unit,
     onNavigateToInterviewSetup: () -> Unit,
     onNavigateToAnalytics: () -> Unit,
-    onNavigateToSettings: () -> Unit
+    onNavigateToSettings: () -> Unit,
+    onNavigateToTips: () -> Unit
 ) {
     Column {
         SectionHeader(title = "Quick Actions", subtitle = "Jump right in")
@@ -394,28 +399,34 @@ private fun QuickActions(
                 onClick = { onNavigateToInterviewSetup() }
             )
             FeatureCard(
-                icon = { Icon(Icons.Rounded.QuestionAnswer, null, tint = AIICTheme.colors.accent, modifier = Modifier.size(22.dp)) },
+                icon = { Icon(Icons.Rounded.Videocam, null, tint = AIICTheme.colors.accent, modifier = Modifier.size(22.dp)) },
+                title = "AI Live Interview",
+                description = "Camera + mic + eye tracking interview",
+                onClick = { onNavigateToInterviewSetup() }
+            )
+            FeatureCard(
+                icon = { Icon(Icons.Rounded.QuestionAnswer, null, tint = AIICTheme.colors.secondary, modifier = Modifier.size(22.dp)) },
                 title = "Resume ATS Scanner",
                 description = "Scan your resume for ATS score",
                 onClick = { onNavigateToResume() }
             )
             FeatureCard(
-                icon = { Icon(Icons.Rounded.TrendingUp, null, tint = AIICTheme.colors.secondary, modifier = Modifier.size(22.dp)) },
+                icon = { Icon(Icons.Rounded.TrendingUp, null, tint = AIICTheme.colors.tertiary, modifier = Modifier.size(22.dp)) },
                 title = "Analytics & Insights",
                 description = "Track your interview performance",
                 onClick = { onNavigateToAnalytics() }
             )
             FeatureCard(
-                icon = { Icon(Icons.Rounded.LocalFireDepartment, null, tint = AIICTheme.colors.warning, modifier = Modifier.size(22.dp)) },
+                icon = { Icon(Icons.Rounded.Lightbulb, null, tint = AIICTheme.colors.warning, modifier = Modifier.size(22.dp)) },
+                title = "Interview Tips",
+                description = "Expert strategies & daily challenges",
+                onClick = { onNavigateToTips() }
+            )
+            FeatureCard(
+                icon = { Icon(Icons.Rounded.LocalFireDepartment, null, tint = AIICTheme.colors.textTertiary, modifier = Modifier.size(22.dp)) },
                 title = "Settings",
                 description = "Language, theme, privacy & more",
                 onClick = { onNavigateToSettings() }
-            )
-            FeatureCard(
-                icon = { Icon(Icons.Rounded.PlayArrow, null, tint = AIICTheme.colors.textDisabled, modifier = Modifier.size(22.dp)) },
-                title = "Voice Interview Mode",
-                description = "Coming in Day 6 update",
-                onClick = { /* Reserved for Day 6 — Voice Interview */ }
             )
         }
     }
