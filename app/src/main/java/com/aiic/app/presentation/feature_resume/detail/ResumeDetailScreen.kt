@@ -42,6 +42,7 @@ import com.aiic.app.presentation.feature_resume.components.ResumeStatusChip
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import androidx.compose.ui.graphics.asImageBitmap
 
 @Composable
 fun ResumeDetailScreen(
@@ -176,23 +177,8 @@ private fun DetailContent(resume: Resume, onNavigateToAnalysis: () -> Unit) {
         
         Spacer(Modifier.height(24.dp))
         
-        // Future Proofing: Architecture ready for PDF Preview Component.
-        PremiumCard(modifier = Modifier.fillMaxWidth()) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(200.dp)
-                    .background(AIICTheme.colors.surfaceElevated),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = "PDF Preview Engine\n(Coming in Future Milestone)",
-                    style = AIICTheme.typography.bodyMedium,
-                    color = AIICTheme.colors.textTertiary,
-                    textAlign = androidx.compose.ui.text.style.TextAlign.Center
-                )
-            }
-        }
+        // PDF Preview Engine
+        InlinePdfPreview(resume = resume)
         
         Spacer(Modifier.height(48.dp))
     }
@@ -234,4 +220,123 @@ private fun formatBytes(bytes: Long): String {
     val units = arrayOf("B", "KB", "MB", "GB", "TB")
     val digitGroups = (Math.log10(bytes.toDouble()) / Math.log10(1024.0)).toInt()
     return String.format(Locale.getDefault(), "%.1f %s", bytes / Math.pow(1024.0, digitGroups.toDouble()), units[digitGroups])
+}
+
+@Composable
+private fun InlinePdfPreview(
+    resume: Resume,
+    viewModel: PdfViewerViewModel = hiltViewModel()
+) {
+    val state by viewModel.state.collectAsState()
+
+    androidx.compose.runtime.LaunchedEffect(resume.fileUrl) {
+        if (resume.fileUrl.isNotBlank()) {
+            viewModel.loadPdf(resume.fileUrl)
+        }
+    }
+
+    PremiumCard(modifier = Modifier.fillMaxWidth()) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        imageVector = Icons.Rounded.Description,
+                        contentDescription = null,
+                        tint = AIICTheme.colors.primary,
+                        modifier = Modifier.size(20.dp)
+                    )
+                    Spacer(Modifier.width(8.dp))
+                    Text(
+                        text = "PDF Preview",
+                        style = AIICTheme.typography.titleSmall,
+                        color = AIICTheme.colors.textPrimary,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                }
+                if (state is PdfViewerState.Success) {
+                    val total = (state as PdfViewerState.Success).totalPages
+                    Text(
+                        text = "$total page${if (total != 1) "s" else ""}",
+                        style = AIICTheme.typography.labelSmall,
+                        color = AIICTheme.colors.textTertiary
+                    )
+                }
+            }
+
+            Spacer(Modifier.height(12.dp))
+
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(320.dp)
+                    .clip(androidx.compose.foundation.shape.RoundedCornerShape(12.dp))
+                    .background(AIICTheme.colors.surfaceElevated),
+                contentAlignment = Alignment.Center
+            ) {
+                when (val s = state) {
+                    is PdfViewerState.Idle, is PdfViewerState.Downloading -> {
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            CircularProgressIndicator(
+                                color = AIICTheme.colors.primary,
+                                modifier = Modifier.size(28.dp),
+                                strokeWidth = 3.dp
+                            )
+                            Spacer(Modifier.height(8.dp))
+                            Text(
+                                text = "Loading preview...",
+                                style = AIICTheme.typography.bodySmall,
+                                color = AIICTheme.colors.textTertiary
+                            )
+                        }
+                    }
+                    is PdfViewerState.Rendering -> {
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            CircularProgressIndicator(
+                                progress = { s.progress },
+                                color = AIICTheme.colors.primary,
+                                modifier = Modifier.size(40.dp),
+                                strokeWidth = 3.dp
+                            )
+                            Spacer(Modifier.height(8.dp))
+                            Text(
+                                text = "Rendering page ${s.currentPage}/${s.totalPages}",
+                                style = AIICTheme.typography.bodySmall,
+                                color = AIICTheme.colors.textTertiary
+                            )
+                        }
+                    }
+                    is PdfViewerState.Success -> {
+                        if (s.pages.isNotEmpty()) {
+                            androidx.compose.foundation.Image(
+                                bitmap = s.pages[0].asImageBitmap(),
+                                contentDescription = "Resume preview",
+                                modifier = Modifier.fillMaxSize(),
+                                contentScale = androidx.compose.ui.layout.ContentScale.Crop
+                            )
+                        }
+                    }
+                    is PdfViewerState.Error -> {
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            Icon(
+                                imageVector = Icons.Rounded.Description,
+                                contentDescription = null,
+                                tint = AIICTheme.colors.textTertiary,
+                                modifier = Modifier.size(32.dp)
+                            )
+                            Spacer(Modifier.height(8.dp))
+                            Text(
+                                text = "Preview unavailable",
+                                style = AIICTheme.typography.bodySmall,
+                                color = AIICTheme.colors.textTertiary
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
