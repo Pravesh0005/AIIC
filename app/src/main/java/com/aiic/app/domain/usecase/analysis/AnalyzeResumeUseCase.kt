@@ -13,7 +13,7 @@ class AnalyzeResumeUseCase @Inject constructor(
     private val saveResumeAnalysisUseCase: SaveResumeAnalysisUseCase
 ) {
     /**
-     * Orchestrates the complete Day 3B AI Pipeline:
+     * Orchestrates the complete Phase 3B AI Pipeline:
      * 1. Extract Text from PDF
      * 2. Parse Text via LLM Intelligence Engine
      * 3. Save resulting analysis to Firestore
