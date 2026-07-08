@@ -59,8 +59,8 @@ fun InterviewSessionScreen(
     com.aiic.app.common.permissions.InterviewPermissionGate(
         requireMicrophone = requireMic,
         requireCamera = requireCamera,
-        onDenied = onNavigateBack
-    ) {
+        onDenied = onNavigateBack,
+        onAllGranted = {
 
     LaunchedEffect(viewModel.events) {
         viewModel.events.collect { event ->
@@ -91,8 +91,7 @@ fun InterviewSessionScreen(
                 )
             }
         }
-        return
-    }
+    } else {
 
     Scaffold(
         topBar = {
@@ -216,7 +215,9 @@ fun InterviewSessionScreen(
             Spacer(modifier = Modifier.height(16.dp))
         }
     }
-    } // end InterviewPermissionGate
+    } // end else
+    } // end onAllGranted
+    ) // end InterviewPermissionGate
 }
 
 @Composable
