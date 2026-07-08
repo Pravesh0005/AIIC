@@ -69,7 +69,7 @@ class CameraAnalysisManager(
 
                 val preview = Preview.Builder()
                     .build()
-                    .also { it.surfaceProvider = previewView.surfaceProvider }
+                    .also { it.setSurfaceProvider(previewView.surfaceProvider) }
 
                 val imageAnalysis = ImageAnalysis.Builder()
                     .setTargetResolution(Size(640, 480))
