@@ -170,7 +170,7 @@ fun AnalyticsDashboardScreen(
                     label = "Streak",
                     value = "${state.practiceStreak}",
                     unit = "days",
-                    icon = Icons.Rounded.LocalFire,
+                    icon = Icons.Rounded.Whatshot,
                     color = Color(0xFFE17055),
                     modifier = Modifier.weight(1f)
                 )
