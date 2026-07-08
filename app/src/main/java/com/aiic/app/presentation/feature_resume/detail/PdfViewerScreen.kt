@@ -266,6 +266,7 @@ private fun PdfPagesViewer(pages: List<Bitmap>, totalPages: Int) {
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun ZoomablePdfPage(bitmap: Bitmap, pageNumber: Int, totalPages: Int) {
     var scale by remember { mutableFloatStateOf(1f) }
