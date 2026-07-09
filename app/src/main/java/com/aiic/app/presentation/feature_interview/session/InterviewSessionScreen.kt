@@ -163,6 +163,15 @@ fun InterviewSessionScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
+            // ── Camera Preview ──
+            if (state.interviewMode == InterviewMode.VIDEO) {
+                CameraPreviewSection(
+                    viewModel = viewModel,
+                    modifier = Modifier.fillMaxWidth().height(240.dp)
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+            }
+
             // ── Voice Mode: Waveform + Transcript ──
             if (state.interviewMode == InterviewMode.VOICE || state.interviewMode == InterviewMode.VIDEO) {
                 VoiceInterviewSection(
@@ -505,5 +514,25 @@ private fun ActionBar(
                 Text("Submit", color = Color.White, fontWeight = FontWeight.Bold)
             }
         }
+    }
+}
+
+@Composable
+private fun CameraPreviewSection(
+    viewModel: InterviewSessionViewModel,
+    modifier: Modifier = Modifier
+) {
+    val lifecycleOwner = androidx.lifecycle.compose.LocalLifecycleOwner.current
+
+    PremiumCard(modifier = modifier) {
+        androidx.compose.ui.viewinterop.AndroidView(
+            factory = { context ->
+                androidx.camera.view.PreviewView(context).apply {
+                    scaleType = androidx.camera.view.PreviewView.ScaleType.FILL_CENTER
+                    viewModel.startCamera(lifecycleOwner, this)
+                }
+            },
+            modifier = Modifier.fillMaxSize()
+        )
     }
 }

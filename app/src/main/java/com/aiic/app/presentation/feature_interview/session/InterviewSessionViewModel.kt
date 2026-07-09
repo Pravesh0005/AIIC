@@ -125,6 +125,10 @@ class InterviewSessionViewModel @Inject constructor(
                         if (currentState.interviewMode != InterviewMode.TEXT) {
                             initializeSpeechRecognizer()
                         }
+                        // Initialize camera if needed
+                        if (currentState.interviewMode == InterviewMode.VIDEO) {
+                            initializeCamera()
+                        }
                     } else {
                         updateState { copy(isLoading = false, error = "No questions found.") }
                     }
@@ -178,6 +182,21 @@ class InterviewSessionViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    private var cameraManager: com.aiic.app.data.camera.CameraAnalysisManager? = null
+
+    private fun initializeCamera() {
+        cameraManager = com.aiic.app.data.camera.CameraAnalysisManager(application, bodyLanguageAnalyzer)
+        viewModelScope.launch {
+            cameraManager?.warning?.collect { warn ->
+                updateState { copy(cameraWarning = warn) }
+            }
+        }
+    }
+
+    fun startCamera(lifecycleOwner: androidx.lifecycle.LifecycleOwner, previewView: androidx.camera.view.PreviewView) {
+        cameraManager?.startCamera(lifecycleOwner, previewView)
     }
 
     private fun toggleVoiceRecording() {
