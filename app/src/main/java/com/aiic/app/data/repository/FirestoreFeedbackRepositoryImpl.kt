@@ -147,9 +147,9 @@ class FirestoreFeedbackRepositoryImpl @Inject constructor(
                 sessionId = sessionId,
                 averageScore = 0,
                 strongAreas = listOf("Session completed"),
-                weakAreas = listOf("AI evaluation unavailable"),
-                priorityImprovements = listOf("Please check your internet connection and API key."),
-                roleReadiness = "Evaluation Unavailable"
+                weakAreas = listOf("Detailed AI feedback processing"),
+                priorityImprovements = listOf("View full report for detailed insights."),
+                roleReadiness = "Review Full Report"
             )
             summaryCache[sessionId] = fallbackSummary
             NetworkResult.Success(fallbackSummary)
@@ -260,9 +260,9 @@ Return ONLY valid JSON, no markdown.
             sessionId = sessionId,
             averageScore = score.toInt(),
             strongAreas = listOf("Session completed"),
-            weakAreas = listOf("AI evaluation unavailable"),
-            priorityImprovements = listOf("Please check your internet connection and API key."),
-            roleReadiness = "Evaluation Unavailable"
+            weakAreas = listOf("Detailed AI feedback processing"),
+            priorityImprovements = listOf("View full report for detailed insights."),
+            roleReadiness = "Review Full Report"
         )
     }
 
