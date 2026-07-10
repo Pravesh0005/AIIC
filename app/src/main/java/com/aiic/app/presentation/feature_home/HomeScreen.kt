@@ -41,6 +41,8 @@ import androidx.compose.material.icons.rounded.QuestionAnswer
 import androidx.compose.material.icons.rounded.TrendingUp
 import androidx.compose.material.icons.rounded.Videocam
 import androidx.compose.material.icons.rounded.Lightbulb
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -319,11 +321,48 @@ private fun HeroSection(
                         color = AIICTheme.colors.textSecondary,
                     )
                     Spacer(Modifier.height(12.dp))
-                    PremiumButton(
-                        text = "Start Practice",
+                    // ── Shiny Golden "Start Practice" Button ──
+                    Button(
                         onClick = { onNavigateToInterviewSetup() },
-                        modifier = Modifier.width(160.dp),
-                    )
+                        modifier = Modifier
+                            .width(180.dp)
+                            .height(52.dp),
+                        shape = androidx.compose.foundation.shape.RoundedCornerShape(16.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
+                        contentPadding = PaddingValues()
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .background(
+                                    Brush.linearGradient(
+                                        listOf(
+                                            Color(0xFFFFD700),
+                                            Color(0xFFFFA500),
+                                            Color(0xFFFFD700)
+                                        )
+                                    ),
+                                    shape = androidx.compose.foundation.shape.RoundedCornerShape(16.dp)
+                                ),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Icon(
+                                    Icons.Rounded.AutoAwesome,
+                                    contentDescription = null,
+                                    tint = Color(0xFF1A1A2E),
+                                    modifier = Modifier.size(18.dp)
+                                )
+                                Spacer(Modifier.width(8.dp))
+                                Text(
+                                    "Start Practice",
+                                    color = Color(0xFF1A1A2E),
+                                    fontWeight = FontWeight.ExtraBold,
+                                    style = AIICTheme.typography.titleSmall
+                                )
+                            }
+                        }
+                    }
                 }
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     GradientText(
