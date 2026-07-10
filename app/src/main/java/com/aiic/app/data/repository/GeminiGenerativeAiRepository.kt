@@ -46,8 +46,8 @@ class GeminiGenerativeAiRepository @Inject constructor() : GenerativeAiRepositor
                     val url = java.net.URL("https://api.groq.com/openai/v1/chat/completions")
                     Log.d("AIIC_DEBUG", "callGroq: HTTP URL: $url")
                     val connection = url.openConnection() as java.net.HttpURLConnection
-                    connection.connectTimeout = 5000
-                    connection.readTimeout = 12000
+                    connection.connectTimeout = 10000
+                    connection.readTimeout = 30000
                     connection.requestMethod = "POST"
                     connection.setRequestProperty("Content-Type", "application/json")
                     connection.setRequestProperty("Authorization", "Bearer $groqKey")
@@ -59,7 +59,7 @@ class GeminiGenerativeAiRepository @Inject constructor() : GenerativeAiRepositor
                             mapOf("role" to "user", "content" to prompt)
                         ),
                         "temperature" to 0.7,
-                        "max_tokens" to 2048
+                        "max_tokens" to 8192
                     )
                     val bodyStr = gson.toJson(body)
 
@@ -115,8 +115,8 @@ class GeminiGenerativeAiRepository @Inject constructor() : GenerativeAiRepositor
                     val url = java.net.URL("https://api.groq.com/openai/v1/chat/completions")
                     Log.d("AIIC_DEBUG", "callGroqJson: HTTP URL: $url")
                     val connection = url.openConnection() as java.net.HttpURLConnection
-                    connection.connectTimeout = 5000
-                    connection.readTimeout = 12000
+                    connection.connectTimeout = 10000
+                    connection.readTimeout = 30000
                     connection.requestMethod = "POST"
                     connection.setRequestProperty("Content-Type", "application/json")
                     connection.setRequestProperty("Authorization", "Bearer $groqKey")
@@ -128,7 +128,7 @@ class GeminiGenerativeAiRepository @Inject constructor() : GenerativeAiRepositor
                             mapOf("role" to "user", "content" to prompt)
                         ),
                         "temperature" to 0.7,
-                        "max_tokens" to 4096,
+                        "max_tokens" to 8192,
                         "response_format" to mapOf("type" to "json_object")
                     )
                     val bodyStr = gson.toJson(body)
