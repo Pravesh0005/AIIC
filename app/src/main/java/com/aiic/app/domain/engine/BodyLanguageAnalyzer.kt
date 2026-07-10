@@ -50,20 +50,25 @@ class BodyLanguageAnalyzer @Inject constructor() {
     }
 
     fun getLatestWarning(): String? {
-        return if (frames.isNotEmpty() && !frames.last().faceDetected) {
+        if (frames.isEmpty()) return null
+        // Only show "Face not detected" if the last 5 frames all missed face detection
+        // This avoids false positives with glasses, partial face, etc.
+        val recentFrames = frames.takeLast(5)
+        val allMissed = recentFrames.size >= 5 && recentFrames.all { !it.faceDetected }
+        return if (allMissed) {
             "Face not detected"
-        } else if (frames.isNotEmpty() && frames.last().lightingQuality == LightingQuality.TOO_DARK) {
+        } else if (frames.last().lightingQuality == LightingQuality.TOO_DARK) {
             "Too dark"
-        } else if (frames.isNotEmpty() && frames.last().multipleFaces) {
+        } else if (frames.last().multipleFaces) {
             "Multiple faces"
-        } else if (frames.isNotEmpty()) {
+        } else {
             val last = frames.last()
             when {
                 abs(last.headEulerAngleX) > LOOKING_DOWN_X_THRESHOLD -> "Looking down"
                 abs(last.headEulerAngleY) > LOOKING_SIDEWAYS_Y_THRESHOLD -> "Looking away"
                 else -> null
             }
-        } else null
+        }
     }
 
     fun generateReport(): BodyLanguageReport {
