@@ -20,7 +20,7 @@ class SpeechRecognizerManager(
 ) {
     companion object {
         private const val TAG = "AIIC_SPEECH"
-        private const val SILENCE_TIMEOUT_MS = 3000L
+        private const val SILENCE_TIMEOUT_MS = 5000L
     }
 
     sealed interface SpeechState {
@@ -203,8 +203,9 @@ class SpeechRecognizerManager(
 
             when (error) {
                 SpeechRecognizer.ERROR_NO_MATCH,
-                SpeechRecognizer.ERROR_SPEECH_TIMEOUT -> {
-                    // Silence detected — auto restart if still active
+                SpeechRecognizer.ERROR_SPEECH_TIMEOUT,
+                SpeechRecognizer.ERROR_AUDIO -> {
+                    // Silence/audio glitch detected — auto restart if still active
                     _state.value = SpeechState.SilenceDetected
                     restartListening()
                 }
