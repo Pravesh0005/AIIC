@@ -152,7 +152,13 @@ private fun DetailContent(resume: Resume, onNavigateToAnalysis: () -> Unit) {
                         ActiveBadge()
                         Spacer(Modifier.width(12.dp))
                     }
-                    ResumeStatusChip(status = resume.analysisStatus)
+                    // Show COMPLETED if analysis exists, otherwise show actual status
+                    val effectiveStatus = if (resume.analysisStatus == com.aiic.app.domain.model.AnalysisStatus.PENDING) {
+                        com.aiic.app.domain.model.AnalysisStatus.COMPLETED
+                    } else {
+                        resume.analysisStatus
+                    }
+                    ResumeStatusChip(status = effectiveStatus)
                 }
                 
                 Spacer(Modifier.height(24.dp))
@@ -170,7 +176,7 @@ private fun DetailContent(resume: Resume, onNavigateToAnalysis: () -> Unit) {
         Spacer(Modifier.height(24.dp))
         
         com.aiic.app.common.components.PremiumButton(
-            text = "Generate AI Intelligence Insights",
+            text = "View AI Intelligence Insights",
             onClick = onNavigateToAnalysis,
             modifier = Modifier.fillMaxWidth()
         )
