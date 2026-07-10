@@ -340,6 +340,9 @@ private fun VoiceInterviewSection(
     onToggleRecording: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    var isEditing by remember { mutableStateOf(false) }
+    var editableText by remember(transcript) { mutableStateOf(transcript) }
+
     Column(modifier = modifier) {
         // Waveform
         VoiceWaveform(
@@ -349,9 +352,33 @@ private fun VoiceInterviewSection(
             barColorSecondary = AIICTheme.colors.accent
         )
 
-        Spacer(Modifier.height(16.dp))
+        Spacer(Modifier.height(12.dp))
 
-        // Transcript area
+        // "Your Answer" label + Edit button
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = "Your Answer",
+                style = AIICTheme.typography.titleMedium,
+                color = AIICTheme.colors.textSecondary,
+                fontWeight = FontWeight.SemiBold
+            )
+            TextButton(onClick = { isEditing = !isEditing }) {
+                Text(
+                    text = if (isEditing) "Done" else "Edit",
+                    style = AIICTheme.typography.labelMedium,
+                    color = AIICTheme.colors.primary,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+        }
+
+        Spacer(Modifier.height(4.dp))
+
+        // Transcript area - editable or read-only
         PremiumCard(
             modifier = Modifier
                 .fillMaxWidth()
@@ -369,14 +396,33 @@ private fun VoiceInterviewSection(
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.padding(bottom = 8.dp)
                 )
-                Text(
-                    text = if (transcript.isBlank()) {
-                        if (isRecording) "Listening... Start speaking." else "Tap the mic to start speaking."
-                    } else transcript,
-                    style = AIICTheme.typography.bodyLarge,
-                    color = if (transcript.isBlank()) AIICTheme.colors.textTertiary else AIICTheme.colors.textPrimary,
-                    lineHeight = 24.sp
-                )
+                if (isEditing) {
+                    OutlinedTextField(
+                        value = editableText,
+                        onValueChange = { editableText = it },
+                        modifier = Modifier.fillMaxWidth(),
+                        textStyle = AIICTheme.typography.bodyLarge.copy(
+                            color = AIICTheme.colors.textPrimary,
+                            lineHeight = 24.sp
+                        ),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = AIICTheme.colors.primary,
+                            unfocusedBorderColor = AIICTheme.colors.borderSubtle,
+                            cursorColor = AIICTheme.colors.primary
+                        ),
+                        placeholder = { Text("Edit your answer...", color = AIICTheme.colors.textTertiary) },
+                        shape = RoundedCornerShape(12.dp)
+                    )
+                } else {
+                    Text(
+                        text = if (transcript.isBlank()) {
+                            if (isRecording) "Listening... Start speaking." else "Tap the mic to start speaking."
+                        } else transcript,
+                        style = AIICTheme.typography.bodyLarge,
+                        color = if (transcript.isBlank()) AIICTheme.colors.textTertiary else AIICTheme.colors.textPrimary,
+                        lineHeight = 24.sp
+                    )
+                }
             }
         }
     }
