@@ -6,6 +6,7 @@ import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -21,23 +22,40 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.ArrowForward
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.aiic.app.core.theme.AIICTheme
 
+/**
+ * ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ *  AIIC Design System — Reusable Components
+ *  Matching official design reference boards.
+ * ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ */
+
+// ── PremiumButton ──────────────────────────────────
+// Blue gradient button with arrow, 56dp height, pill shape
+// Reference: Login "Sign In →", Register "Create Account →"
 @Composable
 fun PremiumButton(
     text: String,
@@ -45,10 +63,17 @@ fun PremiumButton(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     isLoading: Boolean = false,
+    showArrow: Boolean = true,
     containerColor: Color = AIICTheme.colors.primary,
     contentColor: Color = AIICTheme.colors.textOnPrimary,
     content: @Composable (() -> Unit)? = null,
 ) {
+    val gradientBrush = Brush.horizontalGradient(
+        colors = listOf(
+            AIICTheme.colors.gradientPrimaryStart,
+            AIICTheme.colors.gradientPrimaryEnd,
+        )
+    )
 
     Button(
         onClick = onClick,
@@ -56,7 +81,7 @@ fun PremiumButton(
             .fillMaxWidth()
             .height(56.dp),
         enabled = enabled && !isLoading,
-        shape = AIICTheme.shapes.button,
+        shape = RoundedCornerShape(16.dp),
         colors = ButtonDefaults.buttonColors(
             containerColor = containerColor,
             contentColor = contentColor,
@@ -89,16 +114,34 @@ fun PremiumButton(
                         color = contentColor,
                     )
                 }
-                else -> Text(
-                    text = text,
-                    style = AIICTheme.typography.button,
-                    color = contentColor,
-                )
+                else -> Row(
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(
+                        text = text,
+                        style = AIICTheme.typography.button,
+                        color = contentColor,
+                        fontWeight = FontWeight.Medium,
+                    )
+                    if (showArrow) {
+                        Spacer(Modifier.width(8.dp))
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Rounded.ArrowForward,
+                            contentDescription = null,
+                            tint = contentColor,
+                            modifier = Modifier.size(20.dp),
+                        )
+                    }
+                }
             }
         }
     }
 }
 
+// ── PremiumCard ──────────────────────────────────
+// Dark card with subtle blue-tinted border, 16dp radius
+// Reference: All cards across screens
 @Composable
 fun PremiumCard(
     modifier: Modifier = Modifier,
@@ -107,15 +150,51 @@ fun PremiumCard(
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .clip(AIICTheme.shapes.card)
-            .background(AIICTheme.colors.surfaceElevated)
-            .border(1.dp, AIICTheme.colors.border, AIICTheme.shapes.card)
+            .clip(RoundedCornerShape(16.dp))
+            .background(AIICTheme.colors.surface)
+            .border(
+                width = 1.dp,
+                color = AIICTheme.colors.border,
+                shape = RoundedCornerShape(16.dp)
+            )
             .padding(AIICTheme.spacing.cardPadding),
     ) {
         content()
     }
 }
 
+// ── GlowCard ──────────────────────────────────
+// Card with neon blue glow border effect
+@Composable
+fun GlowCard(
+    modifier: Modifier = Modifier,
+    glowColor: Color = AIICTheme.colors.glowBlue,
+    content: @Composable () -> Unit,
+) {
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(16.dp))
+            .drawBehind {
+                // Outer glow
+                drawRoundRect(
+                    color = glowColor.copy(alpha = 0.15f),
+                    cornerRadius = androidx.compose.ui.geometry.CornerRadius(16.dp.toPx()),
+                )
+            }
+            .background(AIICTheme.colors.surface)
+            .border(
+                width = 1.dp,
+                color = glowColor.copy(alpha = 0.4f),
+                shape = RoundedCornerShape(16.dp)
+            )
+            .padding(AIICTheme.spacing.cardPadding),
+    ) {
+        content()
+    }
+}
+
+// ── SectionHeader ──────────────────────────────────
 @Composable
 fun SectionHeader(
     title: String,
@@ -136,6 +215,7 @@ fun SectionHeader(
                 text = title,
                 style = AIICTheme.typography.titleMedium,
                 color = AIICTheme.colors.textPrimary,
+                fontWeight = FontWeight.SemiBold,
             )
             if (subtitle != null) {
                 Text(
@@ -149,16 +229,18 @@ fun SectionHeader(
             Text(
                 text = action,
                 style = AIICTheme.typography.labelMedium,
-                color = AIICTheme.colors.primary,
+                color = AIICTheme.colors.secondary,
                 fontWeight = FontWeight.SemiBold,
                 modifier = Modifier
                     .clip(AIICTheme.shapes.small)
+                    .clickable(onClick = onAction)
                     .padding(horizontal = 8.dp, vertical = 4.dp),
             )
         }
     }
 }
 
+// ── LoadingShimmer ──────────────────────────────────
 @Composable
 fun LoadingShimmer(
     modifier: Modifier = Modifier,
@@ -189,11 +271,12 @@ fun LoadingShimmer(
         modifier = modifier
             .fillMaxWidth()
             .height(height)
-            .clip(AIICTheme.shapes.card)
+            .clip(RoundedCornerShape(16.dp))
             .background(shimmerBrush),
     )
 }
 
+// ── ShimmerList ──────────────────────────────────
 @Composable
 fun ShimmerList(
     count: Int = 3,
@@ -209,6 +292,7 @@ fun ShimmerList(
     }
 }
 
+// ── EmptyStateView ──────────────────────────────────
 @Composable
 fun EmptyStateView(
     title: String,
@@ -244,6 +328,7 @@ fun EmptyStateView(
     }
 }
 
+// ── ErrorStateView ──────────────────────────────────
 @Composable
 fun ErrorStateView(
     message: String,
@@ -275,10 +360,13 @@ fun ErrorStateView(
             modifier = Modifier.width(180.dp),
             containerColor = AIICTheme.colors.error,
             contentColor = AIICTheme.colors.textPrimary,
+            showArrow = false,
         )
     }
 }
 
+// ── AppLogo ──────────────────────────────────
+// Blue gradient circle with "AI" text — matches logo system
 @Composable
 fun AppLogo(
     modifier: Modifier = Modifier,
@@ -308,11 +396,12 @@ fun AppLogo(
     }
 }
 
+// ── GradientText ──────────────────────────────────
 @Composable
 fun GradientText(
     text: String,
     modifier: Modifier = Modifier,
-    style: androidx.compose.ui.text.TextStyle = AIICTheme.typography.displayMedium,
+    style: TextStyle = AIICTheme.typography.displayMedium,
     colors: List<Color>? = null,
 ) {
     Text(
@@ -324,6 +413,7 @@ fun GradientText(
     )
 }
 
+// ── ScoreCard ──────────────────────────────────
 @Composable
 fun ScoreCard(
     title: String,
@@ -356,6 +446,7 @@ fun ScoreCard(
     }
 }
 
+// ── FeatureCard ──────────────────────────────────
 @Composable
 fun FeatureCard(
     icon: @Composable () -> Unit,
@@ -369,7 +460,7 @@ fun FeatureCard(
             Box(
                 modifier = Modifier
                     .size(44.dp)
-                    .clip(AIICTheme.shapes.medium)
+                    .clip(RoundedCornerShape(12.dp))
                     .background(AIICTheme.colors.primaryContainer),
                 contentAlignment = Alignment.Center,
             ) {
@@ -392,6 +483,8 @@ fun FeatureCard(
     }
 }
 
+// ── GoogleSignInButton ──────────────────────────────────
+// Outlined button with Google icon — matches design reference
 @Composable
 fun GoogleSignInButton(
     text: String,
@@ -399,18 +492,18 @@ fun GoogleSignInButton(
     modifier: Modifier = Modifier,
     isLoading: Boolean = false,
 ) {
-    androidx.compose.material3.OutlinedButton(
+    OutlinedButton(
         onClick = onClick,
         modifier = modifier
             .fillMaxWidth()
             .height(56.dp),
         enabled = !isLoading,
-        shape = AIICTheme.shapes.button,
-        colors = androidx.compose.material3.ButtonDefaults.outlinedButtonColors(
+        shape = RoundedCornerShape(16.dp),
+        colors = ButtonDefaults.outlinedButtonColors(
             containerColor = Color.Transparent,
             contentColor = AIICTheme.colors.textPrimary,
         ),
-        border = androidx.compose.foundation.BorderStroke(1.dp, AIICTheme.colors.border),
+        border = BorderStroke(1.dp, AIICTheme.colors.border),
         contentPadding = PaddingValues(horizontal = 16.dp),
     ) {
         if (isLoading) {
@@ -420,7 +513,7 @@ fun GoogleSignInButton(
                 strokeWidth = 2.dp,
             )
         } else {
-            androidx.compose.material3.Icon(
+            Icon(
                 painter = androidx.compose.ui.res.painterResource(id = com.aiic.app.R.drawable.ic_google),
                 contentDescription = "Google Logo",
                 modifier = Modifier.size(24.dp),
@@ -433,5 +526,35 @@ fun GoogleSignInButton(
                 color = AIICTheme.colors.textPrimary,
             )
         }
+    }
+}
+
+// ── StatItem ──────────────────────────────────
+// Individual stat display (Day Streak, Practice Time, etc.)
+@Composable
+fun StatItem(
+    icon: @Composable () -> Unit,
+    value: String,
+    label: String,
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
+    ) {
+        icon()
+        Spacer(Modifier.height(4.dp))
+        Text(
+            text = value,
+            style = AIICTheme.typography.titleMedium,
+            color = AIICTheme.colors.textPrimary,
+            fontWeight = FontWeight.Bold,
+        )
+        Text(
+            text = label,
+            style = AIICTheme.typography.labelSmall,
+            color = AIICTheme.colors.textTertiary,
+        )
     }
 }
