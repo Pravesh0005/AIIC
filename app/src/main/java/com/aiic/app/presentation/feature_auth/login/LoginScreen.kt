@@ -3,6 +3,7 @@ package com.aiic.app.presentation.feature_auth.login
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.slideInVertically
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -37,18 +38,28 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.aiic.app.R
 import com.aiic.app.common.components.AIICTextField
+import com.aiic.app.common.components.GoogleSignInButton
 import com.aiic.app.common.components.PremiumButton
 import com.aiic.app.core.base.UiEvent
 import com.aiic.app.core.theme.AIICTheme
 import kotlinx.coroutines.delay
 
+/**
+ * Login Screen — Pixel-perfect match to Design Reference #3
+ * Layout: Logo → "AIIC" → "AI Interview Coach" → "Welcome Back!" →
+ *         subtitle → Email field → Password field → Forgot Password →
+ *         "Sign In →" → divider → "Continue with Google" → "Sign Up"
+ */
 @Composable
 fun LoginScreen(
     onNavigateToRegister: () -> Unit,
@@ -61,7 +72,7 @@ fun LoginScreen(
     var visibleItems by remember { mutableIntStateOf(0) }
 
     LaunchedEffect(Unit) {
-        repeat(6) { delay(80); visibleItems++ }
+        repeat(8) { delay(80); visibleItems++ }
     }
 
     LaunchedEffect(Unit) {
@@ -85,104 +96,75 @@ fun LoginScreen(
                 .statusBarsPadding()
                 .verticalScroll(rememberScrollState())
                 .padding(horizontal = 24.dp)
-                .padding(top = 40.dp, bottom = 40.dp),
+                .padding(top = 48.dp, bottom = 40.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            // Header
-            AnimatedVisibility(visibleItems > 0, enter = fadeIn() + slideInVertically { -20 }) {
+            // ── Logo Section ──
+            AnimatedVisibility(visibleItems > 0, enter = fadeIn() + slideInVertically { -30 }) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text(
-                        text = "Welcome Back",
-                        style = AIICTheme.typography.displayMedium,
-                        color = AIICTheme.colors.textPrimary,
-                        fontWeight = FontWeight.Bold,
+                    // AIIC Logo
+                    Image(
+                        painter = painterResource(id = R.drawable.ic_launcher_foreground),
+                        contentDescription = "AIIC Logo",
+                        modifier = Modifier.size(80.dp),
                     )
                     Spacer(Modifier.height(8.dp))
                     Text(
-                        text = "Sign in to your account",
-                        style = AIICTheme.typography.bodyLarge,
+                        text = "AIIC",
+                        style = AIICTheme.typography.headlineLarge,
+                        color = AIICTheme.colors.textPrimary,
+                        fontWeight = FontWeight.Bold,
+                    )
+                    Text(
+                        text = "AI Interview Coach",
+                        style = AIICTheme.typography.bodySmall,
                         color = AIICTheme.colors.textSecondary,
                     )
                 }
             }
 
-            Spacer(Modifier.height(40.dp))
+            Spacer(Modifier.height(32.dp))
 
-            // Google Button (Top Priority)
-            AnimatedVisibility(visibleItems > 1, enter = fadeIn() + slideInVertically { 20 }) {
-                val context = androidx.compose.ui.platform.LocalContext.current
-                val googleSignInLauncher = androidx.activity.compose.rememberLauncherForActivityResult(
-                    contract = androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult()
-                ) { result ->
-                    val task = com.google.android.gms.auth.api.signin.GoogleSignIn.getSignedInAccountFromIntent(result.data)
-                    try {
-                        val account = task.getResult(com.google.android.gms.common.api.ApiException::class.java)
-                        account?.idToken?.let { idToken ->
-                            viewModel.onAction(LoginAction.GoogleSignInSuccess(idToken))
-                        }
-                    } catch (e: Exception) {
-                        viewModel.onAction(LoginAction.GoogleSignInFailure(e.message ?: "Google Sign-In Failed"))
-                    }
-                }
-
-                com.aiic.app.common.components.GoogleSignInButton(
-                    text = "Continue with Google",
-                    onClick = { 
-                        val gso = com.google.android.gms.auth.api.signin.GoogleSignInOptions.Builder(com.google.android.gms.auth.api.signin.GoogleSignInOptions.DEFAULT_SIGN_IN)
-                            .requestIdToken(context.getString(com.aiic.app.R.string.default_web_client_id))
-                            .requestEmail()
-                            .build()
-                        val googleSignInClient = com.google.android.gms.auth.api.signin.GoogleSignIn.getClient(context, gso)
-                        googleSignInClient.signOut().addOnCompleteListener {
-                            googleSignInLauncher.launch(googleSignInClient.signInIntent)
-                        }
-                    },
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
-
-            // Divider
-            AnimatedVisibility(visibleItems > 2, enter = fadeIn()) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 24.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    HorizontalDivider(
-                        modifier = Modifier.weight(1f),
-                        color = AIICTheme.colors.border,
-                    )
+            // ── Welcome Text ──
+            AnimatedVisibility(visibleItems > 1, enter = fadeIn() + slideInVertically { -20 }) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Text(
-                        text = "or",
-                        style = AIICTheme.typography.labelMedium,
-                        color = AIICTheme.colors.textTertiary,
-                        modifier = Modifier.padding(horizontal = 16.dp)
+                        text = "Welcome Back!",
+                        style = AIICTheme.typography.headlineLarge,
+                        color = AIICTheme.colors.textPrimary,
+                        fontWeight = FontWeight.Bold,
                     )
-                    HorizontalDivider(
-                        modifier = Modifier.weight(1f),
-                        color = AIICTheme.colors.border,
+                    Spacer(Modifier.height(8.dp))
+                    Text(
+                        text = "Sign in to continue your interview journey",
+                        style = AIICTheme.typography.bodyMedium,
+                        color = AIICTheme.colors.textSecondary,
+                        textAlign = TextAlign.Center,
                     )
                 }
             }
 
-            // Form
-            AnimatedVisibility(visibleItems > 3, enter = fadeIn() + slideInVertically { 20 }) {
+            Spacer(Modifier.height(32.dp))
+
+            // ── Form Fields ──
+            AnimatedVisibility(visibleItems > 2, enter = fadeIn() + slideInVertically { 20 }) {
                 Column(verticalArrangement = Arrangement.spacedBy(20.dp)) {
+                    // Email
                     AIICTextField(
                         value = state.email,
                         onValueChange = { viewModel.onAction(LoginAction.UpdateEmail(it)) },
-                        label = "EMAIL",
-                        placeholder = "you@example.com",
+                        label = "Email",
+                        placeholder = "Enter your email",
                         isError = state.emailError != null,
                         errorMessage = state.emailError,
                         keyboardType = KeyboardType.Email,
                     )
 
+                    // Password
                     AIICTextField(
                         value = state.password,
                         onValueChange = { viewModel.onAction(LoginAction.UpdatePassword(it)) },
-                        label = "PASSWORD",
+                        label = "Password",
                         placeholder = "Enter your password",
                         isError = state.passwordError != null,
                         errorMessage = state.passwordError,
@@ -202,15 +184,17 @@ fun LoginScreen(
                         keyboardType = KeyboardType.Password,
                     )
 
+                    // Forgot Password
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.End,
                     ) {
                         TextButton(onClick = onNavigateToForgotPassword) {
                             Text(
-                                text = "Forgot password?",
+                                text = "Forgot Password?",
                                 style = AIICTheme.typography.bodySmall,
-                                color = AIICTheme.colors.primary,
+                                color = AIICTheme.colors.secondary,
+                                fontWeight = FontWeight.Medium,
                             )
                         }
                     }
@@ -219,21 +203,84 @@ fun LoginScreen(
 
             Spacer(Modifier.height(24.dp))
 
-            // Login Button
-            AnimatedVisibility(visibleItems > 4, enter = fadeIn() + slideInVertically { 20 }) {
+            // ── Sign In Button ──
+            AnimatedVisibility(visibleItems > 3, enter = fadeIn() + slideInVertically { 20 }) {
                 PremiumButton(
                     text = "Sign In",
                     onClick = { viewModel.onAction(LoginAction.Login) },
                     enabled = !state.isLoading,
                     isLoading = state.isLoading,
+                    showArrow = true,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+            }
+
+            Spacer(Modifier.height(24.dp))
+
+            // ── Divider ──
+            AnimatedVisibility(visibleItems > 4, enter = fadeIn()) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 4.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    HorizontalDivider(
+                        modifier = Modifier.weight(1f),
+                        color = AIICTheme.colors.border,
+                    )
+                    Text(
+                        text = "or continue with",
+                        style = AIICTheme.typography.labelSmall,
+                        color = AIICTheme.colors.textTertiary,
+                        modifier = Modifier.padding(horizontal = 16.dp)
+                    )
+                    HorizontalDivider(
+                        modifier = Modifier.weight(1f),
+                        color = AIICTheme.colors.border,
+                    )
+                }
+            }
+
+            Spacer(Modifier.height(24.dp))
+
+            // ── Google Sign In ──
+            AnimatedVisibility(visibleItems > 5, enter = fadeIn() + slideInVertically { 20 }) {
+                val context = androidx.compose.ui.platform.LocalContext.current
+                val googleSignInLauncher = androidx.activity.compose.rememberLauncherForActivityResult(
+                    contract = androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult()
+                ) { result ->
+                    val task = com.google.android.gms.auth.api.signin.GoogleSignIn.getSignedInAccountFromIntent(result.data)
+                    try {
+                        val account = task.getResult(com.google.android.gms.common.api.ApiException::class.java)
+                        account?.idToken?.let { idToken ->
+                            viewModel.onAction(LoginAction.GoogleSignInSuccess(idToken))
+                        }
+                    } catch (e: Exception) {
+                        viewModel.onAction(LoginAction.GoogleSignInFailure(e.message ?: "Google Sign-In Failed"))
+                    }
+                }
+
+                GoogleSignInButton(
+                    text = "Continue with Google",
+                    onClick = {
+                        val gso = com.google.android.gms.auth.api.signin.GoogleSignInOptions.Builder(com.google.android.gms.auth.api.signin.GoogleSignInOptions.DEFAULT_SIGN_IN)
+                            .requestIdToken(context.getString(R.string.default_web_client_id))
+                            .requestEmail()
+                            .build()
+                        val googleSignInClient = com.google.android.gms.auth.api.signin.GoogleSignIn.getClient(context, gso)
+                        googleSignInClient.signOut().addOnCompleteListener {
+                            googleSignInLauncher.launch(googleSignInClient.signInIntent)
+                        }
+                    },
                     modifier = Modifier.fillMaxWidth()
                 )
             }
 
             Spacer(Modifier.height(32.dp))
 
-            // Register Link
-            AnimatedVisibility(visibleItems > 5, enter = fadeIn()) {
+            // ── Register Link ──
+            AnimatedVisibility(visibleItems > 6, enter = fadeIn()) {
                 Row(
                     horizontalArrangement = Arrangement.Center,
                     modifier = Modifier.fillMaxWidth(),
@@ -244,9 +291,9 @@ fun LoginScreen(
                         color = AIICTheme.colors.textTertiary,
                     )
                     Text(
-                        text = "Create one",
+                        text = "Sign Up",
                         style = AIICTheme.typography.bodyMedium,
-                        color = AIICTheme.colors.primary,
+                        color = AIICTheme.colors.secondary,
                         fontWeight = FontWeight.SemiBold,
                         modifier = Modifier.clickable { onNavigateToRegister() },
                     )
