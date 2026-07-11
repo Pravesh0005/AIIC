@@ -126,28 +126,7 @@ class SpeechRecognizerManager(
 
     fun getSilenceDurationMs(): Long = totalSilenceMs
 
-    /**
-     * Restarts listening after a final result to continue capturing multi-sentence answers.
-     */
-    private fun restartListening() {
-        if (_isActive.value) {
-            try {
-                speechRecognizer?.cancel()
-                val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
-                    putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
-                    putExtra(RecognizerIntent.EXTRA_LANGUAGE, "en-US")
-                    putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, true)
-                    putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 1)
-                    putExtra(RecognizerIntent.EXTRA_SPEECH_INPUT_COMPLETE_SILENCE_LENGTH_MILLIS, SILENCE_TIMEOUT_MS)
-                    putExtra(RecognizerIntent.EXTRA_SPEECH_INPUT_POSSIBLY_COMPLETE_SILENCE_LENGTH_MILLIS, SILENCE_TIMEOUT_MS)
-                }
-                speechRecognizer?.startListening(intent)
-                isListening = true
-            } catch (e: Exception) {
-                Log.e(TAG, "Restart failed: ${e.message}")
-            }
-        }
-    }
+    // Auto-restart removed for manual control
 
     private fun createListener() = object : RecognitionListener {
         override fun onReadyForSpeech(params: Bundle?) {
@@ -205,17 +184,16 @@ class SpeechRecognizerManager(
                 SpeechRecognizer.ERROR_NO_MATCH,
                 SpeechRecognizer.ERROR_SPEECH_TIMEOUT,
                 SpeechRecognizer.ERROR_AUDIO -> {
-                    // Silence/audio glitch detected — auto restart if still active
                     _state.value = SpeechState.SilenceDetected
-                    restartListening()
-                }
-                SpeechRecognizer.ERROR_RECOGNIZER_BUSY -> {
-                    // Retry after brief delay
-                    restartListening()
+                    isListening = false
+                    _isActive.value = false
+                    _rmsLevel.value = 0f
                 }
                 else -> {
                     _state.value = SpeechState.Error(msg, error)
                     isListening = false
+                    _isActive.value = false
+                    _rmsLevel.value = 0f
                 }
             }
         }
@@ -240,8 +218,10 @@ class SpeechRecognizerManager(
                 }
             }
 
-            // Auto-restart to continue capturing
-            restartListening()
+            // Stopped naturally
+            isListening = false
+            _isActive.value = false
+            _rmsLevel.value = 0f
         }
 
         override fun onPartialResults(partialResults: Bundle?) {
