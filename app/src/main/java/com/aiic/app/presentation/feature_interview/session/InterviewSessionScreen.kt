@@ -151,6 +151,7 @@ fun InterviewSessionScreen(
                 .fillMaxSize()
                 .padding(padding)
                 .padding(horizontal = AIICTheme.spacing.screenHorizontal)
+                .verticalScroll(rememberScrollState())
         ) {
             Spacer(modifier = Modifier.height(8.dp))
 
@@ -179,7 +180,8 @@ fun InterviewSessionScreen(
                     rmsLevel = state.voiceRmsLevel,
                     isRecording = state.isVoiceRecording,
                     onToggleRecording = { viewModel.onAction(InterviewSessionAction.ToggleVoiceRecording) },
-                    modifier = Modifier.weight(1f)
+                    onTranscriptChange = { viewModel.onAction(InterviewSessionAction.UpdateVoiceTranscript(it)) },
+                    modifier = Modifier.fillMaxWidth().heightIn(min = 250.dp, max = 400.dp)
                 )
             } else {
                 // ── Text Mode: Answer Input ──
@@ -187,7 +189,7 @@ fun InterviewSessionScreen(
                     answer = state.currentAnswerInput,
                     onAnswerChange = { viewModel.onAction(InterviewSessionAction.UpdateAnswerInput(it)) },
                     isEvaluating = state.isEvaluating,
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.fillMaxWidth().heightIn(min = 250.dp, max = 400.dp)
                 )
             }
 
@@ -338,6 +340,7 @@ private fun VoiceInterviewSection(
     rmsLevel: Float,
     isRecording: Boolean,
     onToggleRecording: () -> Unit,
+    onTranscriptChange: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var isEditing by remember { mutableStateOf(false) }
@@ -399,7 +402,10 @@ private fun VoiceInterviewSection(
                 if (isEditing) {
                     OutlinedTextField(
                         value = editableText,
-                        onValueChange = { editableText = it },
+                        onValueChange = { 
+                            editableText = it 
+                            onTranscriptChange(it)
+                        },
                         modifier = Modifier.fillMaxWidth(),
                         textStyle = AIICTheme.typography.bodyLarge.copy(
                             color = AIICTheme.colors.textPrimary,
@@ -448,7 +454,7 @@ private fun TextInterviewSection(
             onValueChange = onAnswerChange,
             modifier = Modifier
                 .fillMaxWidth()
-                .weight(1f),
+                .heightIn(min = 150.dp),
             textStyle = AIICTheme.typography.bodyLarge,
             placeholder = { Text("Type your answer here...", color = AIICTheme.colors.textTertiary) },
             colors = OutlinedTextFieldDefaults.colors(

@@ -96,6 +96,7 @@ fun SettingsScreen(
                                 .clickable {
                                     viewModel.onAction(SettingsAction.UpdateLanguage(lang))
                                     showLanguageDialog = false
+                                    (context as? android.app.Activity)?.recreate()
                                 }
                                 .padding(horizontal = 16.dp, vertical = 12.dp),
                             verticalAlignment = Alignment.CenterVertically

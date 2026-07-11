@@ -54,6 +54,7 @@ data class InterviewSessionState(
 
 sealed interface InterviewSessionAction {
     data class UpdateAnswerInput(val answer: String) : InterviewSessionAction
+    data class UpdateVoiceTranscript(val transcript: String) : InterviewSessionAction
     data object SubmitAnswer : InterviewSessionAction
     data object QuitSession : InterviewSessionAction
     data object DismissError : InterviewSessionAction
@@ -142,9 +143,8 @@ class InterviewSessionViewModel @Inject constructor(
 
     override fun onAction(action: InterviewSessionAction) {
         when (action) {
-            is InterviewSessionAction.UpdateAnswerInput -> {
-                updateState { copy(currentAnswerInput = action.answer) }
-            }
+            is InterviewSessionAction.UpdateAnswerInput -> updateState { copy(currentAnswerInput = action.answer) }
+            is InterviewSessionAction.UpdateVoiceTranscript -> updateState { copy(voiceTranscript = action.transcript) }
             InterviewSessionAction.SubmitAnswer -> submitCurrentAnswer()
             InterviewSessionAction.QuitSession -> quitSession()
             InterviewSessionAction.DismissError -> updateState { copy(error = null) }
