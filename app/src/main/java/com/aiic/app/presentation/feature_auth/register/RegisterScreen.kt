@@ -3,6 +3,7 @@ package com.aiic.app.presentation.feature_auth.register
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.slideInVertically
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -19,6 +20,7 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.Visibility
 import androidx.compose.material.icons.rounded.VisibilityOff
 import androidx.compose.material3.Checkbox
@@ -38,18 +40,31 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.aiic.app.R
 import com.aiic.app.common.components.AIICTextField
+import com.aiic.app.common.components.GoogleSignInButton
 import com.aiic.app.common.components.PremiumButton
 import com.aiic.app.core.base.UiEvent
 import com.aiic.app.core.theme.AIICTheme
 import kotlinx.coroutines.delay
 
+/**
+ * Register Screen — Design Reference #4
+ * Layout: Back ← → Logo → "Create Account" → "Let's get you started" →
+ *         Full Name → Email → Password → Confirm Password →
+ *         Terms checkbox → "Create Account →" → divider → Google → "Sign In"
+ */
 @Composable
 fun RegisterScreen(
     onNavigateToLogin: () -> Unit,
@@ -61,7 +76,7 @@ fun RegisterScreen(
     var visibleItems by remember { mutableIntStateOf(0) }
 
     LaunchedEffect(Unit) {
-        repeat(7) { delay(80); visibleItems++ }
+        repeat(9) { delay(80); visibleItems++ }
     }
 
     LaunchedEffect(Unit) {
@@ -85,92 +100,76 @@ fun RegisterScreen(
                 .statusBarsPadding()
                 .verticalScroll(rememberScrollState())
                 .padding(horizontal = 24.dp)
-                .padding(top = 40.dp, bottom = 40.dp),
+                .padding(top = 16.dp, bottom = 40.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            AnimatedVisibility(visibleItems > 0, enter = fadeIn() + slideInVertically { -20 }) {
+            // ── Back Button ──
+            Row(modifier = Modifier.fillMaxWidth()) {
+                IconButton(onClick = onNavigateToLogin) {
+                    Icon(
+                        Icons.AutoMirrored.Rounded.ArrowBack,
+                        contentDescription = "Back",
+                        tint = AIICTheme.colors.textPrimary,
+                    )
+                }
+            }
+
+            Spacer(Modifier.height(16.dp))
+
+            // ── Logo ──
+            AnimatedVisibility(visibleItems > 0, enter = fadeIn() + slideInVertically { -30 }) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Image(
+                        painter = painterResource(id = R.drawable.ic_launcher_foreground),
+                        contentDescription = "AIIC Logo",
+                        modifier = Modifier.size(72.dp),
+                    )
+                    Spacer(Modifier.height(4.dp))
                     Text(
-                        text = "Create Account",
-                        style = AIICTheme.typography.displayMedium,
+                        text = "AIIC",
+                        style = AIICTheme.typography.headlineMedium,
                         color = AIICTheme.colors.textPrimary,
                         fontWeight = FontWeight.Bold,
                     )
-                    Spacer(Modifier.height(8.dp))
                     Text(
-                        text = "Start your interview preparation journey",
-                        style = AIICTheme.typography.bodyLarge,
+                        text = "AI Interview Coach",
+                        style = AIICTheme.typography.bodySmall,
                         color = AIICTheme.colors.textSecondary,
                     )
                 }
             }
 
-            Spacer(Modifier.height(40.dp))
+            Spacer(Modifier.height(24.dp))
 
-            AnimatedVisibility(visibleItems > 1, enter = fadeIn() + slideInVertically { 20 }) {
-                // Top Priority: Google Sign-In (Standard premium flow)
-                val context = androidx.compose.ui.platform.LocalContext.current
-                val googleSignInLauncher = androidx.activity.compose.rememberLauncherForActivityResult(
-                    contract = androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult()
-                ) { result ->
-                    val task = com.google.android.gms.auth.api.signin.GoogleSignIn.getSignedInAccountFromIntent(result.data)
-                    try {
-                        val account = task.getResult(com.google.android.gms.common.api.ApiException::class.java)
-                        account?.idToken?.let { idToken ->
-                            viewModel.onAction(RegisterAction.GoogleSignInSuccess(idToken))
-                        }
-                    } catch (e: Exception) {
-                        viewModel.onAction(RegisterAction.GoogleSignInFailure(e.message ?: "Google Sign-In Failed"))
-                    }
-                }
-
-                com.aiic.app.common.components.GoogleSignInButton(
-                    text = "Continue with Google",
-                    onClick = { 
-                        val gso = com.google.android.gms.auth.api.signin.GoogleSignInOptions.Builder(com.google.android.gms.auth.api.signin.GoogleSignInOptions.DEFAULT_SIGN_IN)
-                            .requestIdToken(context.getString(com.aiic.app.R.string.default_web_client_id))
-                            .requestEmail()
-                            .build()
-                        val googleSignInClient = com.google.android.gms.auth.api.signin.GoogleSignIn.getClient(context, gso)
-                        googleSignInClient.signOut().addOnCompleteListener {
-                            googleSignInLauncher.launch(googleSignInClient.signInIntent)
-                        }
-                    },
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
-
-            AnimatedVisibility(visibleItems > 2, enter = fadeIn()) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 24.dp)
-                ) {
-                    HorizontalDivider(
-                        modifier = Modifier.weight(1f),
-                        color = AIICTheme.colors.border
-                    )
+            // ── Heading ──
+            AnimatedVisibility(visibleItems > 1, enter = fadeIn() + slideInVertically { -20 }) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Text(
-                        text = "or",
-                        style = AIICTheme.typography.labelMedium,
-                        color = AIICTheme.colors.textTertiary,
-                        modifier = Modifier.padding(horizontal = 16.dp)
+                        text = "Create Account",
+                        style = AIICTheme.typography.headlineLarge,
+                        color = AIICTheme.colors.textPrimary,
+                        fontWeight = FontWeight.Bold,
                     )
-                    HorizontalDivider(
-                        modifier = Modifier.weight(1f),
-                        color = AIICTheme.colors.border
+                    Spacer(Modifier.height(8.dp))
+                    Text(
+                        text = "Let's get you started on your\ninterview preparation journey.",
+                        style = AIICTheme.typography.bodyMedium,
+                        color = AIICTheme.colors.textSecondary,
+                        textAlign = TextAlign.Center,
                     )
                 }
             }
 
-            AnimatedVisibility(visibleItems > 3, enter = fadeIn() + slideInVertically { 20 }) {
+            Spacer(Modifier.height(28.dp))
+
+            // ── Form Fields ──
+            AnimatedVisibility(visibleItems > 2, enter = fadeIn() + slideInVertically { 20 }) {
                 Column(verticalArrangement = Arrangement.spacedBy(20.dp)) {
                     AIICTextField(
                         value = state.name,
                         onValueChange = { viewModel.onAction(RegisterAction.UpdateName(it)) },
-                        label = "FULL NAME",
-                        placeholder = "Jane Doe",
+                        label = "Full Name",
+                        placeholder = "Enter your full name",
                         isError = state.nameError != null,
                         errorMessage = state.nameError,
                     )
@@ -178,8 +177,8 @@ fun RegisterScreen(
                     AIICTextField(
                         value = state.email,
                         onValueChange = { viewModel.onAction(RegisterAction.UpdateEmail(it)) },
-                        label = "EMAIL",
-                        placeholder = "you@example.com",
+                        label = "Email",
+                        placeholder = "Enter your email",
                         isError = state.emailError != null,
                         errorMessage = state.emailError,
                         keyboardType = KeyboardType.Email,
@@ -188,8 +187,8 @@ fun RegisterScreen(
                     AIICTextField(
                         value = state.password,
                         onValueChange = { viewModel.onAction(RegisterAction.UpdatePassword(it)) },
-                        label = "PASSWORD",
-                        placeholder = "Min 8 chars, 1 uppercase",
+                        label = "Password",
+                        placeholder = "Create a strong password",
                         isError = state.passwordError != null,
                         errorMessage = state.passwordError,
                         visualTransformation = if (state.isPasswordVisible)
@@ -211,8 +210,8 @@ fun RegisterScreen(
                     AIICTextField(
                         value = state.confirmPassword,
                         onValueChange = { viewModel.onAction(RegisterAction.UpdateConfirmPassword(it)) },
-                        label = "CONFIRM PASSWORD",
-                        placeholder = "Re-enter your password",
+                        label = "Confirm Password",
+                        placeholder = "Confirm your password",
                         isError = state.confirmPasswordError != null,
                         errorMessage = state.confirmPasswordError,
                         visualTransformation = PasswordVisualTransformation(),
@@ -221,14 +220,13 @@ fun RegisterScreen(
                 }
             }
 
-            Spacer(Modifier.height(24.dp))
+            Spacer(Modifier.height(20.dp))
 
-            AnimatedVisibility(visibleItems > 4, enter = fadeIn()) {
+            // ── Terms Checkbox ──
+            AnimatedVisibility(visibleItems > 3, enter = fadeIn()) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 4.dp),
+                    modifier = Modifier.fillMaxWidth(),
                 ) {
                     Checkbox(
                         checked = state.agreedToTerms,
@@ -240,28 +238,94 @@ fun RegisterScreen(
                         ),
                     )
                     Text(
-                        text = "I agree to the Terms of Service and Privacy Policy",
+                        text = buildAnnotatedString {
+                            append("I agree to the ")
+                            withStyle(SpanStyle(color = AIICTheme.colors.secondary, fontWeight = FontWeight.Medium)) {
+                                append("Terms & Conditions")
+                            }
+                            append("\nand ")
+                            withStyle(SpanStyle(color = AIICTheme.colors.secondary, fontWeight = FontWeight.Medium)) {
+                                append("Privacy Policy")
+                            }
+                        },
                         style = AIICTheme.typography.bodySmall,
                         color = AIICTheme.colors.textSecondary,
                     )
                 }
             }
 
-            Spacer(Modifier.height(32.dp))
+            Spacer(Modifier.height(24.dp))
 
-            AnimatedVisibility(visibleItems > 5, enter = fadeIn() + slideInVertically { 20 }) {
+            // ── Create Account Button ──
+            AnimatedVisibility(visibleItems > 4, enter = fadeIn() + slideInVertically { 20 }) {
                 PremiumButton(
                     text = "Create Account",
                     onClick = { viewModel.onAction(RegisterAction.Register) },
                     enabled = !state.isLoading && state.agreedToTerms,
                     isLoading = state.isLoading,
+                    showArrow = true,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+
+            Spacer(Modifier.height(24.dp))
+
+            // ── Divider ──
+            AnimatedVisibility(visibleItems > 5, enter = fadeIn()) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    HorizontalDivider(modifier = Modifier.weight(1f), color = AIICTheme.colors.border)
+                    Text(
+                        text = "or continue with",
+                        style = AIICTheme.typography.labelSmall,
+                        color = AIICTheme.colors.textTertiary,
+                        modifier = Modifier.padding(horizontal = 16.dp)
+                    )
+                    HorizontalDivider(modifier = Modifier.weight(1f), color = AIICTheme.colors.border)
+                }
+            }
+
+            Spacer(Modifier.height(24.dp))
+
+            // ── Google Sign Up ──
+            AnimatedVisibility(visibleItems > 6, enter = fadeIn() + slideInVertically { 20 }) {
+                val context = androidx.compose.ui.platform.LocalContext.current
+                val googleSignInLauncher = androidx.activity.compose.rememberLauncherForActivityResult(
+                    contract = androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult()
+                ) { result ->
+                    val task = com.google.android.gms.auth.api.signin.GoogleSignIn.getSignedInAccountFromIntent(result.data)
+                    try {
+                        val account = task.getResult(com.google.android.gms.common.api.ApiException::class.java)
+                        account?.idToken?.let { idToken ->
+                            viewModel.onAction(RegisterAction.GoogleSignInSuccess(idToken))
+                        }
+                    } catch (e: Exception) {
+                        viewModel.onAction(RegisterAction.GoogleSignInFailure(e.message ?: "Google Sign-In Failed"))
+                    }
+                }
+
+                GoogleSignInButton(
+                    text = "Sign up with Google",
+                    onClick = {
+                        val gso = com.google.android.gms.auth.api.signin.GoogleSignInOptions.Builder(com.google.android.gms.auth.api.signin.GoogleSignInOptions.DEFAULT_SIGN_IN)
+                            .requestIdToken(context.getString(R.string.default_web_client_id))
+                            .requestEmail()
+                            .build()
+                        val googleSignInClient = com.google.android.gms.auth.api.signin.GoogleSignIn.getClient(context, gso)
+                        googleSignInClient.signOut().addOnCompleteListener {
+                            googleSignInLauncher.launch(googleSignInClient.signInIntent)
+                        }
+                    },
                     modifier = Modifier.fillMaxWidth()
                 )
             }
 
             Spacer(Modifier.height(32.dp))
 
-            AnimatedVisibility(visibleItems > 6, enter = fadeIn()) {
+            // ── Sign In Link ──
+            AnimatedVisibility(visibleItems > 7, enter = fadeIn()) {
                 Row(horizontalArrangement = Arrangement.Center, modifier = Modifier.fillMaxWidth()) {
                     Text(
                         text = "Already have an account? ",
@@ -269,9 +333,9 @@ fun RegisterScreen(
                         color = AIICTheme.colors.textTertiary,
                     )
                     Text(
-                        text = "Sign in",
+                        text = "Sign In",
                         style = AIICTheme.typography.bodyMedium,
-                        color = AIICTheme.colors.primary,
+                        color = AIICTheme.colors.secondary,
                         fontWeight = FontWeight.SemiBold,
                         modifier = Modifier.clickable { onNavigateToLogin() },
                     )
