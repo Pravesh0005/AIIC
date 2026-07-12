@@ -3,6 +3,7 @@ package com.aiic.app.presentation.feature_splash
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -10,6 +11,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -18,14 +20,22 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.scale
-import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.aiic.app.common.components.AppLogo
-import com.aiic.app.common.components.GradientText
+import com.aiic.app.R
 import com.aiic.app.core.theme.AIICTheme
 
+/**
+ * Splash Screen — Design Reference #2
+ * Dark background, centered AIIC logo with scale+fade animation,
+ * "AIIC" text, "AI Interview Coach" subtitle,
+ * bottom tagline: "Empowering you to crack your dream interview."
+ */
 @Composable
 fun SplashScreen(
     onNavigateToOnboarding: () -> Unit,
@@ -63,46 +73,46 @@ fun SplashScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(
-                brush = Brush.verticalGradient(
-                    colors = listOf(
-                        AIICTheme.colors.gradientDarkStart,
-                        AIICTheme.colors.surface,
-                        AIICTheme.colors.gradientDarkEnd,
-                    )
-                )
-            ),
+            .background(AIICTheme.colors.background),
         contentAlignment = Alignment.Center,
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
         ) {
-            AppLogo(
-                size = 80.dp,
+            // Logo icon
+            Image(
+                painter = painterResource(id = R.drawable.ic_launcher_foreground),
+                contentDescription = "AIIC Logo",
                 modifier = Modifier
+                    .size(120.dp)
                     .scale(logoScale.value)
                     .alpha(logoAlpha.value),
             )
 
-            Spacer(Modifier.height(24.dp))
+            Spacer(Modifier.height(16.dp))
 
-            GradientText(
+            // "AIIC" text
+            Text(
                 text = "AIIC",
                 style = AIICTheme.typography.displayLarge,
+                color = AIICTheme.colors.textPrimary,
+                fontWeight = FontWeight.Bold,
                 modifier = Modifier.alpha(textAlpha.value),
             )
 
             Spacer(Modifier.height(8.dp))
 
+            // "AI Interview Coach" subtitle
             Text(
-                text = "Your Personal AI Career Coach",
+                text = "AI Interview Coach",
                 style = AIICTheme.typography.bodyMedium,
-                color = AIICTheme.colors.textTertiary,
-                modifier = Modifier.alpha(taglineAlpha.value),
+                color = AIICTheme.colors.textSecondary,
+                modifier = Modifier.alpha(textAlpha.value),
             )
         }
 
+        // Bottom tagline
         Box(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
@@ -114,10 +124,16 @@ fun SplashScreen(
                 verticalArrangement = Arrangement.Center,
             ) {
                 Text(
-                    text = "AI Interview Coach",
-                    style = AIICTheme.typography.labelSmall,
-                    color = AIICTheme.colors.textDisabled,
-                    fontWeight = FontWeight.Medium,
+                    text = buildAnnotatedString {
+                        append("Empowering you to crack\n")
+                        withStyle(SpanStyle(color = AIICTheme.colors.secondary)) {
+                            append("your dream interview.")
+                        }
+                    },
+                    style = AIICTheme.typography.bodySmall,
+                    color = AIICTheme.colors.textTertiary,
+                    fontWeight = FontWeight.Normal,
+                    textAlign = androidx.compose.ui.text.style.TextAlign.Center,
                 )
             }
         }
