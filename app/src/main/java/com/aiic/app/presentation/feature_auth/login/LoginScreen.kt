@@ -104,7 +104,7 @@ fun LoginScreen(
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     // AIIC Logo
                     Image(
-                        painter = painterResource(id = R.drawable.ic_launcher_foreground),
+                        painter = painterResource(id = R.drawable.logo),
                         contentDescription = "AIIC Logo",
                         modifier = Modifier.size(80.dp),
                     )

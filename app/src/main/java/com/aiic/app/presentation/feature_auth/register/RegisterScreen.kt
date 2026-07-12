@@ -120,7 +120,7 @@ fun RegisterScreen(
             AnimatedVisibility(visibleItems > 0, enter = fadeIn() + slideInVertically { -30 }) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Image(
-                        painter = painterResource(id = R.drawable.ic_launcher_foreground),
+                        painter = painterResource(id = R.drawable.logo),
                         contentDescription = "AIIC Logo",
                         modifier = Modifier.size(72.dp),
                     )
