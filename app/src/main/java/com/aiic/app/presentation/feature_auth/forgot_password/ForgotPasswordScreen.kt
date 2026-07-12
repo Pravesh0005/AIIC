@@ -99,7 +99,7 @@ fun ForgotPasswordScreen(
                     Icon(
                         Icons.Rounded.CheckCircle,
                         contentDescription = null,
-                        tint = AIICTheme.colors.primary, // Using primary since it's white now
+                        tint = AIICTheme.colors.green,
                         modifier = Modifier.size(72.dp),
                     )
                     Spacer(Modifier.height(24.dp))
@@ -150,8 +150,8 @@ fun ForgotPasswordScreen(
                         AIICTextField(
                             value = state.email,
                             onValueChange = { viewModel.onAction(ForgotPasswordAction.UpdateEmail(it)) },
-                            label = "EMAIL",
-                            placeholder = "you@example.com",
+                            label = "Email",
+                            placeholder = "Enter your registered email",
                             isError = state.emailError != null,
                             errorMessage = state.emailError,
                             keyboardType = KeyboardType.Email,
@@ -175,9 +175,9 @@ fun ForgotPasswordScreen(
 
                 AnimatedVisibility(visibleItems > 3, enter = fadeIn()) {
                     Text(
-                        text = "Remember your password? Sign in",
+                        text = "Remember your password? Sign In",
                         style = AIICTheme.typography.bodyMedium,
-                        color = AIICTheme.colors.primary,
+                        color = AIICTheme.colors.secondary,
                         fontWeight = FontWeight.Medium,
                         modifier = Modifier.clickable { onNavigateBack() },
                     )
