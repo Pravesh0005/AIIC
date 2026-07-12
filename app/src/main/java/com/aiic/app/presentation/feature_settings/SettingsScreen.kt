@@ -313,7 +313,7 @@ fun SettingsScreen(
                 icon = Icons.Rounded.Language,
                 label = "Language",
                 detail = state.language,
-                color = AIICTheme.colors.tertiary,
+                color = AIICTheme.colors.green,
                 onClick = { showLanguageDialog = true }
             )
             SettingsNavItem(
