@@ -56,6 +56,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 @Composable
 fun SettingsScreen(
     viewModel: SettingsViewModel = hiltViewModel(),
+
     onNavigateBack: () -> Unit = {},
     onLogout: () -> Unit = {}
 ) {
@@ -96,7 +97,6 @@ fun SettingsScreen(
                                 .clickable {
                                     viewModel.onAction(SettingsAction.UpdateLanguage(lang))
                                     showLanguageDialog = false
-                                    (context as? android.app.Activity)?.recreate()
                                 }
                                 .padding(horizontal = 16.dp, vertical = 12.dp),
                             verticalAlignment = Alignment.CenterVertically
@@ -364,7 +364,9 @@ fun SettingsScreen(
         PremiumButton(
             text = "Log Out",
             onClick = onLogout,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            containerColor = AIICTheme.colors.error,
+            showArrow = false,
         )
     }
 }
