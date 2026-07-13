@@ -513,7 +513,9 @@ private fun ActionBar(
                 .background(AIICTheme.colors.surfaceElevated)
         ) {
             Icon(
-                if (isPaused) Icons.Rounded.PlayArrow else Icons.Rounded.Pause,
+                painter = androidx.compose.ui.res.painterResource(
+                    id = if (isPaused) com.aiic.app.R.drawable.ic_exact_play else com.aiic.app.R.drawable.ic_exact_pause
+                ),
                 contentDescription = if (isPaused) "Resume" else "Pause",
                 tint = AIICTheme.colors.textSecondary
             )
@@ -532,7 +534,9 @@ private fun ActionBar(
                     )
             ) {
                 Icon(
-                    if (isVoiceRecording) Icons.Rounded.MicOff else Icons.Rounded.Mic,
+                    painter = androidx.compose.ui.res.painterResource(
+                        id = if (isVoiceRecording) com.aiic.app.R.drawable.ic_exact_mic_off else com.aiic.app.R.drawable.ic_exact_mic
+                    ),
                     contentDescription = if (isVoiceRecording) "Stop" else "Record",
                     tint = if (isVoiceRecording) AIICTheme.colors.error else AIICTheme.colors.textSecondary
                 )
@@ -561,7 +565,11 @@ private fun ActionBar(
                 Spacer(Modifier.width(8.dp))
                 Text("Evaluating...", color = Color.White, fontWeight = FontWeight.Bold)
             } else {
-                Icon(Icons.Rounded.Send, contentDescription = null, modifier = Modifier.size(18.dp))
+                Icon(
+                    painter = androidx.compose.ui.res.painterResource(id = com.aiic.app.R.drawable.ic_exact_send), 
+                    contentDescription = null, 
+                    modifier = Modifier.size(18.dp)
+                )
                 Spacer(Modifier.width(8.dp))
                 Text("Submit", color = Color.White, fontWeight = FontWeight.Bold)
             }
