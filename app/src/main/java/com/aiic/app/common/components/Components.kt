@@ -46,16 +46,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.aiic.app.core.theme.AIICTheme
 
-/**
- * ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- *  AIIC Design System — Reusable Components
- *  Matching official design reference boards.
- * ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- */
-
-// ── PremiumButton ──────────────────────────────────
-// Blue gradient button with arrow, 56dp height, pill shape
-// Reference: Login "Sign In →", Register "Create Account →"
 @Composable
 fun PremiumButton(
     text: String,
@@ -139,9 +129,6 @@ fun PremiumButton(
     }
 }
 
-// ── PremiumCard ──────────────────────────────────
-// Dark card with subtle blue-tinted border, 16dp radius
-// Reference: All cards across screens
 @Composable
 fun PremiumCard(
     modifier: Modifier = Modifier,
@@ -163,8 +150,6 @@ fun PremiumCard(
     }
 }
 
-// ── GlowCard ──────────────────────────────────
-// Card with neon blue glow border effect
 @Composable
 fun GlowCard(
     modifier: Modifier = Modifier,
@@ -176,7 +161,7 @@ fun GlowCard(
             .fillMaxWidth()
             .clip(RoundedCornerShape(16.dp))
             .drawBehind {
-                // Outer glow
+                
                 drawRoundRect(
                     color = glowColor.copy(alpha = 0.15f),
                     cornerRadius = androidx.compose.ui.geometry.CornerRadius(16.dp.toPx()),
@@ -194,7 +179,6 @@ fun GlowCard(
     }
 }
 
-// ── SectionHeader ──────────────────────────────────
 @Composable
 fun SectionHeader(
     title: String,
@@ -240,7 +224,6 @@ fun SectionHeader(
     }
 }
 
-// ── LoadingShimmer ──────────────────────────────────
 @Composable
 fun LoadingShimmer(
     modifier: Modifier = Modifier,
@@ -276,7 +259,6 @@ fun LoadingShimmer(
     )
 }
 
-// ── ShimmerList ──────────────────────────────────
 @Composable
 fun ShimmerList(
     count: Int = 3,
@@ -292,7 +274,6 @@ fun ShimmerList(
     }
 }
 
-// ── EmptyStateView ──────────────────────────────────
 @Composable
 fun EmptyStateView(
     title: String,
@@ -328,7 +309,6 @@ fun EmptyStateView(
     }
 }
 
-// ── ErrorStateView ──────────────────────────────────
 @Composable
 fun ErrorStateView(
     message: String,
@@ -365,8 +345,6 @@ fun ErrorStateView(
     }
 }
 
-// ── AppLogo ──────────────────────────────────
-// Blue gradient circle with "AI" text — matches logo system
 @Composable
 fun AppLogo(
     modifier: Modifier = Modifier,
@@ -396,7 +374,6 @@ fun AppLogo(
     }
 }
 
-// ── GradientText ──────────────────────────────────
 @Composable
 fun GradientText(
     text: String,
@@ -413,7 +390,6 @@ fun GradientText(
     )
 }
 
-// ── ScoreCard ──────────────────────────────────
 @Composable
 fun ScoreCard(
     title: String,
@@ -446,7 +422,6 @@ fun ScoreCard(
     }
 }
 
-// ── FeatureCard ──────────────────────────────────
 @Composable
 fun FeatureCard(
     icon: @Composable () -> Unit,
@@ -483,8 +458,6 @@ fun FeatureCard(
     }
 }
 
-// ── GoogleSignInButton ──────────────────────────────────
-// Outlined button with Google icon — matches design reference
 @Composable
 fun GoogleSignInButton(
     text: String,
@@ -529,8 +502,6 @@ fun GoogleSignInButton(
     }
 }
 
-// ── StatItem ──────────────────────────────────
-// Individual stat display (Day Streak, Practice Time, etc.)
 @Composable
 fun StatItem(
     icon: @Composable () -> Unit,
@@ -558,7 +529,6 @@ fun StatItem(
         )
     }
 }
-
 
 @androidx.compose.runtime.Composable
 fun EarthGlowBackground(modifier: androidx.compose.ui.Modifier = androidx.compose.ui.Modifier) {

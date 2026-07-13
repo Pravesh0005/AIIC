@@ -100,7 +100,7 @@ class ResumeUploadViewModel @Inject constructor(
                 fileName = fileName,
                 fileSize = fileSize,
                 resumeVersion = nextVersion,
-                activeResume = true // Always set the newly uploaded resume as the active one
+                activeResume = true 
             )
             
             when (val result = resumeRepository.createResumeMetadata(newResume)) {

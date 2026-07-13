@@ -34,11 +34,6 @@ import com.aiic.app.core.theme.AIICTheme
 import kotlinx.coroutines.launch
 import kotlin.math.abs
 
-/**
- * World-class PDF Preview Engine.
- * Features: Native PdfRenderer, pinch-to-zoom, page-by-page scroll,
- * floating page indicator, shimmer loading state, error retry.
- */
 @Composable
 fun PdfViewerScreen(
     storageUrl: String,
@@ -61,7 +56,7 @@ fun PdfViewerScreen(
             .statusBarsPadding()
             .navigationBarsPadding()
     ) {
-        // Top bar
+        
         PdfTopBar(fileName = fileName, onNavigateBack = onNavigateBack, state = state)
 
         Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
@@ -112,7 +107,7 @@ private fun PdfTopBar(fileName: String, onNavigateBack: () -> Unit, state: PdfVi
                 )
             }
         }
-        // PDF badge
+        
         Box(
             modifier = Modifier
                 .clip(RoundedCornerShape(6.dp))
@@ -132,7 +127,7 @@ private fun PdfDownloadingState() {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        // Animated PDF icon
+        
         val infiniteTransition = rememberInfiniteTransition(label = "pulse")
         val alpha by infiniteTransition.animateFloat(
             initialValue = 0.4f, targetValue = 1f, label = "alpha",
@@ -167,7 +162,7 @@ private fun PdfRenderingState(currentPage: Int, totalPages: Int, progress: Float
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        // Circular progress
+        
         Box(contentAlignment = Alignment.Center, modifier = Modifier.size(100.dp)) {
             CircularProgressIndicator(
                 progress = { progress },
@@ -195,7 +190,6 @@ private fun PdfPagesViewer(pages: List<Bitmap>, totalPages: Int) {
     val listState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
 
-    // Derive current visible page
     val currentPage by remember {
         derivedStateOf { listState.firstVisibleItemIndex + 1 }
     }
@@ -218,7 +212,6 @@ private fun PdfPagesViewer(pages: List<Bitmap>, totalPages: Int) {
             }
         }
 
-        // Floating page indicator
         AnimatedVisibility(
             visible = totalPages > 1,
             enter = fadeIn() + slideInVertically { it },
@@ -236,7 +229,7 @@ private fun PdfPagesViewer(pages: List<Bitmap>, totalPages: Int) {
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    // Prev page
+                    
                     if (currentPage > 1) {
                         IconButton(
                             onClick = { coroutineScope.launch { listState.animateScrollToItem(currentPage - 2) } },
@@ -251,7 +244,7 @@ private fun PdfPagesViewer(pages: List<Bitmap>, totalPages: Int) {
                         color = Color.White,
                         fontWeight = FontWeight.SemiBold
                     )
-                    // Next page
+                    
                     if (currentPage < totalPages) {
                         IconButton(
                             onClick = { coroutineScope.launch { listState.animateScrollToItem(currentPage) } },
@@ -275,7 +268,7 @@ private fun ZoomablePdfPage(bitmap: Bitmap, pageNumber: Int, totalPages: Int) {
     val transformableState = rememberTransformableState { zoomChange, panChange, _ ->
         val newScale = (scale * zoomChange).coerceIn(0.8f, 4f)
         scale = newScale
-        // Constrain pan to page bounds
+        
         val maxOffset = if (scale > 1f) 400f * (scale - 1f) else 0f
         offset = Offset(
             x = (offset.x + panChange.x).coerceIn(-maxOffset, maxOffset),
@@ -283,7 +276,6 @@ private fun ZoomablePdfPage(bitmap: Bitmap, pageNumber: Int, totalPages: Int) {
         )
     }
 
-    // Double tap to zoom
     val interactionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() }
 
     Box(
@@ -320,7 +312,6 @@ private fun ZoomablePdfPage(bitmap: Bitmap, pageNumber: Int, totalPages: Int) {
             contentScale = ContentScale.FillWidth
         )
 
-        // Page number chip (top-right corner)
         Box(
             modifier = Modifier
                 .align(Alignment.TopEnd)

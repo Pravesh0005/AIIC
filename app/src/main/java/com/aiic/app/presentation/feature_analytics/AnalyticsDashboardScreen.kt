@@ -88,12 +88,10 @@ fun AnalyticsDashboardScreen(
         ) {
             Spacer(Modifier.height(8.dp))
 
-            // ── Overall Performance Header ──
             PerformanceHeaderCard(state)
 
             Spacer(Modifier.height(20.dp))
 
-            // ── Score Trend Chart ──
             Text(
                 "Score Progression",
                 style = AIICTheme.typography.titleLarge,
@@ -113,7 +111,6 @@ fun AnalyticsDashboardScreen(
 
             Spacer(Modifier.height(20.dp))
 
-            // ── Key Metrics Grid ──
             Text(
                 "Performance Breakdown",
                 style = AIICTheme.typography.titleLarge,
@@ -186,7 +183,6 @@ fun AnalyticsDashboardScreen(
 
             Spacer(Modifier.height(20.dp))
 
-            // ── Dimension Scores ──
             Text(
                 "Skill Dimensions",
                 style = AIICTheme.typography.titleLarge,
@@ -207,7 +203,6 @@ fun AnalyticsDashboardScreen(
 
             Spacer(Modifier.height(20.dp))
 
-            // ── Interview Type Breakdown ──
             if (state.typeBreakdown.isNotEmpty()) {
                 Text(
                     "By Interview Type",
@@ -264,7 +259,6 @@ fun AnalyticsDashboardScreen(
                 Spacer(Modifier.height(16.dp))
             }
 
-            // ── Recent Sessions ──
             if (state.sessions.isNotEmpty()) {
                 Text(
                     "Recent Sessions",
@@ -380,7 +374,6 @@ private fun ScoreTrendChart(
         val visibleCount = (points.size * animProgress.value).toInt().coerceAtLeast(1)
         val visiblePoints = points.take(visibleCount)
 
-        // Gradient fill under curve
         val fillPath = Path().apply {
             moveTo(visiblePoints.first().x, size.height)
             visiblePoints.forEach { lineTo(it.x, it.y) }
@@ -394,7 +387,6 @@ private fun ScoreTrendChart(
             )
         )
 
-        // Line
         val linePath = Path().apply {
             visiblePoints.forEachIndexed { i, pt ->
                 if (i == 0) moveTo(pt.x, pt.y) else lineTo(pt.x, pt.y)
@@ -402,7 +394,6 @@ private fun ScoreTrendChart(
         }
         drawPath(linePath, color = primaryColor, style = Stroke(width = 3f, cap = StrokeCap.Round))
 
-        // Data points
         visiblePoints.forEachIndexed { i, pt ->
             drawCircle(primaryColor, radius = 5f, center = pt)
             drawCircle(Color.White, radius = 2.5f, center = pt)

@@ -8,7 +8,7 @@ import javax.inject.Inject
 class ScoreAnswerUseCase @Inject constructor(
     private val analyzeAnswerUseCase: AnalyzeAnswerUseCase
 ) {
-    // This can act as a facade over AnalyzeAnswerUseCase or handle deterministic scoring before AI
+    
     suspend operator fun invoke(
         sessionId: String,
         questionId: String,
@@ -17,7 +17,7 @@ class ScoreAnswerUseCase @Inject constructor(
         targetRole: String,
         resumeContext: String
     ): NetworkResult<AnswerFeedback> {
-        // Fast deterministic scoring could go here before AI invocation
+        
         if (answerText.length < 10) {
             return NetworkResult.Error(message = "Answer too short to evaluate.")
         }

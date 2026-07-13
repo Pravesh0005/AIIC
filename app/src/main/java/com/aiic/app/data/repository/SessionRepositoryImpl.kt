@@ -30,6 +30,6 @@ class SessionRepositoryImpl @Inject constructor(
     override fun isOnboardingCompleted(): Flow<Boolean> = prefs.isOnboardingCompleted()
 
     override suspend fun updateLastActive() {
-        // Will be enhanced with Firestore write in future
+        
     }
 }

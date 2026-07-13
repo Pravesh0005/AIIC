@@ -36,7 +36,7 @@ class SessionSummaryViewModel @Inject constructor(
 
         _uiState.value = SessionSummaryUiState.Loading
         viewModelScope.launch {
-            // 20 second timeout — never hang forever
+            
             val result = withTimeoutOrNull(20000L) {
                 getSessionSummaryUseCase(sessionId)
             }

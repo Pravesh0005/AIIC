@@ -9,10 +9,6 @@ import com.aiic.app.domain.repository.ResumeRepository
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
-/**
- * Validates and delegates resume upload to the repository.
- * Enforces file size and type constraints at the domain level.
- */
 class UploadResumeUseCase @Inject constructor(
     private val resumeRepository: ResumeRepository,
 ) {
@@ -52,9 +48,6 @@ sealed interface FileValidationResult {
     data class TooLarge(val actual: Long, val limit: Long) : FileValidationResult
 }
 
-/**
- * Deletes a specific resume version from Storage and Firestore.
- */
 class DeleteResumeUseCase @Inject constructor(
     private val resumeRepository: ResumeRepository,
 ) {
@@ -66,9 +59,6 @@ class DeleteResumeUseCase @Inject constructor(
         resumeRepository.deleteResume(resumeId, userId, version)
 }
 
-/**
- * Retrieves full resume history for a user.
- */
 class GetResumeHistoryUseCase @Inject constructor(
     private val resumeRepository: ResumeRepository,
 ) {
@@ -76,9 +66,6 @@ class GetResumeHistoryUseCase @Inject constructor(
         resumeRepository.getResumeHistory(userId)
 }
 
-/**
- * Retrieves the latest resume version for a user.
- */
 class GetLatestResumeUseCase @Inject constructor(
     private val resumeRepository: ResumeRepository,
 ) {
@@ -86,9 +73,6 @@ class GetLatestResumeUseCase @Inject constructor(
         resumeRepository.getLatestResume(userId)
 }
 
-/**
- * Retrieves a single resume by its ID.
- */
 class GetResumeDetailsUseCase @Inject constructor(
     private val resumeRepository: ResumeRepository,
 ) {
@@ -96,9 +80,6 @@ class GetResumeDetailsUseCase @Inject constructor(
         resumeRepository.getResumeById(resumeId)
 }
 
-/**
- * Updates mutable metadata on an existing resume.
- */
 class UpdateResumeUseCase @Inject constructor(
     private val resumeRepository: ResumeRepository,
 ) {
@@ -109,9 +90,6 @@ class UpdateResumeUseCase @Inject constructor(
         resumeRepository.updateResumeMetadata(resumeId, updates)
 }
 
-/**
- * Sets a specific resume version as the active resume.
- */
 class SetActiveResumeUseCase @Inject constructor(
     private val resumeRepository: ResumeRepository,
 ) {
@@ -119,9 +97,6 @@ class SetActiveResumeUseCase @Inject constructor(
         resumeRepository.setActiveResume(userId, resumeId)
 }
 
-/**
- * Observes resume history in real-time via Firestore snapshots.
- */
 class ObserveResumeUseCase @Inject constructor(
     private val resumeRepository: ResumeRepository,
 ) {
@@ -129,9 +104,6 @@ class ObserveResumeUseCase @Inject constructor(
         resumeRepository.observeResumeHistory(userId)
 }
 
-/**
- * Cancels an in-progress upload.
- */
 class CancelUploadUseCase @Inject constructor(
     private val resumeRepository: ResumeRepository,
 ) {

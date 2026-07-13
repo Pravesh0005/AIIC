@@ -32,7 +32,6 @@ fun AnalyticsScreen(
 ) {
     val scrollState = rememberScrollState()
 
-    // Derive real metrics from actual data
     val avgScore = if (readinessScore > 0) (readinessScore * 100).toInt() else 0
     val totalMinutes = (hoursOfPractice * 60).toInt()
     val avgTimePerInterview = if (interviewsCompleted > 0) totalMinutes / interviewsCompleted else 0
@@ -71,7 +70,6 @@ fun AnalyticsScreen(
 
         Spacer(Modifier.height(24.dp))
 
-        // Performance Overview Cards
         Text(
             text = "Performance Overview",
             style = AIICTheme.typography.titleMedium,
@@ -128,7 +126,6 @@ fun AnalyticsScreen(
 
         Spacer(Modifier.height(28.dp))
 
-        // Session Breakdown
         Text(
             text = "Session Breakdown",
             style = AIICTheme.typography.titleMedium,
@@ -165,7 +162,6 @@ fun AnalyticsScreen(
 
         Spacer(Modifier.height(28.dp))
 
-        // AI Insights
         Text(
             text = "AI Insights",
             style = AIICTheme.typography.titleMedium,
@@ -208,7 +204,6 @@ fun AnalyticsScreen(
 
         Spacer(Modifier.height(28.dp))
 
-        // Progress Indicators
         if (interviewsCompleted > 0) {
             Text(
                 text = "Readiness Breakdown",
@@ -353,8 +348,6 @@ fun SkillProgressRow(skill: String, score: Int) {
     }
 }
 
-/** Converts raw float hours to a clean human-readable duration string.
- *  e.g. 0f -> "0 min", 0.5f -> "30m", 1.25f -> "1h 15m", 2.0f -> "2h" */
 private fun formatPracticeTime(hours: Float): String {
     if (hours <= 0f) return "0 min"
     val totalMinutes = (hours * 60).toInt()

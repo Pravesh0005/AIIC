@@ -47,19 +47,17 @@ class ResumeAnalysisViewModel @Inject constructor(
             return
         }
 
-        // Don't re-load if we already have a successful analysis for this resume
         val current = _uiState.value
         if (current is AnalysisUiState.Success && current.analysis.resumeId == resumeId) {
             android.util.Log.d("AIIC_ANALYSIS", "loadAnalysis: Already loaded for resumeId=$resumeId, skipping")
             return
         }
 
-        // Show a checking state (NOT Analyzing — that triggers spinner + implies AI is running)
         _uiState.update { AnalysisUiState.Retrying }
 
         viewModelScope.launch {
             android.util.Log.d("AIIC_ANALYSIS", "loadAnalysis: Checking Firestore for userId=$userId, resumeId=$resumeId")
-            // First check if an analysis already exists in Firestore to avoid duplicate generation
+            
             when (val existingResult = getResumeAnalysisUseCase(userId, resumeId)) {
                 is NetworkResult.Success -> {
                     android.util.Log.d("AIIC_ANALYSIS", "loadAnalysis: Found existing analysis, score=${existingResult.data.overallScore}")
@@ -67,7 +65,7 @@ class ResumeAnalysisViewModel @Inject constructor(
                 }
                 is NetworkResult.Error -> {
                     android.util.Log.d("AIIC_ANALYSIS", "loadAnalysis: No existing analysis found (${existingResult.message}), running pipeline")
-                    // No analysis exists — now set Analyzing and run generation
+                    
                     _uiState.update { AnalysisUiState.Analyzing }
                     runAnalysisPipeline(userId, resumeId)
                 }

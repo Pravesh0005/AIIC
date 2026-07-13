@@ -12,7 +12,6 @@ import javax.inject.Inject
 
 class FirestoreInterviewSessionRepository @Inject constructor() : InterviewSessionRepository {
     
-    // In-memory cache for demo purposes
     private val sessions = mutableMapOf<String, InterviewSession>()
 
     override suspend fun createSession(

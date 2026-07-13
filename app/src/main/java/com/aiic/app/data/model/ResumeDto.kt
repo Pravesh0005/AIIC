@@ -4,9 +4,6 @@ import com.aiic.app.domain.model.AnalysisStatus
 import com.aiic.app.domain.model.ProcessingState
 import com.aiic.app.domain.model.Resume
 
-/**
- * Data Transfer Object for Firestore representation of a Resume.
- */
 data class ResumeDto(
     val resumeId: String = "",
     val userId: String = "",

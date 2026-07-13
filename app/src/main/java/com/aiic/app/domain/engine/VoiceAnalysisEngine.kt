@@ -6,10 +6,6 @@ import com.aiic.app.domain.model.VoiceMetrics
 import javax.inject.Inject
 import javax.inject.Singleton
 
-/**
- * Analyzes voice transcripts for filler words, WPM, speech speed, and communication quality.
- * Runs entirely on-device — no network calls required.
- */
 @Singleton
 class VoiceAnalysisEngine @Inject constructor() {
 
@@ -41,18 +37,15 @@ class VoiceAnalysisEngine @Inject constructor() {
         val totalWords = words.size
         val speechDurationMinutes = speechDurationMs / 60000f
 
-        // Calculate WPM
         val wpm = if (speechDurationMinutes > 0.05f) {
             totalWords / speechDurationMinutes
         } else {
             0f
         }
 
-        // Detect filler words
         val fillerBreakdown = mutableMapOf<String, Int>()
         val lowerTranscript = transcript.lowercase()
 
-        // Check multi-word fillers first
         FILLER_WORDS.filter { it.contains(" ") }.forEach { filler ->
             val regex = "\\b${Regex.escape(filler)}\\b".toRegex()
             val count = regex.findAll(lowerTranscript).count()
@@ -61,7 +54,6 @@ class VoiceAnalysisEngine @Inject constructor() {
             }
         }
 
-        // Check single-word fillers
         FILLER_WORDS.filter { !it.contains(" ") }.forEach { filler ->
             val count = words.count { it.replace("[^a-z]".toRegex(), "") == filler }
             if (count > 0) {
@@ -71,7 +63,6 @@ class VoiceAnalysisEngine @Inject constructor() {
 
         val totalFillers = fillerBreakdown.values.sum()
 
-        // Calculate speech speed
         val speechSpeed = when {
             wpm < SLOW_WPM -> SpeechSpeed.TOO_SLOW
             wpm < IDEAL_WPM_MIN -> SpeechSpeed.SLOW
@@ -80,15 +71,13 @@ class VoiceAnalysisEngine @Inject constructor() {
             else -> SpeechSpeed.TOO_FAST
         }
 
-        // Calculate average pause duration
-        val estimatedPauses = maxOf(1, (speechDurationMs / 5000).toInt()) // Rough estimate
+        val estimatedPauses = maxOf(1, (speechDurationMs / 5000).toInt()) 
         val averagePauseMs = if (silenceDurationMs > 0) {
             silenceDurationMs / estimatedPauses
         } else {
             0L
         }
 
-        // Calculate communication score (0-100)
         val fillerPenalty = (totalFillers.toFloat() / maxOf(1, totalWords)) * 100f
         val speedBonus = when (speechSpeed) {
             SpeechSpeed.NORMAL -> 25f
@@ -96,11 +85,10 @@ class VoiceAnalysisEngine @Inject constructor() {
             else -> 5f
         }
         val confidenceBonus = speechConfidence * 25f
-        val contentBonus = minOf(25f, totalWords / 4f) // More words = more content
+        val contentBonus = minOf(25f, totalWords / 4f) 
         val communicationScore = (100f - fillerPenalty + speedBonus + confidenceBonus + contentBonus)
             .coerceIn(0f, 100f)
 
-        // Clarity score based on filler ratio
         val fillerRatio = totalFillers.toFloat() / maxOf(1, totalWords)
         val clarityScore = ((1f - fillerRatio) * 100f).coerceIn(0f, 100f)
 

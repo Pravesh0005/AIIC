@@ -23,10 +23,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import kotlin.math.sin
 
-/**
- * Animated voice waveform visualization that responds to real-time RMS audio levels.
- * Creates a professional audio waveform animation similar to Siri/Google Assistant.
- */
 @Composable
 fun VoiceWaveform(
     rmsLevel: Float,
@@ -82,7 +78,6 @@ fun VoiceWaveform(
             val x = i * (barWidth + spacing) + spacing / 2f
             val y = (canvasHeight - barHeight) / 2f
 
-            // Gradient-like effect: center bars are primary color, edges are secondary
             val distFromCenter = kotlin.math.abs(i - barCount / 2f) / (barCount / 2f)
             val color = lerp(barColor, barColorSecondary, distFromCenter)
 
@@ -105,9 +100,6 @@ private fun lerp(start: Color, stop: Color, fraction: Float): Color {
     )
 }
 
-/**
- * Pulsating mic indicator for when voice recording is active.
- */
 @Composable
 fun PulsingMicIndicator(
     isActive: Boolean,
@@ -139,7 +131,6 @@ fun PulsingMicIndicator(
     Canvas(modifier = modifier) {
         val radius = size.minDimension / 2f
 
-        // Outer pulse ring
         if (isActive) {
             drawCircle(
                 color = color.copy(alpha = alpha),
@@ -147,7 +138,6 @@ fun PulsingMicIndicator(
             )
         }
 
-        // Inner solid circle
         drawCircle(
             color = color.copy(alpha = if (isActive) 0.9f else 0.4f),
             radius = radius * 0.7f

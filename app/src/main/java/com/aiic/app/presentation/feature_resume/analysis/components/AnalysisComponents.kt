@@ -68,7 +68,6 @@ fun ATSScoreCard(score: Int, classification: String, modifier: Modifier = Modifi
                     val topLeft = androidx.compose.ui.geometry.Offset(strokeWidthPx / 2f, strokeWidthPx / 2f)
                     val arcSizeObj = androidx.compose.ui.geometry.Size(arcSize, arcSize)
 
-                    // Track
                     drawArc(
                         color = trackColor,
                         startAngle = -90f,
@@ -82,7 +81,6 @@ fun ATSScoreCard(score: Int, classification: String, modifier: Modifier = Modifi
                         )
                     )
 
-                    // Progress
                     drawArc(
                         color = color,
                         startAngle = -90f,
@@ -142,6 +140,8 @@ fun SkillChip(skill: String) {
             color = AIICTheme.colors.textPrimary
         )
     }
+}
+
 @Composable
 fun StrengthCard(strengths: List<String>) {
     InsightListCard("Strengths", com.aiic.app.R.drawable.ic_exact_strength, AIICTheme.colors.success, strengths)

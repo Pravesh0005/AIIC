@@ -14,11 +14,6 @@ import kotlinx.coroutines.withTimeoutOrNull
 import java.util.UUID
 import javax.inject.Inject
 
-/**
- * Groq-only AI repository.
- * All AI generation uses Groq API exclusively.
- * No Gemini dependency, no Gemini fallback.
- */
 class GeminiGenerativeAiRepository @Inject constructor() : GenerativeAiRepository {
 
     private val groqKey = com.aiic.app.BuildConfig.GROQ_API_KEY
@@ -100,9 +95,6 @@ class GeminiGenerativeAiRepository @Inject constructor() : GenerativeAiRepositor
         }
     }
 
-    /**
-     * Groq call with JSON response format enforced.
-     */
     private suspend fun callGroqJson(prompt: String): String? {
         if (groqKey.isBlank()) {
             Log.e("AIIC_DEBUG", "callGroqJson: API Key is blank")
@@ -242,7 +234,6 @@ class GeminiGenerativeAiRepository @Inject constructor() : GenerativeAiRepositor
     }
 }
 
-// Internal data class for Gson parsing mapping strictly to the JSON schema
 data class AiAnalysisResponse(
     val overallScore: Int,
     val atsScoreDetails: AtsScoreDetails,

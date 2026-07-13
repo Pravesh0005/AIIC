@@ -10,12 +10,6 @@ import androidx.compose.ui.text.googlefonts.Font
 import androidx.compose.ui.text.googlefonts.GoogleFont
 import androidx.compose.ui.unit.sp
 
-/**
- * AIIC Design System — Typography
- * Reference: Poppins SemiBold (Headings/Titles),
- *            Poppins Regular (Body/Text),
- *            Poppins Medium (Buttons/Links)
- */
 private val googleFontProvider = GoogleFont.Provider(
     providerAuthority = "com.google.android.gms.fonts",
     providerPackage = "com.google.android.gms",
@@ -32,7 +26,6 @@ val PoppinsFontFamily = FontFamily(
     Font(googleFont = PoppinsFont, fontProvider = googleFontProvider, weight = FontWeight.Bold),
 )
 
-// Keep Inter as secondary/fallback for data-dense areas
 private val InterFont = GoogleFont("Inter")
 
 val InterFontFamily = FontFamily(
@@ -43,7 +36,6 @@ val InterFontFamily = FontFamily(
     Font(googleFont = InterFont, fontProvider = googleFontProvider, weight = FontWeight.Bold),
 )
 
-// Keep SpaceGrotesk reference so existing usages don't break at compile time
 private val SpaceGroteskFont = GoogleFont("Space Grotesk")
 val SpaceGroteskFontFamily = FontFamily(
     Font(googleFont = SpaceGroteskFont, fontProvider = googleFontProvider, weight = FontWeight.Normal),
@@ -54,7 +46,7 @@ val SpaceGroteskFontFamily = FontFamily(
 
 @Immutable
 data class AIICTypography(
-    // ── Display ──
+    
     val displayLarge: TextStyle = TextStyle(
         fontFamily = PoppinsFontFamily,
         fontWeight = FontWeight.Bold,
@@ -77,7 +69,6 @@ data class AIICTypography(
         letterSpacing = (-0.25).sp
     ),
 
-    // ── Headline ──
     val headlineLarge: TextStyle = TextStyle(
         fontFamily = PoppinsFontFamily,
         fontWeight = FontWeight.SemiBold,
@@ -100,7 +91,6 @@ data class AIICTypography(
         letterSpacing = 0.sp
     ),
 
-    // ── Title ──
     val titleLarge: TextStyle = TextStyle(
         fontFamily = PoppinsFontFamily,
         fontWeight = FontWeight.SemiBold,
@@ -123,7 +113,6 @@ data class AIICTypography(
         letterSpacing = 0.1.sp
     ),
 
-    // ── Body ──
     val bodyLarge: TextStyle = TextStyle(
         fontFamily = PoppinsFontFamily,
         fontWeight = FontWeight.Normal,
@@ -146,7 +135,6 @@ data class AIICTypography(
         letterSpacing = 0.4.sp
     ),
 
-    // ── Label ──
     val labelLarge: TextStyle = TextStyle(
         fontFamily = PoppinsFontFamily,
         fontWeight = FontWeight.SemiBold,
@@ -169,7 +157,6 @@ data class AIICTypography(
         letterSpacing = 0.5.sp
     ),
 
-    // ── Button ──
     val button: TextStyle = TextStyle(
         fontFamily = PoppinsFontFamily,
         fontWeight = FontWeight.Medium,
@@ -178,7 +165,6 @@ data class AIICTypography(
         letterSpacing = 0.25.sp
     ),
 
-    // ── Caption ──
     val caption: TextStyle = TextStyle(
         fontFamily = PoppinsFontFamily,
         fontWeight = FontWeight.Normal,
@@ -187,7 +173,6 @@ data class AIICTypography(
         letterSpacing = 0.4.sp
     ),
 
-    // ── Overline ──
     val overline: TextStyle = TextStyle(
         fontFamily = PoppinsFontFamily,
         fontWeight = FontWeight.SemiBold,

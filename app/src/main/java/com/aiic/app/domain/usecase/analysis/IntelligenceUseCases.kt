@@ -11,11 +11,6 @@ import javax.inject.Inject
 
 class CalculateATSScoreUseCase @Inject constructor() {
     
-    // In a fully decoupled system where ATS Score is calculated locally using keyword matching algorithms,
-    // this Use Case would encapsulate that complex logic without relying on an LLM.
-    // Since our architecture uses Gemini as a unified intelligence engine, we provide this Use Case 
-    // to strictly extract or recalculate sub-scores independently if needed in the future.
-    
     operator fun invoke(analysis: ResumeAnalysis): Int {
         val details = analysis.atsScoreDetails
         return (details.skillsScore * 0.3 + 
@@ -28,10 +23,6 @@ class CalculateATSScoreUseCase @Inject constructor() {
 }
 
 class GenerateRecommendationsUseCase @Inject constructor() {
-    
-    // Similarly, this acts as a specialized engine. If the LLM didn't return recommendations,
-    // or if we want to run a local rules engine based on the parsed missing keywords, 
-    // it executes here.
     
     operator fun invoke(missingKeywords: List<String>): List<Recommendation> {
         return missingKeywords.map {

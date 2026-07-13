@@ -19,15 +19,6 @@ import com.google.gson.Gson
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
-/**
- * Local-first feedback repository.
- * 
- * Interview data lives in-memory (session, questions, answers repos are all in-memory caches).
- * This impl generates AI-powered summaries using Groq via the answers already held in memory,
- * then optionally syncs to Firestore in the background.
- * 
- * NEVER blocks on Firestore reads for critical user flows.
- */
 class FirestoreFeedbackRepositoryImpl @Inject constructor(
     private val firestore: FirebaseFirestore,
     private val answerRepository: InterviewAnswerRepository,
@@ -36,16 +27,14 @@ class FirestoreFeedbackRepositoryImpl @Inject constructor(
     private val generativeAiRepository: GenerativeAiRepository
 ) : FeedbackRepository {
 
-    // Local cache for feedbacks to avoid re-generation
     private val feedbackCache = mutableMapOf<String, AnswerFeedback>()
     private val summaryCache = mutableMapOf<String, SessionSummary>()
     private val gson = Gson()
 
     override suspend fun saveAnswerFeedback(feedback: AnswerFeedback): NetworkResult<Unit> {
-        // Save locally first (always succeeds)
+        
         feedbackCache[feedback.feedbackId] = feedback
 
-        // Try to sync to Firestore in background — don't block on failure
         try {
             val dto = feedback.toDto()
             firestore.collection("sessions")
@@ -54,19 +43,18 @@ class FirestoreFeedbackRepositoryImpl @Inject constructor(
                 .document(feedback.feedbackId)
                 .set(dto)
         } catch (_: Exception) {
-            // Firestore sync failed — that's OK, we have local data
+            
         }
         return NetworkResult.Success(Unit)
     }
 
     override suspend fun getFeedbackForAnswer(answerId: String): NetworkResult<AnswerFeedback> {
-        // Check local cache first
+        
         val cached = feedbackCache.values.find { it.questionId == answerId }
         if (cached != null) {
             return NetworkResult.Success(cached)
         }
 
-        // Fallback to Firestore only if local cache misses
         return try {
             val querySnapshot = firestore.collectionGroup("feedbacks")
                 .whereEqualTo("question_id", answerId)
@@ -90,19 +78,17 @@ class FirestoreFeedbackRepositoryImpl @Inject constructor(
 
     override suspend fun generateAndSaveSessionSummary(sessionId: String): NetworkResult<SessionSummary> {
         android.util.Log.d("AIIC_DEBUG", "Entering generateAndSaveSessionSummary for sessionId: $sessionId")
-        // Check cache first
+        
         summaryCache[sessionId]?.let { return NetworkResult.Success(it) }
 
         return try {
-            // 1. Get session data from in-memory repo
+            
             val sessionResult = sessionRepository.getSessionById(sessionId)
             val session = sessionResult.getOrNull()
 
-            // 2. Get answers from in-memory repo
             val answersResult = answerRepository.getAnswersForSession(sessionId)
             val answers = answersResult.getOrNull() ?: emptyList()
 
-            // 3. Get questions from in-memory repo
             val questionsResult = questionRepository.getQuestionsForSession(sessionId)
             val questions = questionsResult.getOrNull() ?: emptyList()
 
@@ -110,7 +96,7 @@ class FirestoreFeedbackRepositoryImpl @Inject constructor(
 
             if (answers.isEmpty()) {
                 android.util.Log.d("AIIC_DEBUG", "generateAndSaveSessionSummary: Answers empty, returning basic summary")
-                // No answers saved — generate a basic summary from session data
+                
                 val basicSummary = SessionSummary(
                     sessionId = sessionId,
                     averageScore = 0,
@@ -123,7 +109,6 @@ class FirestoreFeedbackRepositoryImpl @Inject constructor(
                 return NetworkResult.Success(basicSummary)
             }
 
-            // 4. Try AI-powered summary via Groq
             android.util.Log.d("AIIC_DEBUG", "generateAndSaveSessionSummary: Calling tryAiSummary")
             val aiSummary = tryAiSummary(sessionId, session?.role ?: "Software Engineer", questions, answers)
             if (aiSummary != null) {
@@ -133,7 +118,6 @@ class FirestoreFeedbackRepositoryImpl @Inject constructor(
                 return NetworkResult.Success(aiSummary)
             }
 
-            // 5. Fallback: Build summary locally without AI
             android.util.Log.e("AIIC_DEBUG", "generateAndSaveSessionSummary: tryAiSummary failed, calling buildLocalSummary fallback")
             val localSummary = buildLocalSummary(sessionId, session?.role ?: "Unknown", session?.score ?: 0f, answers, questions)
             summaryCache[sessionId] = localSummary
@@ -142,7 +126,7 @@ class FirestoreFeedbackRepositoryImpl @Inject constructor(
 
         } catch (e: Exception) {
             android.util.Log.e("AIIC_DEBUG", "generateAndSaveSessionSummary: Exception caught", e)
-            // Ultimate fallback — never show raw exception to user
+            
             val fallbackSummary = SessionSummary(
                 sessionId = sessionId,
                 averageScore = 0,
@@ -157,10 +141,9 @@ class FirestoreFeedbackRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getSessionSummary(sessionId: String): NetworkResult<SessionSummary> {
-        // Local cache first
+        
         summaryCache[sessionId]?.let { return NetworkResult.Success(it) }
 
-        // Try Firestore
         return try {
             val document = firestore.collection("sessions")
                 .document(sessionId)
@@ -181,8 +164,6 @@ class FirestoreFeedbackRepositoryImpl @Inject constructor(
             NetworkResult.Error(message = "Summary not available offline")
         }
     }
-
-    // ── AI-Powered Summary via Groq ──
 
     private suspend fun tryAiSummary(
         sessionId: String,
@@ -274,7 +255,7 @@ Return ONLY valid JSON, no markdown.
                 .document("final")
                 .set(summary.toDto())
         } catch (_: Exception) {
-            // Background sync — don't block UI
+            
         }
     }
 }

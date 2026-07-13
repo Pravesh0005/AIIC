@@ -22,7 +22,7 @@ class FirestoreInterviewQuestionRepository @Inject constructor(
         config: InterviewConfig,
         resumeContext: String
     ): NetworkResult<List<InterviewQuestion>> {
-        // Build a rich, role-aware prompt that forces specific technical questions
+        
         val pastQuestions = questionsCache.map { it.content }.takeLast(30).joinToString("\n- ")
 
         val roleSpecificGuidance = getRoleSpecificGuidance(config.role, config.interviewType)
@@ -58,7 +58,7 @@ class FirestoreInterviewQuestionRepository @Inject constructor(
             if (questions.size >= config.questionCount) {
                 NetworkResult.Success(questions)
             } else {
-                // AI returned fewer questions than expected, supplement with role-specific fallback
+                
                 val supplemented = questions.toMutableList()
                 val fallback = getRoleFallbackQuestions(config.role, config.interviewType)
                     .shuffled()
@@ -75,7 +75,7 @@ class FirestoreInterviewQuestionRepository @Inject constructor(
                 NetworkResult.Success(supplemented)
             }
         } else {
-            // Full fallback — AI completely unavailable
+            
             val fallback = getRoleFallbackQuestions(config.role, config.interviewType)
                 .shuffled()
                 .take(config.questionCount)
@@ -132,8 +132,6 @@ No numbers or bullet points.
         val sessionQuestions = questionsCache.filter { it.sessionId == sessionId }
         return NetworkResult.Success(sessionQuestions)
     }
-
-    // ==================== ROLE-SPECIFIC QUESTION GUIDANCE ====================
 
     private fun getRoleSpecificGuidance(role: String, type: InterviewType): String {
         val roleLower = role.lowercase()

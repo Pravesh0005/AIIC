@@ -148,7 +148,7 @@ fun AIICNavHost(navController: NavHostController = rememberNavController()) {
                 },
                 onNavigateToAnalytics = { navController.navigate(AppRoutes.Analytics.route) },
                 onNavigateToSettings = { navController.navigate(AppRoutes.Settings.route) },
-                onNavigateToProfile = { /* Handled in-tab via HomeScreen bottom nav */ },
+                onNavigateToProfile = {  },
                 onNavigateToTips = { navController.navigate(AppRoutes.InterviewTips.route) }
             )
         }
@@ -177,7 +177,6 @@ fun AIICNavHost(navController: NavHostController = rememberNavController()) {
             )
         }
 
-        // Resume Platform
         composable(AppRoutes.ResumeDashboard.route) {
             ResumeDashboardScreen(
                 onNavigateToUpload = { navController.navigate(AppRoutes.ResumeUpload.route) },
@@ -264,7 +263,6 @@ fun AIICNavHost(navController: NavHostController = rememberNavController()) {
             )
         }
 
-        // Analytics Dashboard
         composable(AppRoutes.Analytics.route) {
             AnalyticsDashboardScreen(
                 onNavigateBack = { navController.popBackStack() },
@@ -274,14 +272,12 @@ fun AIICNavHost(navController: NavHostController = rememberNavController()) {
             )
         }
 
-        // Interview Tips / Mastery
         composable(AppRoutes.InterviewTips.route) {
             com.aiic.app.presentation.feature_tips.InterviewTipsScreen(
                 onNavigateBack = { navController.popBackStack() }
             )
         }
 
-        // --- Phase 4: AI Mock Interview Engine ---
         composable(AppRoutes.InterviewSetup.route) {
             com.aiic.app.presentation.feature_interview.setup.InterviewSetupScreen(
                 onNavigateBack = { navController.popBackStack() },
@@ -332,7 +328,6 @@ fun AIICNavHost(navController: NavHostController = rememberNavController()) {
             )
         }
 
-        // Comprehensive Interview Report
         composable(
             route = AppRoutes.InterviewReport.route,
             arguments = listOf(androidx.navigation.navArgument("sessionId") { type = androidx.navigation.NavType.StringType })

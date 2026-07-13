@@ -123,7 +123,7 @@ fun InterviewSessionScreen(
                     }
                 },
                 actions = {
-                    // Timer pill
+                    
                     Box(
                         modifier = Modifier
                             .padding(end = 16.dp)
@@ -155,7 +155,6 @@ fun InterviewSessionScreen(
         ) {
             Spacer(modifier = Modifier.height(8.dp))
 
-            // ── AI Interviewer Section ──
             InterviewerBubble(
                 question = state.currentQuestion?.content ?: "Preparing question...",
                 isFollowUp = state.currentQuestion?.isFollowUp == true,
@@ -164,7 +163,6 @@ fun InterviewSessionScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // ── Camera Preview ──
             if (state.interviewMode == InterviewMode.VIDEO) {
                 CameraPreviewSection(
                     viewModel = viewModel,
@@ -173,7 +171,6 @@ fun InterviewSessionScreen(
                 Spacer(modifier = Modifier.height(16.dp))
             }
 
-            // ── Voice Mode: Waveform + Transcript ──
             if (state.interviewMode == InterviewMode.VOICE || state.interviewMode == InterviewMode.VIDEO) {
                 VoiceInterviewSection(
                     transcript = state.voiceTranscript,
@@ -184,7 +181,7 @@ fun InterviewSessionScreen(
                     modifier = Modifier.fillMaxWidth().heightIn(min = 250.dp, max = 400.dp)
                 )
             } else {
-                // ── Text Mode: Answer Input ──
+                
                 TextInterviewSection(
                     answer = state.currentAnswerInput,
                     onAnswerChange = { viewModel.onAction(InterviewSessionAction.UpdateAnswerInput(it)) },
@@ -193,13 +190,11 @@ fun InterviewSessionScreen(
                 )
             }
 
-            // ── Camera Warning Bar ──
             if (state.interviewMode == InterviewMode.VIDEO && state.cameraWarning != null) {
                 CameraWarningBar(warning = state.cameraWarning!!)
                 Spacer(modifier = Modifier.height(8.dp))
             }
 
-            // ── Error Display ──
             if (state.error != null) {
                 Text(
                     text = state.error!!,
@@ -211,7 +206,6 @@ fun InterviewSessionScreen(
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            // ── Action Buttons ──
             ActionBar(
                 interviewMode = state.interviewMode,
                 isVoiceRecording = state.isVoiceRecording,
@@ -226,9 +220,9 @@ fun InterviewSessionScreen(
             Spacer(modifier = Modifier.height(16.dp))
         }
     }
-    } // end else
-    } // end onAllGranted
-    ) // end InterviewPermissionGate
+    } 
+    } 
+    ) 
 }
 
 @Composable
@@ -251,7 +245,7 @@ private fun InterviewerBubble(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.padding(bottom = 12.dp)
             ) {
-                // AI Avatar
+                
                 Box(
                     modifier = Modifier
                         .size(36.dp)
@@ -347,7 +341,7 @@ private fun VoiceInterviewSection(
     var editableText by remember(transcript) { mutableStateOf(transcript) }
 
     Column(modifier = modifier) {
-        // Waveform
+        
         VoiceWaveform(
             rmsLevel = rmsLevel,
             isActive = isRecording,
@@ -357,7 +351,6 @@ private fun VoiceInterviewSection(
 
         Spacer(Modifier.height(12.dp))
 
-        // "Your Answer" label + Edit button
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -381,7 +374,6 @@ private fun VoiceInterviewSection(
 
         Spacer(Modifier.height(4.dp))
 
-        // Transcript area - editable or read-only
         PremiumCard(
             modifier = Modifier
                 .fillMaxWidth()
@@ -504,7 +496,7 @@ private fun ActionBar(
         horizontalArrangement = Arrangement.spacedBy(12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        // Pause button
+        
         IconButton(
             onClick = onTogglePause,
             modifier = Modifier
@@ -521,7 +513,6 @@ private fun ActionBar(
             )
         }
 
-        // Voice toggle (for voice/video modes)
         if (interviewMode == InterviewMode.VOICE || interviewMode == InterviewMode.VIDEO) {
             IconButton(
                 onClick = onToggleVoice,
@@ -543,7 +534,6 @@ private fun ActionBar(
             }
         }
 
-        // Submit button
         Button(
             onClick = onSubmit,
             modifier = Modifier

@@ -190,7 +190,6 @@ fun EditProfileScreen(
                 
                 Spacer(Modifier.height(24.dp))
 
-                // Personal Information
                 AnimatedVisibility(visibleItems > 1, enter = fadeIn() + slideInVertically { 30 }) {
                     PremiumCard(modifier = Modifier.fillMaxWidth()) {
                         Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
@@ -209,7 +208,6 @@ fun EditProfileScreen(
                                 leadingIcon = Icons.Rounded.Person,
                             )
 
-                            // Gender Selection
                             Text(
                                 text = "Gender",
                                 style = AIICTheme.typography.labelMedium,
@@ -245,7 +243,6 @@ fun EditProfileScreen(
 
                 Spacer(Modifier.height(16.dp))
 
-                // Career Goals
                 AnimatedVisibility(visibleItems > 2, enter = fadeIn() + slideInVertically { 30 }) {
                     PremiumCard(modifier = Modifier.fillMaxWidth()) {
                         Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
@@ -277,7 +274,6 @@ fun EditProfileScreen(
 
                 Spacer(Modifier.height(16.dp))
 
-                // Background
                 AnimatedVisibility(visibleItems > 3, enter = fadeIn() + slideInVertically { 30 }) {
                     PremiumCard(modifier = Modifier.fillMaxWidth()) {
                         Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {

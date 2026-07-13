@@ -72,13 +72,6 @@ import com.aiic.app.common.components.PremiumCard
 import com.aiic.app.common.components.SectionHeader
 import com.aiic.app.core.theme.AIICTheme
 
-/**
- * Home Screen — Design Reference #9
- * Bottom nav: Home | Interviews | Resume | Analytics | Profile
- * Content: Greeting → Progress card → Quick Actions (4-grid) →
- *          Recent Interviews → AI Insight → Stats row
- */
-
 private data class NavItem(
     val label: String,
     val selectedIcon: ImageVector,
@@ -172,7 +165,7 @@ fun HomeScreen(
                     streakDays = state.streakDays
                 )
                 2 -> {
-                    // Resume tab — navigate to resume screen
+                    
                     LaunchedEffect(Unit) { onNavigateToResume() }
                 }
                 3 -> com.aiic.app.presentation.feature_analytics.AnalyticsScreen(
@@ -211,7 +204,7 @@ private fun HomeContent(
         contentPadding = PaddingValues(bottom = 16.dp),
         verticalArrangement = Arrangement.spacedBy(20.dp),
     ) {
-        // ── Top Bar ──
+        
         item {
             Row(
                 modifier = Modifier
@@ -221,7 +214,7 @@ private fun HomeContent(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    // Hamburger / logo area
+                    
                     Column {
                         Text(
                             text = "AIIC",
@@ -236,7 +229,7 @@ private fun HomeContent(
                         )
                     }
                 }
-                IconButton(onClick = { /* notifications */ }) {
+                IconButton(onClick = {  }) {
                     Icon(
                         Icons.Rounded.Notifications,
                         contentDescription = "Notifications",
@@ -246,7 +239,6 @@ private fun HomeContent(
             }
         }
 
-        // ── Greeting ──
         item {
             Column(
                 modifier = Modifier.padding(horizontal = 20.dp),
@@ -266,7 +258,6 @@ private fun HomeContent(
             }
         }
 
-        // ── Overall Progress Card ──
         item {
             Box(
                 modifier = Modifier
@@ -296,7 +287,7 @@ private fun HomeContent(
                             color = AIICTheme.colors.textSecondary,
                         )
                         Spacer(Modifier.height(12.dp))
-                        // Progress bar
+                        
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth(0.8f)
@@ -333,7 +324,7 @@ private fun HomeContent(
                             )
                         }
                     }
-                    // Score circle
+                    
                     Box(
                         modifier = Modifier
                             .size(64.dp)
@@ -353,7 +344,6 @@ private fun HomeContent(
             }
         }
 
-        // ── Quick Actions (4-grid) ──
         item {
             Column {
                 SectionHeader(title = "Quick Actions", action = "See All >", onAction = {})
@@ -400,7 +390,6 @@ private fun HomeContent(
             }
         }
 
-        // ── AI Insight Card ──
         item {
             Box(
                 modifier = Modifier
@@ -437,7 +426,6 @@ private fun HomeContent(
             }
         }
 
-        // ── Bottom Stats Row ──
         item {
             Row(
                 modifier = Modifier
@@ -478,7 +466,6 @@ private fun HomeContent(
     }
 }
 
-// ── Quick Action Grid Item ──
 @Composable
 private fun QuickActionItem(
     icon: ImageVector,
@@ -524,7 +511,6 @@ private fun QuickActionItem(
     }
 }
 
-// ── Bottom Stat Item ──
 @Composable
 private fun BottomStat(
     icon: ImageVector,

@@ -19,15 +19,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.aiic.app.core.theme.AIICTheme
 
-/**
- * AIIC Custom Loading & Animation Icons
- * As per Design Reference:
- * - Dot Pulse
- * - Ring Loader
- * - AI Thinking (Pulse / Wave)
- * - Gradient Spin
- */
-
 @Composable
 fun AIICDotPulse(
     modifier: Modifier = Modifier,
@@ -80,7 +71,7 @@ fun AIICRingLoader(
     color: Color = AIICTheme.colors.primary,
     strokeWidth: Dp = 4.dp
 ) {
-    // Custom styled CircularProgressIndicator for Ring Loader
+    
     CircularProgressIndicator(
         modifier = modifier,
         color = color,
@@ -118,14 +109,14 @@ fun AIICPulseAnimation(
     )
 
     Box(contentAlignment = Alignment.Center, modifier = modifier) {
-        // Outer pulsing ring
+        
         Box(
             modifier = Modifier
                 .size(baseSize)
                 .scale(scale)
                 .background(color.copy(alpha = alpha), shape = CircleShape)
         )
-        // Inner solid core
+        
         Box(
             modifier = Modifier
                 .size(baseSize / 2)

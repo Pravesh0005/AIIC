@@ -45,7 +45,7 @@ import java.util.Locale
 @Composable
 fun ResumeInsightsScreen(
     onNavigateBack: () -> Unit,
-    onNavigateToAnalysis: (String) -> Unit, // pass resumeId
+    onNavigateToAnalysis: (String) -> Unit, 
     viewModel: ResumeInsightsViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()

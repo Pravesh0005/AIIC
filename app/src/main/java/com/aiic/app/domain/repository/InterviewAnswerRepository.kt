@@ -6,5 +6,5 @@ import com.aiic.app.domain.model.InterviewAnswer
 interface InterviewAnswerRepository {
     suspend fun submitAnswer(answer: InterviewAnswer): NetworkResult<Unit>
     suspend fun getAnswersForSession(sessionId: String): NetworkResult<List<InterviewAnswer>>
-    suspend fun evaluateAnswer(question: String, answer: String): NetworkResult<Pair<Float, String>> // Returns Score & Feedback
+    suspend fun evaluateAnswer(question: String, answer: String): NetworkResult<Pair<Float, String>> 
 }

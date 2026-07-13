@@ -32,7 +32,6 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object AppModule {
 
-    // Firebase
     @Provides @Singleton
     fun provideFirebaseAuth(): FirebaseAuth = FirebaseAuth.getInstance()
 
@@ -42,12 +41,10 @@ object AppModule {
     @Provides @Singleton
     fun provideFirebaseStorage(): FirebaseStorage = FirebaseStorage.getInstance()
 
-    // Local
     @Provides @Singleton
     fun providePreferencesManager(@ApplicationContext context: Context): PreferencesManager =
         PreferencesManager(context)
 
-    // Repositories
     @Provides @Singleton
     fun provideAuthRepository(auth: FirebaseAuth): AuthRepository =
         FirebaseAuthRepository(auth)
@@ -115,21 +112,18 @@ object AppModule {
             firestore, answerRepository, questionRepository, sessionRepository, generativeAiRepository
         )
 
-    // Interview Report Repository
     @Provides @Singleton
     fun provideInterviewReportRepository(
         firestore: FirebaseFirestore
     ): com.aiic.app.domain.repository.InterviewReportRepository =
         com.aiic.app.data.repository.FirestoreInterviewReportRepository(firestore)
 
-    // Voice & Camera Analysis Engines
     @Provides @Singleton
     fun provideVoiceAnalysisEngine(): VoiceAnalysisEngine = VoiceAnalysisEngine()
 
     @Provides @Singleton
     fun provideBodyLanguageAnalyzer(): BodyLanguageAnalyzer = BodyLanguageAnalyzer()
 
-    // Infrastructure
     @Provides @Singleton
     fun provideDispatcherProvider(): DispatcherProvider = DefaultDispatcherProvider()
 

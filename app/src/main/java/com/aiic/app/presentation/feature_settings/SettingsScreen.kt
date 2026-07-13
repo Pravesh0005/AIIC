@@ -71,7 +71,6 @@ fun SettingsScreen(
     val isDarkTheme = com.aiic.app.core.theme.LocalIsDarkTheme.current
     val onToggleTheme = com.aiic.app.core.theme.LocalThemeToggle.current
 
-    // ── Language picker dialog ──
     if (showLanguageDialog) {
         AlertDialog(
             onDismissRequest = { showLanguageDialog = false },
@@ -121,7 +120,6 @@ fun SettingsScreen(
         )
     }
 
-    // ── Data & Storage dialog ──
     if (showDataStorageDialog) {
         AlertDialog(
             onDismissRequest = { showDataStorageDialog = false },
@@ -152,7 +150,6 @@ fun SettingsScreen(
         )
     }
 
-    // ── Privacy & Security dialog ──
     if (showPrivacyDialog) {
         AlertDialog(
             onDismissRequest = { showPrivacyDialog = false },
@@ -183,7 +180,6 @@ fun SettingsScreen(
         )
     }
 
-    // ── Help & Support dialog ──
     if (showHelpDialog) {
         AlertDialog(
             onDismissRequest = { showHelpDialog = false },
@@ -213,7 +209,6 @@ fun SettingsScreen(
         )
     }
 
-    // ── About AIIC dialog ──
     if (showAboutDialog) {
         AlertDialog(
             onDismissRequest = { showAboutDialog = false },
@@ -266,7 +261,6 @@ fun SettingsScreen(
 
         Spacer(Modifier.height(28.dp))
 
-        // ── Preferences ──
         Text(
             text = "Preferences",
             style = AIICTheme.typography.titleMedium,
@@ -300,7 +294,6 @@ fun SettingsScreen(
 
         Spacer(Modifier.height(28.dp))
 
-        // ── General ──
         Text(
             text = "General",
             style = AIICTheme.typography.titleMedium,
@@ -334,7 +327,6 @@ fun SettingsScreen(
 
         Spacer(Modifier.height(28.dp))
 
-        // ── Support ──
         Text(
             text = "Support",
             style = AIICTheme.typography.titleMedium,

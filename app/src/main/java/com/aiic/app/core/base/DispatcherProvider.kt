@@ -5,10 +5,6 @@ import kotlinx.coroutines.Dispatchers
 import javax.inject.Inject
 import javax.inject.Singleton
 
-/**
- * Abstraction over CoroutineDispatchers for testability.
- * In tests, swap with TestDispatcherProvider using StandardTestDispatcher.
- */
 interface DispatcherProvider {
     val main: CoroutineDispatcher
     val io: CoroutineDispatcher

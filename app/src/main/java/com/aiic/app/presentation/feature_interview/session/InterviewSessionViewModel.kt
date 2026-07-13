@@ -37,18 +37,14 @@ data class InterviewSessionState(
     val error: String? = null,
     val answeredCount: Int = 0,
 
-    // Interview mode
     val interviewMode: InterviewMode = InterviewMode.TEXT,
 
-    // Voice state
     val isVoiceRecording: Boolean = false,
     val voiceTranscript: String = "",
     val voiceRmsLevel: Float = 0f,
 
-    // Camera state
     val cameraWarning: String? = null,
 
-    // Pause state
     val isPaused: Boolean = false
 )
 
@@ -122,11 +118,10 @@ class InterviewSessionViewModel @Inject constructor(
                         }
                         startTimer()
 
-                        // Initialize voice if needed
                         if (currentState.interviewMode != InterviewMode.TEXT) {
                             initializeSpeechRecognizer()
                         }
-                        // Initialize camera if needed
+                        
                         if (currentState.interviewMode == InterviewMode.VIDEO) {
                             initializeCamera()
                         }
@@ -222,7 +217,6 @@ class InterviewSessionViewModel @Inject constructor(
     private fun submitCurrentAnswer() {
         val question = currentState.currentQuestion ?: return
 
-        // Get the answer from either voice transcript or text input
         val answer = if (currentState.interviewMode != InterviewMode.TEXT && currentState.voiceTranscript.isNotBlank()) {
             currentState.voiceTranscript
         } else {
@@ -236,13 +230,11 @@ class InterviewSessionViewModel @Inject constructor(
 
         if (currentState.isEvaluating) return
 
-        // Stop voice recording if active
         if (currentState.isVoiceRecording) {
             speechManager?.stopListening()
             updateState { copy(isVoiceRecording = false) }
         }
 
-        // Analyze voice metrics if applicable
         if (currentState.interviewMode != InterviewMode.TEXT && speechManager != null) {
             val voiceResult = voiceAnalysisEngine.analyzeTranscript(
                 transcript = currentState.voiceTranscript,
@@ -285,7 +277,7 @@ class InterviewSessionViewModel @Inject constructor(
             updateState { copy(answeredCount = newAnsweredCount) }
             finishSession()
         } else {
-            // Reset voice state for next question
+            
             speechManager?.resetTranscript()
 
             val nextQ = pendingQuestions.removeAt(0)
@@ -306,12 +298,10 @@ class InterviewSessionViewModel @Inject constructor(
         viewModelScope.launch {
             updateState { copy(isEvaluating = true) }
 
-            // Complete the interview (batch AI evaluation of answers)
             withTimeoutOrNull(30000L) {
                 completeInterviewUseCase(currentState.sessionId)
             }
 
-            // Generate comprehensive report
             withTimeoutOrNull(45000L) {
                 generateInterviewReportUseCase(
                     sessionId = currentState.sessionId,
@@ -320,7 +310,6 @@ class InterviewSessionViewModel @Inject constructor(
                 )
             }
 
-            // Navigate to summary
             updateState { copy(sessionComplete = true, isEvaluating = false) }
             sendEvent(UiEvent.Navigate("interview_summary/${currentState.sessionId}"))
         }

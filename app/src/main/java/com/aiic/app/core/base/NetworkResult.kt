@@ -1,9 +1,5 @@
 package com.aiic.app.core.base
 
-/**
- * Type-safe network result wrapper replacing kotlin.Result.
- * Carries error codes for proper error taxonomy.
- */
 sealed interface NetworkResult<out T> {
     data class Success<T>(val data: T) : NetworkResult<T>
     data class Error(

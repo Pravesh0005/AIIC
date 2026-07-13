@@ -54,12 +54,6 @@ import com.aiic.app.core.base.UiEvent
 import com.aiic.app.core.theme.AIICTheme
 import kotlinx.coroutines.delay
 
-/**
- * Login Screen — Pixel-perfect match to Design Reference #3
- * Layout: Logo → "AIIC" → "AI Interview Coach" → "Welcome Back!" →
- *         subtitle → Email field → Password field → Forgot Password →
- *         "Sign In →" → divider → "Continue with Google" → "Sign Up"
- */
 @Composable
 fun LoginScreen(
     onNavigateToRegister: () -> Unit,
@@ -101,10 +95,10 @@ fun LoginScreen(
                 .padding(top = 48.dp, bottom = 40.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            // ── Logo Section ──
+            
             AnimatedVisibility(visibleItems > 0, enter = fadeIn() + slideInVertically { -30 }) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    // AIIC Logo
+                    
                     Image(
                         painter = painterResource(id = R.drawable.logo),
                         contentDescription = "AIIC Logo",
@@ -127,7 +121,6 @@ fun LoginScreen(
 
             Spacer(Modifier.height(32.dp))
 
-            // ── Welcome Text ──
             AnimatedVisibility(visibleItems > 1, enter = fadeIn() + slideInVertically { -20 }) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Text(
@@ -148,10 +141,9 @@ fun LoginScreen(
 
             Spacer(Modifier.height(32.dp))
 
-            // ── Form Fields ──
             AnimatedVisibility(visibleItems > 2, enter = fadeIn() + slideInVertically { 20 }) {
                 Column(verticalArrangement = Arrangement.spacedBy(20.dp)) {
-                    // Email
+                    
                     AIICTextField(
                         value = state.email,
                         onValueChange = { viewModel.onAction(LoginAction.UpdateEmail(it)) },
@@ -162,7 +154,6 @@ fun LoginScreen(
                         keyboardType = KeyboardType.Email,
                     )
 
-                    // Password
                     AIICTextField(
                         value = state.password,
                         onValueChange = { viewModel.onAction(LoginAction.UpdatePassword(it)) },
@@ -186,7 +177,6 @@ fun LoginScreen(
                         keyboardType = KeyboardType.Password,
                     )
 
-                    // Forgot Password
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.End,
@@ -205,7 +195,6 @@ fun LoginScreen(
 
             Spacer(Modifier.height(24.dp))
 
-            // ── Sign In Button ──
             AnimatedVisibility(visibleItems > 3, enter = fadeIn() + slideInVertically { 20 }) {
                 PremiumButton(
                     text = "Sign In",
@@ -219,7 +208,6 @@ fun LoginScreen(
 
             Spacer(Modifier.height(24.dp))
 
-            // ── Divider ──
             AnimatedVisibility(visibleItems > 4, enter = fadeIn()) {
                 Row(
                     modifier = Modifier
@@ -246,7 +234,6 @@ fun LoginScreen(
 
             Spacer(Modifier.height(24.dp))
 
-            // ── Google Sign In ──
             AnimatedVisibility(visibleItems > 5, enter = fadeIn() + slideInVertically { 20 }) {
                 val context = androidx.compose.ui.platform.LocalContext.current
                 val googleSignInLauncher = androidx.activity.compose.rememberLauncherForActivityResult(
@@ -281,7 +268,6 @@ fun LoginScreen(
 
             Spacer(Modifier.height(32.dp))
 
-            // ── Register Link ──
             AnimatedVisibility(visibleItems > 6, enter = fadeIn()) {
                 Row(
                     horizontalArrangement = Arrangement.Center,

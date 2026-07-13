@@ -4,56 +4,31 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 
-/**
- * AIIC Design System — Color Tokens
- * Extracted from official design reference boards.
- *
- * Primary Palette:
- *   #006BFF  — Primary Blue
- *   #00D4FF  — Cyan Accent
- *   #0A0F1C  — Deep Dark Background
- *   #121826  — Card / Surface
- *   #1E2433  — Elevated Surface
- *   #FFFFFF  — Primary Text
- *
- * Semantic:
- *   #10B981  — Success / Green
- *   #8B5CF6  — Purple / Behavioral
- *   #F59E0B  — Warning / Amber
- *   #EF4444  — Error / Red
- *   #0F172A  — Dark Accent Surface
- *   #94A3B8  — Muted Text
- */
 @Immutable
 data class AIICColors(
-    // ── Backgrounds ──
+    
     val background: Color = Color(0xFF0A0F1C),
     val surface: Color = Color(0xFF121826),
     val surfaceElevated: Color = Color(0xFF1E2433),
     val surfaceCard: Color = Color(0xFF121826),
     val surfaceBright: Color = Color(0xFF2A3347),
 
-    // ── Primary ──
     val primary: Color = Color(0xFF006BFF),
     val primaryVariant: Color = Color(0xFF0055CC),
     val primaryMuted: Color = Color(0xFF0A1A3A),
     val primaryContainer: Color = Color(0xFF0D2240),
 
-    // ── Secondary ──
     val secondary: Color = Color(0xFF00D4FF),
     val secondaryVariant: Color = Color(0xFF00B8D4),
     val secondaryMuted: Color = Color(0xFF0A2A33),
 
-    // ── Accent ──
     val accent: Color = Color(0xFF00D4FF),
     val accentVariant: Color = Color(0xFF00B8D4),
     val accentMuted: Color = Color(0xFF0A2A33),
 
-    // ── Tertiary ──
     val tertiary: Color = Color(0xFF1E2433),
     val tertiaryMuted: Color = Color(0xFF151B2B),
 
-    // ── Semantic Colors ──
     val warning: Color = Color(0xFFF59E0B),
     val warningMuted: Color = Color(0xFF78350F),
 
@@ -63,30 +38,25 @@ data class AIICColors(
     val success: Color = Color(0xFF10B981),
     val successMuted: Color = Color(0xFF064E3B),
 
-    // ── Feature Colors (from Home Dashboard) ──
     val purple: Color = Color(0xFF8B5CF6),
     val orange: Color = Color(0xFFF59E0B),
     val green: Color = Color(0xFF10B981),
     val red: Color = Color(0xFFEF4444),
     val cyan: Color = Color(0xFF00D4FF),
 
-    // ── Text ──
     val textPrimary: Color = Color(0xFFFFFFFF),
     val textSecondary: Color = Color(0xFF94A3B8),
     val textTertiary: Color = Color(0xFF64748B),
     val textDisabled: Color = Color(0xFF475569),
     val textOnPrimary: Color = Color(0xFFFFFFFF),
 
-    // ── Borders ──
     val border: Color = Color(0xFF1E2433),
     val borderFocused: Color = Color(0xFF006BFF),
     val borderSubtle: Color = Color(0xFF1A2035),
 
-    // ── Shimmer ──
     val shimmer: Color = Color(0xFF1E2433),
     val shimmerHighlight: Color = Color(0xFF2A3347),
 
-    // ── Gradients ──
     val gradientPrimaryStart: Color = Color(0xFF006BFF),
     val gradientPrimaryEnd: Color = Color(0xFF00D4FF),
     val gradientSecondaryStart: Color = Color(0xFF00D4FF),
@@ -94,21 +64,17 @@ data class AIICColors(
     val gradientDarkStart: Color = Color(0xFF121826),
     val gradientDarkEnd: Color = Color(0xFF0A0F1C),
 
-    // ── Glass / Blur ──
     val glassBackground: Color = Color(0x1A006BFF),
     val glassBorder: Color = Color(0x33006BFF),
     val glassHighlight: Color = Color(0x0D00D4FF),
 
-    // ── Overlay ──
     val overlay: Color = Color(0xCC0A0F1C),
     val scrim: Color = Color(0x990A0F1C),
 
-    // ── Navigation ──
     val navBarBackground: Color = Color(0xF00A0F1C),
     val navBarSelected: Color = Color(0xFF006BFF),
     val navBarUnselected: Color = Color(0xFF64748B),
 
-    // ── Glow ──
     val glowBlue: Color = Color(0xFF006BFF),
     val glowCyan: Color = Color(0xFF00D4FF),
 )

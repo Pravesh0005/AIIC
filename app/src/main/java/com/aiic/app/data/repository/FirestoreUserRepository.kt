@@ -113,7 +113,6 @@ class FirestoreUserRepository @Inject constructor(
             val path = "profiles/$uid/avatar.jpg"
             val storageRef = storage.reference.child(path)
             
-            // 1. Copy content URI to local cache to verify read access and size
             val context = com.google.firebase.FirebaseApp.getInstance().applicationContext
             val localFile = java.io.File(context.cacheDir, "temp_avatar_$uid.jpg")
             try {
@@ -144,7 +143,7 @@ class FirestoreUserRepository @Inject constructor(
                 android.util.Log.e("AIIC_STORAGE", "putFile failed: ${e.message}", e)
                 return NetworkResult.Error(code = 500, message = "Upload failed (putFile): ${e.localizedMessage}", throwable = e)
             } finally {
-                localFile.delete() // Cleanup
+                localFile.delete() 
             }
             
             val downloadUrl = try {

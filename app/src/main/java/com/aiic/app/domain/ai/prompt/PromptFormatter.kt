@@ -3,7 +3,7 @@ package com.aiic.app.domain.ai.prompt
 object PromptFormatter {
     
     fun formatResumeAnalysisUserPrompt(rawResumeText: String): String {
-        // Strip out excessive whitespace and special characters to optimize token usage
+        
         val cleanedText = rawResumeText.replace(Regex("\\s+"), " ").trim()
         return String.format(PromptTemplates.RESUME_ANALYSIS_USER_PROMPT_TEMPLATE, cleanedText)
     }

@@ -63,12 +63,10 @@ fun InterviewTipsScreen(
         ) {
             Spacer(Modifier.height(8.dp))
 
-            // Hero Banner
             TipHeroBanner()
 
             Spacer(Modifier.height(24.dp))
 
-            // Category tabs
             Text(
                 "Topics",
                 style = AIICTheme.typography.titleLarge,
@@ -97,7 +95,6 @@ fun InterviewTipsScreen(
 
             Spacer(Modifier.height(16.dp))
 
-            // Tips list
             val tips = getTips().filter { tip ->
                 selectedCategory == 0 || tip.category == categories[selectedCategory]
             }
@@ -109,7 +106,6 @@ fun InterviewTipsScreen(
 
             Spacer(Modifier.height(24.dp))
 
-            // Daily Challenge
             DailyChallengeCard()
 
             Spacer(Modifier.height(40.dp))
@@ -181,7 +177,7 @@ data class InterviewTip(
     val icon: ImageVector,
     val color: Color,
     val category: String,
-    val importance: Int = 1 // 1-3
+    val importance: Int = 1 
 )
 
 @Composable
@@ -227,7 +223,6 @@ private fun TipCard(tip: InterviewTip) {
                     )
                 }
 
-                // Importance dots
                 Row(horizontalArrangement = Arrangement.spacedBy(3.dp), modifier = Modifier.padding(top = 4.dp)) {
                     repeat(3) { i ->
                         Box(

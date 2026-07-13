@@ -23,7 +23,7 @@ class FirestoreInterviewAnswerRepository @Inject constructor(
 
     override suspend fun submitAnswer(answer: InterviewAnswer): NetworkResult<Unit> {
         answersCache.add(answer)
-        // Also persist to Firestore so AI summary can always read it
+        
         try {
             firestore.collection("sessions")
                 .document(answer.sessionId)
@@ -46,14 +46,13 @@ class FirestoreInterviewAnswerRepository @Inject constructor(
     }
 
     override suspend fun getAnswersForSession(sessionId: String): NetworkResult<List<InterviewAnswer>> {
-        // Return from in-memory cache first (fastest path)
+        
         val sessionAnswers = answersCache.filter { it.sessionId == sessionId }
         if (sessionAnswers.isNotEmpty()) {
             Log.d(TAG, "getAnswersForSession: Returning ${sessionAnswers.size} answers from cache")
             return NetworkResult.Success(sessionAnswers)
         }
 
-        // Fallback: read from Firestore (covers cross-ViewModel / process-restart scenarios)
         return try {
             Log.d(TAG, "getAnswersForSession: Cache miss, fetching from Firestore for session=$sessionId")
             val snapshot = firestore.collection("sessions")
@@ -78,7 +77,7 @@ class FirestoreInterviewAnswerRepository @Inject constructor(
                 }
             }
             Log.d(TAG, "getAnswersForSession: Loaded ${firestoreAnswers.size} answers from Firestore")
-            // Populate cache for subsequent calls
+            
             answersCache.addAll(firestoreAnswers.filter { fsAnswer ->
                 answersCache.none { it.answerId == fsAnswer.answerId }
             })
@@ -127,11 +126,10 @@ class FirestoreInterviewAnswerRepository @Inject constructor(
                 
                 return NetworkResult.Success(Pair(score, feedback))
             } catch (e: Exception) {
-                // Fallback parsing
+                
             }
         }
         
-        // Default fallback if parsing fails
         return NetworkResult.Success(Pair(0f, "We couldn't evaluate this answer correctly."))
     }
 }

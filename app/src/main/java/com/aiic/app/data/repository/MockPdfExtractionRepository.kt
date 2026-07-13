@@ -8,11 +8,9 @@ import javax.inject.Inject
 class MockPdfExtractionRepository @Inject constructor() : PdfExtractionRepository {
 
     override suspend fun extractTextFromPdf(userId: String, resumeId: String): NetworkResult<String> {
-        // Simulate network/disk latency
+        
         delay(1500)
         
-        // This is a stubbed implementation. In production, this would use iText, PdfBox, 
-        // or a server-side Cloud Function to extract the text buffer.
         val mockExtractedText = """
             John Doe
             Software Engineer

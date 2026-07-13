@@ -25,7 +25,7 @@ import java.util.Locale
 class MainActivity : ComponentActivity() {
 
     override fun attachBaseContext(newBase: Context) {
-        // Apply saved locale before Activity creates its resources
+        
         val prefs = newBase.getSharedPreferences("aiic_prefs", Context.MODE_PRIVATE)
         val savedLang = prefs.getString("app_language", "English") ?: "English"
         val locale = mapLanguageToLocale(savedLang)

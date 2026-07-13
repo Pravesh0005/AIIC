@@ -27,11 +27,6 @@ import androidx.core.content.ContextCompat
 import com.aiic.app.common.components.PremiumButton
 import com.aiic.app.core.theme.AIICTheme
 
-/**
- * Composable that handles runtime permissions for voice and video interview modes.
- * Shows a premium permission request UI if permissions are not granted.
- * Calls [onAllGranted] once all required permissions are available.
- */
 @Composable
 fun InterviewPermissionGate(
     requireMicrophone: Boolean = false,
@@ -91,7 +86,7 @@ private fun PermissionRequestScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        // Shield icon
+        
         Box(
             modifier = Modifier
                 .size(80.dp)
@@ -190,8 +185,5 @@ private fun PermissionItem(
     }
 }
 
-/**
- * Utility to check if a specific permission is granted.
- */
 fun hasPermission(context: Context, permission: String): Boolean =
     ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED

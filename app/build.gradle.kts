@@ -23,7 +23,6 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables { useSupportLibrary = true }
 
-        // Read local.properties or use placeholder
         val localProperties = Properties()
         val localPropertiesFile = rootProject.file("local.properties")
         if (localPropertiesFile.exists()) {
@@ -95,14 +94,12 @@ dependencies {
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.kotlinx.coroutines.play.services)
 
-    // Firebase
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.auth)
     implementation(libs.firebase.firestore)
     implementation(libs.firebase.storage)
     implementation(libs.firebase.analytics)
 
-    // Google Sign-In
     implementation(libs.play.services.auth)
     implementation(libs.credentials)
     implementation(libs.credentials.play.services)
@@ -114,18 +111,15 @@ dependencies {
     implementation(libs.androidx.ui.text.google.fonts)
     implementation(libs.accompanist.systemuicontroller)
     
-    // AI Intelligence
     implementation(libs.generativeai)
     implementation(libs.gson)
     implementation(libs.pdfbox.android)
 
-    // CameraX (Video Interview)
     implementation(libs.camerax.core)
     implementation(libs.camerax.camera2)
     implementation(libs.camerax.lifecycle)
     implementation(libs.camerax.view)
 
-    // ML Kit Face Detection (Body Language Analysis)
     implementation(libs.mlkit.face.detection)
 
     debugImplementation(libs.androidx.ui.tooling)

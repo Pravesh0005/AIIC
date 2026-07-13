@@ -27,7 +27,7 @@ class AnalyzeAnswerUseCase @Inject constructor(
     ): NetworkResult<AnswerFeedback> = withContext(Dispatchers.IO) {
         Log.d("AIIC_DEBUG", "Entering AnalyzeAnswerUseCase for questionId: $questionId, sessionId: $sessionId")
         try {
-            // 1. Build Prompt
+            
             val prompt = FeedbackPromptBuilder.buildAnswerEvaluationPrompt(
                 question = question,
                 answer = answerText,
@@ -35,7 +35,6 @@ class AnalyzeAnswerUseCase @Inject constructor(
                 resumeContext = resumeContext
             )
 
-            // 2. Call AI
             Log.d("AIIC_DEBUG", "AnalyzeAnswerUseCase: Sending prompt to GenerativeAiRepository (generateJson)")
             val aiResponse = generativeAiRepository.generateJson(prompt)
             if (aiResponse is NetworkResult.Error) {
@@ -63,11 +62,9 @@ class AnalyzeAnswerUseCase @Inject constructor(
 
             val jsonString = (aiResponse as NetworkResult.Success).data ?: ""
             
-            // Clean JSON string (remove markdown blocks if AI ignored instructions)
             val cleanJson = jsonString.replace("```json", "").replace("```", "").trim()
             Log.d("AIIC_DEBUG", "AnalyzeAnswerUseCase: Clean JSON String to parse: $cleanJson")
 
-            // 3. Parse Response
             val parsedMap = gson.fromJson(cleanJson, Map::class.java)
 
             @Suppress("UNCHECKED_CAST")
@@ -91,11 +88,10 @@ class AnalyzeAnswerUseCase @Inject constructor(
 
             Log.d("AIIC_DEBUG", "AnalyzeAnswerUseCase: Parsed AnswerFeedback overallScore = ${feedback.overallScore}")
 
-            // 4. Save to Repository
             val saveResult = feedbackRepository.saveAnswerFeedback(feedback)
             if (saveResult is NetworkResult.Error) {
                 Log.e("AIIC_DEBUG", "AnalyzeAnswerUseCase: Failed to save AnswerFeedback to repository")
-                // Return success anyway, since we have the feedback for UI, but maybe log error
+                
                 return@withContext NetworkResult.Success(feedback)
             }
 

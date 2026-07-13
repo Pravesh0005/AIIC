@@ -62,7 +62,6 @@ fun ProfileScreen(
     var showAchievementsDialog by remember { mutableStateOf(false) }
     var showUpgradeDialog by remember { mutableStateOf(false) }
 
-    // ── Achievements Dialog ──
     if (showAchievementsDialog) {
         AlertDialog(
             onDismissRequest = { showAchievementsDialog = false },
@@ -112,7 +111,6 @@ fun ProfileScreen(
         )
     }
 
-    // ── Upgrade to Pro Dialog ──
     if (showUpgradeDialog) {
         AlertDialog(
             onDismissRequest = { showUpgradeDialog = false },
@@ -235,7 +233,6 @@ fun ProfileScreen(
 
         Spacer(Modifier.height(32.dp))
 
-        // Upgrade to Pro card — functional
         PremiumCard(
             modifier = Modifier.clickable { showUpgradeDialog = true }
         ) {

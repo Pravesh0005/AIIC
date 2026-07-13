@@ -30,4 +30,3 @@ abstract class BaseViewModel<S, E>(initialState: S) : ViewModel() {
 
     abstract fun onAction(action: E)
 }
-

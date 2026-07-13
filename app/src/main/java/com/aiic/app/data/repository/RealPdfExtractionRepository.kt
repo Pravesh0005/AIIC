@@ -19,8 +19,6 @@ class RealPdfExtractionRepository @Inject constructor(
             try {
                 val storageRef = storage.reference.child("resumes/$userId/$resumeId.pdf")
                 
-                // Download file into memory (10MB limit is enough for Resumes)
-                // Add retry logic for eventual consistency
                 var bytes: ByteArray? = null
                 var retryCount = 0
                 while (bytes == null && retryCount < 5) {
@@ -37,7 +35,7 @@ class RealPdfExtractionRepository @Inject constructor(
                 if (bytes != null) {
                     PDDocument.load(bytes).use { document ->
                         val stripper = PDFTextStripper()
-                        // Extract text from the whole document
+                        
                         extractedText = stripper.getText(document)
                     }
                 }

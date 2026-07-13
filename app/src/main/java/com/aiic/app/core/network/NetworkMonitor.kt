@@ -12,10 +12,6 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import javax.inject.Inject
 import javax.inject.Singleton
 
-/**
- * Observes network connectivity state as a Flow.
- * Required for offline-first architecture and AI feature availability.
- */
 interface NetworkMonitor {
     val isOnline: Flow<Boolean>
 }
@@ -49,7 +45,6 @@ class ConnectivityNetworkMonitor @Inject constructor(
 
         connectivityManager.registerNetworkCallback(request, callback)
 
-        // Emit initial state
         val activeNetwork = connectivityManager.activeNetwork
         val capabilities = connectivityManager.getNetworkCapabilities(activeNetwork)
         trySend(

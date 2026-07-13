@@ -13,7 +13,7 @@ data class ResumeAnalysis(
     val riskAreas: List<String>,
     val recruiterImpression: String,
     val hirePotential: String,
-    val skills: Map<String, List<String>>, // Category (e.g., "Languages", "Cloud") -> List of skills
+    val skills: Map<String, List<String>>, 
     val missingKeywords: List<String>,
     val recommendations: List<Recommendation>
 ) {
@@ -36,7 +36,7 @@ data class AtsScoreDetails(
 )
 
 data class Recommendation(
-    val category: String, // e.g., "Resume Improvements", "Project Suggestions"
+    val category: String, 
     val suggestion: String,
-    val priority: String // "High", "Medium", "Low"
+    val priority: String 
 )

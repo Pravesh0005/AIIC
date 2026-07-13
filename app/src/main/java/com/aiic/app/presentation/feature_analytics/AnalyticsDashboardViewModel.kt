@@ -26,7 +26,7 @@ data class AnalyticsDashboardState(
     val totalHoursPracticed: Int = 0,
     val performanceLabel: String = "Beginner",
     val typeBreakdown: Map<String, Float> = emptyMap(),
-    // Average dimension scores
+    
     val avgTechnical: Float = 0f,
     val avgCommunication: Float = 0f,
     val avgConfidence: Float = 0f,
@@ -56,7 +56,6 @@ class AnalyticsDashboardViewModel @Inject constructor(
         viewModelScope.launch {
             _state.value = AnalyticsDashboardState(isLoading = true)
 
-            // Collect all completed sessions
             sessionRepository.getSessionHistory(userId).collect { sessions ->
                 if (sessions.isEmpty()) {
                     _state.value = AnalyticsDashboardState(isLoading = false)
@@ -67,28 +66,24 @@ class AnalyticsDashboardViewModel @Inject constructor(
                 val avgScore = if (scores.isNotEmpty()) scores.average().toFloat() else 0f
                 val bestScore = scores.maxOrNull() ?: 0f
 
-                // Improvement rate = last 3 sessions avg vs first 3 sessions avg
                 val improvementRate = if (scores.size >= 6) {
                     val recent = scores.takeLast(3).average().toFloat()
                     val early = scores.take(3).average().toFloat()
                     recent - early
                 } else 0f
 
-                // Total hours: sum of durations
                 val totalMs = sessions.sumOf {
                     val end = it.endedAt ?: it.startedAt
                     (end - it.startedAt).coerceAtLeast(0L)
                 }
                 val totalHours = (totalMs / 3_600_000L).toInt().coerceAtLeast(0)
 
-                // Type breakdown
                 val typeBreakdown = sessions
                     .groupBy { it.interviewType.name.replace("_", " ") }
                     .mapValues { (_, list) ->
                         list.mapNotNull { it.score }.average().toFloat()
                     }
 
-                // Performance label
                 val label = when {
                     avgScore >= 90 -> "Expert 🏆"
                     avgScore >= 75 -> "Advanced ⭐"
@@ -97,7 +92,6 @@ class AnalyticsDashboardViewModel @Inject constructor(
                     else -> "Beginner 🚀"
                 }
 
-                // Fetch reports for detailed dimension metrics
                 var avgTech = 0f
                 var avgComm = 0f
                 var avgConf = 0f
@@ -148,7 +142,7 @@ class AnalyticsDashboardViewModel @Inject constructor(
         if (sessions.isEmpty()) return 0
         val daysSorted = sessions
             .mapNotNull { it.endedAt }
-            .map { it / 86_400_000L } // Convert to day number
+            .map { it / 86_400_000L } 
             .distinct()
             .sortedDescending()
 

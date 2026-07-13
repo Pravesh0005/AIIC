@@ -11,10 +11,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
-/**
- * Production-grade SpeechRecognizer wrapper with real-time transcript streaming,
- * silence detection, auto-restart on pause, and RMS audio level monitoring.
- */
 class SpeechRecognizerManager(
     private val context: Context
 ) {
@@ -126,8 +122,6 @@ class SpeechRecognizerManager(
 
     fun getSilenceDurationMs(): Long = totalSilenceMs
 
-    // Auto-restart removed for manual control
-
     private fun createListener() = object : RecognitionListener {
         override fun onReadyForSpeech(params: Bundle?) {
             Log.d(TAG, "Ready for speech")
@@ -140,14 +134,14 @@ class SpeechRecognizerManager(
         }
 
         override fun onRmsChanged(rmsdB: Float) {
-            // Normalize RMS to 0-1 range
+            
             val normalized = ((rmsdB + 2f) / 12f).coerceIn(0f, 1f)
             _rmsLevel.value = normalized
 
             val now = System.currentTimeMillis()
             if (now - lastRmsTimestamp > 200) {
                 lastRmsTimestamp = now
-                // Track silence: if RMS is very low for extended period
+                
                 if (rmsdB < -1f) {
                     val silenceGap = now - lastSpeechTimestamp
                     if (silenceGap > SILENCE_TIMEOUT_MS) {
@@ -218,7 +212,6 @@ class SpeechRecognizerManager(
                 }
             }
 
-            // Stopped naturally
             isListening = false
             _isActive.value = false
             _rmsLevel.value = 0f

@@ -73,8 +73,6 @@ data class InterviewAnswer(
     val voiceMetrics: VoiceMetrics? = null
 )
 
-// ─── Voice Analysis Models ───────────────────────────────────────────────
-
 data class VoiceMetrics(
     val wordsPerMinute: Float = 0f,
     val speechDurationMs: Long = 0L,
@@ -98,8 +96,6 @@ data class VoiceAnalysisResult(
 enum class SpeechSpeed {
     TOO_SLOW, SLOW, NORMAL, FAST, TOO_FAST
 }
-
-// ─── Camera / Body Language Models ───────────────────────────────────────
 
 data class FaceAnalysisFrame(
     val timestamp: Long = 0L,
@@ -136,15 +132,12 @@ data class BodyLanguageReport(
     val suggestions: List<String> = emptyList()
 )
 
-// ─── Comprehensive Interview Report ──────────────────────────────────────
-
 data class InterviewReport(
     val reportId: String = "",
     val sessionId: String = "",
     val userId: String = "",
     val generatedAt: Long = System.currentTimeMillis(),
 
-    // Scores
     val overallScore: Float = 0f,
     val technicalAccuracyScore: Float = 0f,
     val communicationScore: Float = 0f,
@@ -157,30 +150,24 @@ data class InterviewReport(
     val vocabularyScore: Float = 0f,
     val professionalismScore: Float = 0f,
 
-    // AI Evaluation
     val roleReadiness: String = "",
     val hiringRecommendation: String = "",
     val companyFit: String = "",
     val salaryReadiness: String = "",
 
-    // Analysis
     val strengths: List<String> = emptyList(),
     val weaknesses: List<String> = emptyList(),
     val improvementPlan: List<String> = emptyList(),
     val nextLearningPath: List<String> = emptyList(),
 
-    // Question-level data
     val questionResults: List<QuestionResult> = emptyList(),
     val weakestTopics: List<String> = emptyList(),
     val strongestTopics: List<String> = emptyList(),
 
-    // Voice analysis (if applicable)
     val voiceAnalysis: VoiceMetrics? = null,
 
-    // Body language (if applicable)
     val bodyLanguageReport: BodyLanguageReport? = null,
 
-    // Session metadata
     val totalDurationMs: Long = 0L,
     val targetRole: String = "",
     val interviewType: InterviewType = InterviewType.MIXED,

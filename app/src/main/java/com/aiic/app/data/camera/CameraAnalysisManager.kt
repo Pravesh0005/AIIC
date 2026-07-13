@@ -23,17 +23,13 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import java.util.concurrent.Executors
 
-/**
- * Manages CameraX with MLKit Face Detection for real-time body language analysis.
- * No recording — only live frame analysis.
- */
 class CameraAnalysisManager(
     private val context: Context,
     private val bodyLanguageAnalyzer: BodyLanguageAnalyzer
 ) {
     companion object {
         private const val TAG = "AIIC_CAMERA"
-        private const val ANALYSIS_INTERVAL_MS = 500L // Analyze every 500ms
+        private const val ANALYSIS_INTERVAL_MS = 500L 
     }
 
     private var cameraProvider: ProcessCameraProvider? = null
@@ -160,7 +156,7 @@ class CameraAnalysisManager(
     }
 
     private fun estimateLighting(face: Face): LightingQuality {
-        // Use face bounding box size as proxy for visibility/lighting
+        
         val faceArea = face.boundingBox.width() * face.boundingBox.height()
         return when {
             faceArea < 5000 -> LightingQuality.TOO_DARK

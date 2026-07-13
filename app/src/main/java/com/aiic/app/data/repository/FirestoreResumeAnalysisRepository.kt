@@ -21,7 +21,7 @@ class FirestoreResumeAnalysisRepository @Inject constructor(
 
     override suspend fun getAnalysis(userId: String, resumeId: String): NetworkResult<ResumeAnalysis> {
         return try {
-            // Use deterministic document ID to avoid compound query (no composite index needed)
+            
             val docId = "${userId}_${resumeId}"
             android.util.Log.d("AIIC_ANALYSIS", "getAnalysis: Looking up document ID = $docId")
             
@@ -51,7 +51,7 @@ class FirestoreResumeAnalysisRepository @Inject constructor(
 
     override suspend fun saveAnalysis(analysis: ResumeAnalysis): NetworkResult<Unit> {
         return try {
-            // Use deterministic document ID: userId_resumeId
+            
             val docId = "${analysis.userId}_${analysis.resumeId}"
             android.util.Log.d("AIIC_ANALYSIS", "saveAnalysis: Saving to document ID = $docId")
             
@@ -81,7 +81,6 @@ class FirestoreResumeAnalysisRepository @Inject constructor(
                     it.toObject(ResumeAnalysisDto::class.java)?.toDomain() 
                 } ?: emptyList()
                 
-                // Sort by timestamp descending
                 trySend(analyses.sortedByDescending { it.timestamp })
             }
             

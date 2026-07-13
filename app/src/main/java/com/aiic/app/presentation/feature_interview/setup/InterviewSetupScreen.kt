@@ -77,7 +77,6 @@ fun InterviewSetupScreen(
         ) {
             Spacer(Modifier.height(8.dp))
 
-            // ── Interview Mode Selection ──
             SectionLabel("Interview Mode")
             Spacer(Modifier.height(8.dp))
             Row(
@@ -112,7 +111,6 @@ fun InterviewSetupScreen(
 
             Spacer(Modifier.height(24.dp))
 
-            // ── Target Role ──
             SectionLabel("Target Role")
             Spacer(Modifier.height(8.dp))
             OutlinedTextField(
@@ -164,7 +162,6 @@ fun InterviewSetupScreen(
 
             Spacer(Modifier.height(24.dp))
 
-            // ── Interview Type ──
             SectionLabel("Interview Type")
             Spacer(Modifier.height(8.dp))
             @OptIn(ExperimentalLayoutApi::class)
@@ -195,7 +192,6 @@ fun InterviewSetupScreen(
 
             Spacer(Modifier.height(24.dp))
 
-            // ── Difficulty ──
             SectionLabel("Difficulty")
             Spacer(Modifier.height(8.dp))
             Row(
@@ -235,7 +231,6 @@ fun InterviewSetupScreen(
 
             Spacer(Modifier.height(24.dp))
 
-            // ── Question Count ──
             SectionLabel("Questions: ${state.selectedQuestionCount}")
             Slider(
                 value = state.selectedQuestionCount.toFloat(),
@@ -248,7 +243,6 @@ fun InterviewSetupScreen(
                 )
             )
 
-            // ── Target Company (Optional) ──
             Spacer(Modifier.height(16.dp))
             SectionLabel("Target Company (Optional)")
             Spacer(Modifier.height(8.dp))

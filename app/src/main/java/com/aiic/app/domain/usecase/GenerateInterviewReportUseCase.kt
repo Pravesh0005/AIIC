@@ -10,13 +10,6 @@ import com.google.gson.Gson
 import com.google.gson.JsonObject
 import javax.inject.Inject
 
-/**
- * Generates a comprehensive interview report using Groq AI.
- * Evaluates all dimensions: technical accuracy, communication, confidence,
- * problem solving, depth, structure, leadership, examples, vocabulary, professionalism.
- * 
- * Every score comes from real AI reasoning — never random or hardcoded.
- */
 class GenerateInterviewReportUseCase @Inject constructor(
     private val sessionRepository: InterviewSessionRepository,
     private val questionRepository: InterviewQuestionRepository,
@@ -35,11 +28,9 @@ class GenerateInterviewReportUseCase @Inject constructor(
     ): NetworkResult<InterviewReport> {
         Log.d(TAG, "Generating report for session: $sessionId")
 
-        // 1. Fetch session data
         val session = sessionRepository.getSessionById(sessionId).getOrNull()
             ?: return NetworkResult.Error(message = "Session not found")
 
-        // 2. Fetch questions and answers
         val questions = questionRepository.getQuestionsForSession(sessionId).getOrNull() ?: emptyList()
         val answers = answerRepository.getAnswersForSession(sessionId).getOrNull() ?: emptyList()
 
@@ -47,13 +38,11 @@ class GenerateInterviewReportUseCase @Inject constructor(
             return NetworkResult.Error(message = "No interview data found")
         }
 
-        // 3. Build question-answer pairs
         val qaPairs = questions.sortedBy { it.order }.map { question ->
             val answer = answers.find { it.questionId == question.questionId }
             Pair(question.content, answer?.content ?: "No answer provided")
         }
 
-        // 4. Build voice metrics string if available
         val voiceMetricsStr = voiceMetrics?.let {
             """
             - Words Per Minute: ${it.wordsPerMinute}
@@ -66,7 +55,6 @@ class GenerateInterviewReportUseCase @Inject constructor(
             """.trimIndent()
         }
 
-        // 5. Build body language metrics string if available
         val bodyMetricsStr = bodyLanguageReport?.let {
             """
             - Eye Contact Score: ${it.eyeContactScore}
@@ -78,7 +66,6 @@ class GenerateInterviewReportUseCase @Inject constructor(
             """.trimIndent()
         }
 
-        // 6. Build the comprehensive evaluation prompt
         val prompt = InterviewEvaluationPromptBuilder()
             .setQuestionAnswerPairs(qaPairs)
             .setTargetRole(session.role)
@@ -89,12 +76,10 @@ class GenerateInterviewReportUseCase @Inject constructor(
             .setBodyLanguageMetrics(bodyMetricsStr)
             .build()
 
-        // 7. Call Groq AI for comprehensive evaluation
         val aiResult = generativeAiRepository.generateJson(prompt)
         val jsonStr = aiResult.getOrNull()
             ?: return NetworkResult.Error(message = "AI evaluation failed")
 
-        // 8. Parse AI response
         return try {
             val cleanJson = jsonStr.replace("```json", "").replace("```", "").trim()
             val gson = Gson()
@@ -156,7 +141,6 @@ class GenerateInterviewReportUseCase @Inject constructor(
                 interviewMode = session.interviewMode
             )
 
-            // 9. Save report to Firestore
             reportRepository.saveReport(report)
             Log.d(TAG, "Report generated successfully. Overall score: ${report.overallScore}")
 

@@ -42,12 +42,12 @@ class PdfViewerViewModel @Inject constructor(
 
     companion object {
         private const val TAG = "AIIC_PDF"
-        // Width to render each page at (high-DPI for sharpness)
+        
         private const val RENDER_WIDTH = 1080
     }
 
     fun loadPdf(storageUrl: String) {
-        if (_state.value is PdfViewerState.Success) return // Already loaded
+        if (_state.value is PdfViewerState.Success) return 
         viewModelScope.launch {
             try {
                 _state.value = PdfViewerState.Downloading
@@ -102,12 +102,12 @@ class PdfViewerViewModel @Inject constructor(
                 _state.value = PdfViewerState.Rendering(i + 1, totalPages, (i + 1f) / totalPages)
 
                 val page = pdfRenderer!!.openPage(i)
-                // Calculate height maintaining aspect ratio
+                
                 val aspectRatio = page.height.toFloat() / page.width.toFloat()
                 val renderHeight = (RENDER_WIDTH * aspectRatio).toInt()
 
                 val bitmap = Bitmap.createBitmap(RENDER_WIDTH, renderHeight, Bitmap.Config.ARGB_8888)
-                // Fill white background (PDF pages are transparent by default)
+                
                 bitmap.eraseColor(android.graphics.Color.WHITE)
                 page.render(bitmap, null, null, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY)
                 page.close()

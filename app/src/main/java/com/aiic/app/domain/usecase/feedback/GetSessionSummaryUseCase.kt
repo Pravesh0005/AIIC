@@ -15,7 +15,7 @@ class GetSessionSummaryUseCase @Inject constructor(
         if (generateResult is NetworkResult.Success) {
             return@withContext generateResult
         }
-        // Fallback to getting existing if generation failed
+        
         feedbackRepository.getSessionSummary(sessionId)
     }
 }

@@ -41,9 +41,9 @@ class SettingsViewModel @Inject constructor(
         when (action) {
             is SettingsAction.UpdateLanguage -> {
                 viewModelScope.launch {
-                    // Save to DataStore (reactive)
+                    
                     preferencesRepository.setLanguage(action.language)
-                    // Also save to SharedPreferences so MainActivity.attachBaseContext can read it
+                    
                     context.getSharedPreferences("aiic_prefs", Context.MODE_PRIVATE)
                         .edit()
                         .putString("app_language", action.language)

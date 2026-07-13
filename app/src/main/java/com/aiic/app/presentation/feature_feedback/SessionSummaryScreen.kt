@@ -45,7 +45,7 @@ fun SessionSummaryScreen(
             .statusBarsPadding()
             .navigationBarsPadding()
     ) {
-        // Top bar
+        
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -140,7 +140,6 @@ fun SessionSummaryScreen(
                     ) {
                         Spacer(Modifier.height(16.dp))
 
-                        // Success header
                         Box(
                             modifier = Modifier
                                 .size(80.dp)
@@ -167,7 +166,6 @@ fun SessionSummaryScreen(
 
                         Spacer(Modifier.height(24.dp))
 
-                        // Score Ring
                         ScoreRing(
                             score = summary.averageScore,
                             label = "Performance Score",
@@ -181,7 +179,6 @@ fun SessionSummaryScreen(
 
                         Spacer(Modifier.height(12.dp))
 
-                        // Readiness badge
                         PremiumCard(modifier = Modifier.fillMaxWidth()) {
                             Column(
                                 modifier = Modifier.padding(16.dp),

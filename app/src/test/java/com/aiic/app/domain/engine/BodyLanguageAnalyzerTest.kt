@@ -6,11 +6,6 @@ import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
 
-/**
- * Comprehensive test suite for the BodyLanguageAnalyzer.
- * Tests all analysis dimensions: eye contact, head movement, engagement,
- * confidence, professionalism, and warning generation.
- */
 class BodyLanguageAnalyzerTest {
 
     private lateinit var analyzer: BodyLanguageAnalyzer
@@ -19,8 +14,6 @@ class BodyLanguageAnalyzerTest {
     fun setup() {
         analyzer = BodyLanguageAnalyzer()
     }
-
-    // ── Empty State ──
 
     @Test
     fun `generateReport - returns default report when no frames`() {
@@ -38,11 +31,9 @@ class BodyLanguageAnalyzerTest {
         assertTrue(report.warnings.any { it.contains("never detected") })
     }
 
-    // ── Eye Contact ──
-
     @Test
     fun `generateReport - high eye contact when looking at camera`() {
-        // Head straight (low euler angles = looking at camera)
+        
         repeat(20) {
             analyzer.addFrame(
                 FaceAnalysisFrame(
@@ -67,8 +58,8 @@ class BodyLanguageAnalyzerTest {
                 FaceAnalysisFrame(
                     timestamp = it * 500L,
                     faceDetected = true,
-                    headEulerAngleX = 25f,  // Looking down
-                    headEulerAngleY = 30f,  // Looking sideways
+                    headEulerAngleX = 25f,  
+                    headEulerAngleY = 30f,  
                     smileProbability = 0.2f
                 )
             )
@@ -76,8 +67,6 @@ class BodyLanguageAnalyzerTest {
         val report = analyzer.generateReport()
         assertTrue("Eye contact score should be low", report.eyeContactScore < 30f)
     }
-
-    // ── Confidence ──
 
     @Test
     fun `generateReport - high confidence for steady head and good eye contact`() {
@@ -99,11 +88,9 @@ class BodyLanguageAnalyzerTest {
         assertTrue("Confidence should be high", report.confidenceScore > 60f)
     }
 
-    // ── Nervousness ──
-
     @Test
     fun `generateReport - high nervousness for erratic head movement`() {
-        // Alternate between extreme head positions
+        
         repeat(20) { i ->
             analyzer.addFrame(
                 FaceAnalysisFrame(
@@ -118,8 +105,6 @@ class BodyLanguageAnalyzerTest {
         val report = analyzer.generateReport()
         assertTrue("Nervousness should be elevated", report.nervousnessScore > 30f)
     }
-
-    // ── Smile/Expression ──
 
     @Test
     fun `generateReport - high facial expression score when smiling`() {
@@ -139,8 +124,6 @@ class BodyLanguageAnalyzerTest {
         assertTrue("Smile frequency should be high", report.smileFrequency > 50f)
     }
 
-    // ── Warnings & Suggestions ──
-
     @Test
     fun `getLatestWarning - returns face not detected warning`() {
         analyzer.addFrame(FaceAnalysisFrame(timestamp = 0L, faceDetected = false))
@@ -153,7 +136,7 @@ class BodyLanguageAnalyzerTest {
             FaceAnalysisFrame(
                 timestamp = 0L,
                 faceDetected = true,
-                headEulerAngleX = 25f, // Looking down
+                headEulerAngleX = 25f, 
                 headEulerAngleY = 0f
             )
         )
@@ -167,7 +150,7 @@ class BodyLanguageAnalyzerTest {
                 timestamp = 0L,
                 faceDetected = true,
                 headEulerAngleX = 0f,
-                headEulerAngleY = 30f // Looking sideways
+                headEulerAngleY = 30f 
             )
         )
         assertEquals("Looking away", analyzer.getLatestWarning())
@@ -203,8 +186,6 @@ class BodyLanguageAnalyzerTest {
         assertTrue(report.suggestions.any { it.contains("eye contact", ignoreCase = true) })
     }
 
-    // ── Reset ──
-
     @Test
     fun `reset - clears all accumulated data`() {
         repeat(10) {
@@ -215,11 +196,9 @@ class BodyLanguageAnalyzerTest {
         assertEquals(0, analyzer.getFrameCount())
     }
 
-    // ── Score Bounds ──
-
     @Test
     fun `generateReport - all scores within 0-100 bounds`() {
-        // Mix of detected and undetected frames
+        
         repeat(50) { i ->
             analyzer.addFrame(
                 FaceAnalysisFrame(
@@ -252,8 +231,6 @@ class BodyLanguageAnalyzerTest {
             assertTrue("Score $score should be <= 100", score <= 100f)
         }
     }
-
-    // ── Lighting & Multiple Faces ──
 
     @Test
     fun `addFrame - generates warning for dark lighting`() {

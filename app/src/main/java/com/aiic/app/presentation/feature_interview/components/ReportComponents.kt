@@ -37,9 +37,6 @@ import com.aiic.app.core.theme.AIICTheme
 import kotlin.math.cos
 import kotlin.math.sin
 
-/**
- * Animated score ring with Canvas — displays score with a smooth progress arc animation.
- */
 @Composable
 fun AnimatedScoreRing(
     score: Float,
@@ -73,7 +70,6 @@ fun AnimatedScoreRing(
                 val arcSize = this.size.minDimension - strokeWidth
                 val topLeft = Offset(strokeWidth / 2f, strokeWidth / 2f)
 
-                // Track
                 drawArc(
                     color = trackColor,
                     startAngle = 135f,
@@ -84,7 +80,6 @@ fun AnimatedScoreRing(
                     style = Stroke(width = strokeWidth, cap = StrokeCap.Round)
                 )
 
-                // Progress
                 drawArc(
                     color = primaryColor,
                     startAngle = 135f,
@@ -115,10 +110,6 @@ fun AnimatedScoreRing(
     }
 }
 
-/**
- * Radar/Spider Chart for multi-dimensional score visualization.
- * Supports any number of axes with animated fill.
- */
 @Composable
 fun RadarChart(
     scores: List<Float>,
@@ -153,7 +144,6 @@ fun RadarChart(
         val sides = scores.size
         val angleStep = 360f / sides
 
-        // Draw grid rings (3 levels)
         for (level in 1..3) {
             val levelRadius = radius * level / 3f
             val gridPath = Path()
@@ -168,7 +158,6 @@ fun RadarChart(
             drawPath(gridPath, color = gridColor, style = Stroke(width = 1f))
         }
 
-        // Draw axes
         for (i in 0 until sides) {
             val angle = Math.toRadians((angleStep * i - 90).toDouble())
             val endX = centerX + radius * cos(angle).toFloat()
@@ -176,7 +165,6 @@ fun RadarChart(
             drawLine(gridColor, Offset(centerX, centerY), Offset(endX, endY), strokeWidth = 1f)
         }
 
-        // Draw data polygon
         val dataPath = Path()
         for (i in 0 until sides) {
             val value = (scores[i] / maxScore).coerceIn(0f, 1f) * animProgress.value
@@ -191,7 +179,6 @@ fun RadarChart(
         drawPath(dataPath, color = fillColor)
         drawPath(dataPath, color = strokeColor, style = Stroke(width = 2.5f))
 
-        // Draw data points
         for (i in 0 until sides) {
             val value = (scores[i] / maxScore).coerceIn(0f, 1f) * animProgress.value
             val angle = Math.toRadians((angleStep * i - 90).toDouble())
@@ -201,7 +188,6 @@ fun RadarChart(
             drawCircle(Color.White, radius = 2f, center = Offset(x, y))
         }
 
-        // Draw labels
         for (i in 0 until sides) {
             val angle = Math.toRadians((angleStep * i - 90).toDouble())
             val labelRadius = radius + 24f
@@ -221,9 +207,6 @@ fun RadarChart(
     }
 }
 
-/**
- * Score comparison bar — shows a labeled horizontal bar with animated fill.
- */
 @Composable
 fun ScoreBar(
     label: String,
@@ -269,9 +252,6 @@ fun ScoreBar(
     }
 }
 
-/**
- * Tag pill for strengths/weaknesses display.
- */
 @Composable
 fun TagPill(
     text: String,
@@ -293,9 +273,6 @@ fun TagPill(
     }
 }
 
-/**
- * Metric row for displaying a labeled value with optional icon.
- */
 @Composable
 fun MetricRow(
     label: String,

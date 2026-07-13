@@ -30,12 +30,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.aiic.app.R
 import com.aiic.app.core.theme.AIICTheme
 
-/**
- * Splash Screen — Design Reference #2
- * Dark background, centered AIIC logo with scale+fade animation,
- * "AIIC" text, "AI Interview Coach" subtitle,
- * bottom tagline: "Empowering you to crack your dream interview."
- */
 @Composable
 fun SplashScreen(
     onNavigateToOnboarding: () -> Unit,
@@ -81,7 +75,7 @@ fun SplashScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
         ) {
-            // Logo icon
+            
             Image(
                 painter = painterResource(id = R.drawable.logo),
                 contentDescription = "AIIC Logo",
@@ -93,7 +87,6 @@ fun SplashScreen(
 
             Spacer(Modifier.height(16.dp))
 
-            // "AIIC" text
             Text(
                 text = "AIIC",
                 style = AIICTheme.typography.displayLarge,
@@ -104,7 +97,6 @@ fun SplashScreen(
 
             Spacer(Modifier.height(8.dp))
 
-            // "AI Interview Coach" subtitle
             Text(
                 text = "AI Interview Coach",
                 style = AIICTheme.typography.bodyMedium,
@@ -113,7 +105,6 @@ fun SplashScreen(
             )
         }
 
-        // Bottom tagline
         Box(
             modifier = Modifier
                 .align(Alignment.BottomCenter)

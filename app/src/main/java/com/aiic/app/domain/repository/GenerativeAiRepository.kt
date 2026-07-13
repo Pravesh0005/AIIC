@@ -5,10 +5,6 @@ import com.aiic.app.domain.model.ResumeAnalysis
 
 interface GenerativeAiRepository {
     
-    /**
-     * Analyzes raw text using the Intelligence Engine prompt system to return a structured ResumeAnalysis.
-     * Powered by Groq AI.
-     */
     suspend fun generateResumeAnalysis(
         userId: String,
         resumeId: String,

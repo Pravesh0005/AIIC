@@ -59,12 +59,6 @@ import com.aiic.app.core.base.UiEvent
 import com.aiic.app.core.theme.AIICTheme
 import kotlinx.coroutines.delay
 
-/**
- * Register Screen — Design Reference #4
- * Layout: Back ← → Logo → "Create Account" → "Let's get you started" →
- *         Full Name → Email → Password → Confirm Password →
- *         Terms checkbox → "Create Account →" → divider → Google → "Sign In"
- */
 @Composable
 fun RegisterScreen(
     onNavigateToLogin: () -> Unit,
@@ -105,7 +99,7 @@ fun RegisterScreen(
                 .padding(top = 16.dp, bottom = 40.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            // ── Back Button ──
+            
             Row(modifier = Modifier.fillMaxWidth()) {
                 IconButton(onClick = onNavigateToLogin) {
                     Icon(
@@ -118,7 +112,6 @@ fun RegisterScreen(
 
             Spacer(Modifier.height(16.dp))
 
-            // ── Logo ──
             AnimatedVisibility(visibleItems > 0, enter = fadeIn() + slideInVertically { -30 }) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Image(
@@ -143,7 +136,6 @@ fun RegisterScreen(
 
             Spacer(Modifier.height(24.dp))
 
-            // ── Heading ──
             AnimatedVisibility(visibleItems > 1, enter = fadeIn() + slideInVertically { -20 }) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Text(
@@ -164,7 +156,6 @@ fun RegisterScreen(
 
             Spacer(Modifier.height(28.dp))
 
-            // ── Form Fields ──
             AnimatedVisibility(visibleItems > 2, enter = fadeIn() + slideInVertically { 20 }) {
                 Column(verticalArrangement = Arrangement.spacedBy(20.dp)) {
                     AIICTextField(
@@ -224,7 +215,6 @@ fun RegisterScreen(
 
             Spacer(Modifier.height(20.dp))
 
-            // ── Terms Checkbox ──
             AnimatedVisibility(visibleItems > 3, enter = fadeIn()) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
@@ -258,7 +248,6 @@ fun RegisterScreen(
 
             Spacer(Modifier.height(24.dp))
 
-            // ── Create Account Button ──
             AnimatedVisibility(visibleItems > 4, enter = fadeIn() + slideInVertically { 20 }) {
                 PremiumButton(
                     text = "Create Account",
@@ -272,7 +261,6 @@ fun RegisterScreen(
 
             Spacer(Modifier.height(24.dp))
 
-            // ── Divider ──
             AnimatedVisibility(visibleItems > 5, enter = fadeIn()) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
@@ -291,7 +279,6 @@ fun RegisterScreen(
 
             Spacer(Modifier.height(24.dp))
 
-            // ── Google Sign Up ──
             AnimatedVisibility(visibleItems > 6, enter = fadeIn() + slideInVertically { 20 }) {
                 val context = androidx.compose.ui.platform.LocalContext.current
                 val googleSignInLauncher = androidx.activity.compose.rememberLauncherForActivityResult(
@@ -326,7 +313,6 @@ fun RegisterScreen(
 
             Spacer(Modifier.height(32.dp))
 
-            // ── Sign In Link ──
             AnimatedVisibility(visibleItems > 7, enter = fadeIn()) {
                 Row(horizontalArrangement = Arrangement.Center, modifier = Modifier.fillMaxWidth()) {
                     Text(

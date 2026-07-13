@@ -63,7 +63,7 @@ fun AnswerFeedbackScreen(
                             .padding(16.dp)
                     ) {
                         Text("Question", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
-                        Text(text = "Question ID: ${feedback.questionId}", style = MaterialTheme.typography.bodyMedium) // Should fetch question text in real app
+                        Text(text = "Question ID: ${feedback.questionId}", style = MaterialTheme.typography.bodyMedium) 
                         Spacer(modifier = Modifier.height(8.dp))
                         
                         Text("Your Answer", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.secondary)

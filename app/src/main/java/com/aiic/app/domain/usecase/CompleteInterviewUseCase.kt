@@ -13,13 +13,6 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import javax.inject.Inject
 
-/**
- * Completes an interview session.
- * 
- * Evaluates all answers using Groq via AnalyzeAnswerUseCase.
- * Averages the AI scores to produce the final score.
- * Updates session status to COMPLETED and updates user profile stats.
- */
 class CompleteInterviewUseCase @Inject constructor(
     private val sessionRepository: InterviewSessionRepository,
     private val answerRepository: InterviewAnswerRepository,
@@ -30,7 +23,6 @@ class CompleteInterviewUseCase @Inject constructor(
     suspend operator fun invoke(sessionId: String): NetworkResult<Float> {
         Log.d("AIIC_DEBUG", "Entering CompleteInterviewUseCase for sessionId: $sessionId")
         
-        // 1. Fetch all answers for the session
         val answersResult = answerRepository.getAnswersForSession(sessionId)
         val answers = answersResult.getOrNull()
         if (answers == null) {
@@ -44,7 +36,6 @@ class CompleteInterviewUseCase @Inject constructor(
             return NetworkResult.Success(0f)
         }
 
-        // 2. Fetch questions and session context
         val questionsResult = questionRepository.getQuestionsForSession(sessionId)
         val questions = questionsResult.getOrNull() ?: emptyList()
         val session = sessionRepository.getSessionById(sessionId).getOrNull()
@@ -52,21 +43,19 @@ class CompleteInterviewUseCase @Inject constructor(
 
         Log.d("AIIC_DEBUG", "CompleteInterviewUseCase: Found ${answers.size} answers to evaluate")
 
-        // 3. Evaluate ALL answers via AI concurrently
         val evaluatedAnswers = coroutineScope {
             answers.map { answer ->
                 async {
                     val question = questions.find { it.questionId == answer.questionId }?.content ?: ""
                     Log.d("AIIC_DEBUG", "CompleteInterviewUseCase: Sending answer ${answer.answerId} to AnalyzeAnswerUseCase")
                     
-                    // Run the heavy AI evaluation
                     val feedbackResult = analyzeAnswerUseCase(
                         sessionId = sessionId,
                         questionId = answer.questionId,
                         question = question,
                         answerText = answer.content,
                         targetRole = targetRole,
-                        resumeContext = "" // Context can be added later if needed
+                        resumeContext = "" 
                     )
 
                     val aiScore = feedbackResult.getOrNull()?.overallScore?.toFloat() ?: 0f
@@ -74,13 +63,11 @@ class CompleteInterviewUseCase @Inject constructor(
                     
                     Log.d("AIIC_DEBUG", "CompleteInterviewUseCase: Evaluated answer ${answer.answerId}, Score: $aiScore")
 
-                    // Update the answer object locally
                     val updatedAnswer = answer.copy(
                         aiEvaluationScore = aiScore,
                         aiFeedback = aiFeedbackText
                     )
                     
-                    // Resubmit the updated answer to the repository
                     answerRepository.submitAnswer(updatedAnswer)
                     
                     updatedAnswer
@@ -88,18 +75,15 @@ class CompleteInterviewUseCase @Inject constructor(
             }.awaitAll()
         }
 
-        // 4. Calculate real final score
         val finalScore = evaluatedAnswers.map { it.aiEvaluationScore }.average().toFloat().coerceIn(0f, 100f)
         Log.d("AIIC_DEBUG", "CompleteInterviewUseCase: Calculated final average score: $finalScore")
 
-        // 5. Complete session
         val completeResult = sessionRepository.completeSession(sessionId, finalScore)
         if (completeResult.getOrNull() == null) {
             Log.e("AIIC_DEBUG", "CompleteInterviewUseCase: Failed to complete session in repository")
             return NetworkResult.Error(message = "Failed to mark session as complete")
         }
 
-        // 6. Update UserProfile with new readiness score and interview count
         if (session != null) {
             val userResult = userRepository.getUserProfile(session.userId).getOrNull()
             
@@ -114,7 +98,6 @@ class CompleteInterviewUseCase @Inject constructor(
             val normalizedScore = finalScore / 100f
             val newCount = currentCount + 1
             
-            // Simple moving average
             val newReadiness = if (currentReadiness == 0f) {
                 normalizedScore 
             } else {

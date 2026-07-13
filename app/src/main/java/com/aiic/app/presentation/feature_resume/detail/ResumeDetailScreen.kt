@@ -152,7 +152,7 @@ private fun DetailContent(resume: Resume, onNavigateToAnalysis: () -> Unit) {
                         ActiveBadge()
                         Spacer(Modifier.width(12.dp))
                     }
-                    // Show COMPLETED if analysis exists, otherwise show actual status
+                    
                     val effectiveStatus = if (resume.analysisStatus == com.aiic.app.domain.model.AnalysisStatus.PENDING) {
                         com.aiic.app.domain.model.AnalysisStatus.COMPLETED
                     } else {
@@ -183,7 +183,6 @@ private fun DetailContent(resume: Resume, onNavigateToAnalysis: () -> Unit) {
         
         Spacer(Modifier.height(24.dp))
         
-        // PDF Preview Engine
         InlinePdfPreview(resume = resume)
         
         Spacer(Modifier.height(48.dp))

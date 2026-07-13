@@ -3,10 +3,6 @@ package com.aiic.app.domain.ai.prompt
 import org.junit.Assert.*
 import org.junit.Test
 
-/**
- * Tests for InterviewEvaluationPromptBuilder to verify prompt construction
- * covers all dimensions and produces valid, parseable AI prompts.
- */
 class InterviewEvaluationPromptBuilderTest {
 
     @Test

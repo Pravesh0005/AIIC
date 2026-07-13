@@ -54,7 +54,7 @@ class HomeViewModel @Inject constructor(
                                 profilePhotoUrl = profile.profilePhotoUrl,
                                 readinessScore = profile.readinessScore,
                                 interviewsCompleted = profile.interviewCount,
-                                streakDays = 1, // Simulated active streak
+                                streakDays = 1, 
                                 hoursOfPractice = profile.totalPracticeHours
                             )
                         }

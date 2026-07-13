@@ -14,7 +14,6 @@ sealed class AppRoutes(val route: String) {
     data object Analytics : AppRoutes("analytics")
     data object InterviewTips : AppRoutes("interview_tips")
 
-    // Resume Platform
     data object ResumeDashboard : AppRoutes("resume_dashboard")
     data object ResumeUpload : AppRoutes("resume_upload")
     data object ResumeHistory : AppRoutes("resume_history")
@@ -22,7 +21,6 @@ sealed class AppRoutes(val route: String) {
         fun createRoute(resumeId: String) = "resume_detail/$resumeId"
     }
     
-    // Resume Analysis
     data object ResumeAnalysis : AppRoutes("resume_analysis/{resumeId}") {
         fun createRoute(resumeId: String) = "resume_analysis/$resumeId"
     }
@@ -37,7 +35,6 @@ sealed class AppRoutes(val route: String) {
     }
     data object ResumeInsights : AppRoutes("resume_insights")
     
-    // Interview Engine
     data object InterviewSetup : AppRoutes("interview_setup")
     data object InterviewSession : AppRoutes("interview_session/{sessionId}") {
         fun createRoute(sessionId: String) = "interview_session/$sessionId"
@@ -54,7 +51,6 @@ sealed class AppRoutes(val route: String) {
         fun createRoute(answerId: String) = "answer_feedback/$answerId"
     }
     
-
     companion object {
         const val AUTH_GRAPH = "auth_graph"
         const val MAIN_GRAPH = "main_graph"

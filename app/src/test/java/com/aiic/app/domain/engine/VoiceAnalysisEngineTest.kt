@@ -5,11 +5,6 @@ import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
 
-/**
- * Comprehensive test suite for the VoiceAnalysisEngine.
- * Tests all analysis dimensions: WPM, filler detection, speech speed,
- * communication scoring, and clarity scoring.
- */
 class VoiceAnalysisEngineTest {
 
     private lateinit var engine: VoiceAnalysisEngine
@@ -19,12 +14,10 @@ class VoiceAnalysisEngineTest {
         engine = VoiceAnalysisEngine()
     }
 
-    // ── WPM Calculation ──
-
     @Test
     fun `analyzeTranscript - calculates correct WPM for normal speech`() {
         val transcript = "The quick brown fox jumps over the lazy dog. I believe this is a good example sentence."
-        // 16 words in 8 seconds = 120 WPM
+        
         val result = engine.analyzeTranscript(transcript, speechDurationMs = 8000, silenceDurationMs = 500, speechConfidence = 0.9f)
         assertTrue("WPM should be positive", result.metrics.wordsPerMinute > 0)
         assertEquals(16, result.metrics.totalWords)
@@ -33,7 +26,7 @@ class VoiceAnalysisEngineTest {
     @Test
     fun `analyzeTranscript - handles very short speech duration`() {
         val result = engine.analyzeTranscript("Hello", speechDurationMs = 100, silenceDurationMs = 0, speechConfidence = 0.5f)
-        // Duration < 3 seconds threshold
+        
         assertTrue("Should return valid result", result.metrics.totalWords == 1)
     }
 
@@ -43,8 +36,6 @@ class VoiceAnalysisEngineTest {
         assertEquals(0f, result.metrics.wordsPerMinute, 0.01f)
         assertEquals(0, result.metrics.totalWords)
     }
-
-    // ── Filler Word Detection ──
 
     @Test
     fun `analyzeTranscript - detects single-word fillers`() {
@@ -70,11 +61,9 @@ class VoiceAnalysisEngineTest {
         assertEquals("Clean speech should have few/no fillers", 0, result.metrics.fillerWordCount)
     }
 
-    // ── Speech Speed Classification ──
-
     @Test
     fun `analyzeTranscript - classifies normal speech speed`() {
-        // 20 words in 10 seconds = 120 WPM (NORMAL or SLOW boundary)
+        
         val words = (1..25).joinToString(" ") { "word" }
         val result = engine.analyzeTranscript(words, speechDurationMs = 12000, silenceDurationMs = 500, speechConfidence = 0.8f)
         assertTrue("Should be SLOW or NORMAL speed",
@@ -83,7 +72,7 @@ class VoiceAnalysisEngineTest {
 
     @Test
     fun `analyzeTranscript - classifies fast speech speed`() {
-        // 50 words in 15 seconds = 200 WPM (TOO_FAST)
+        
         val words = (1..50).joinToString(" ") { "word" }
         val result = engine.analyzeTranscript(words, speechDurationMs = 15000, silenceDurationMs = 100, speechConfidence = 0.8f)
         assertTrue("Should be FAST or TOO_FAST",
@@ -92,13 +81,11 @@ class VoiceAnalysisEngineTest {
 
     @Test
     fun `analyzeTranscript - classifies slow speech speed`() {
-        // 5 words in 10 seconds = 30 WPM (TOO_SLOW)
+        
         val result = engine.analyzeTranscript("I am thinking very carefully", speechDurationMs = 10000, silenceDurationMs = 5000, speechConfidence = 0.5f)
         assertTrue("Should be TOO_SLOW or SLOW",
             result.speechSpeed == SpeechSpeed.TOO_SLOW || result.speechSpeed == SpeechSpeed.SLOW)
     }
-
-    // ── Communication Score ──
 
     @Test
     fun `analyzeTranscript - high communication score for quality speech`() {
@@ -117,8 +104,6 @@ class VoiceAnalysisEngineTest {
             result.metrics.communicationScore < cleanResult.metrics.communicationScore)
     }
 
-    // ── Clarity Score ──
-
     @Test
     fun `analyzeTranscript - clarity score inversely correlated with filler ratio`() {
         val cleanResult = engine.analyzeTranscript(
@@ -131,8 +116,6 @@ class VoiceAnalysisEngineTest {
         )
         assertTrue("Clean speech should have higher clarity", cleanResult.clarityScore > dirtyResult.clarityScore)
     }
-
-    // ── Helper Methods ──
 
     @Test
     fun `getSpeechSpeedLabel - returns correct labels`() {
@@ -150,8 +133,6 @@ class VoiceAnalysisEngineTest {
         assertTrue(critical.contains("Critical"))
     }
 
-    // ── Edge Cases ──
-
     @Test
     fun `analyzeTranscript - handles whitespace-only transcript`() {
         val result = engine.analyzeTranscript("   ", speechDurationMs = 5000, silenceDurationMs = 1000, speechConfidence = 0.5f)
@@ -166,12 +147,11 @@ class VoiceAnalysisEngineTest {
 
     @Test
     fun `analyzeTranscript - communication score stays within bounds`() {
-        // Extremely bad scenario
+        
         val badResult = engine.analyzeTranscript("um uh like um", speechDurationMs = 60000, silenceDurationMs = 55000, speechConfidence = 0.1f)
         assertTrue(badResult.metrics.communicationScore >= 0f)
         assertTrue(badResult.metrics.communicationScore <= 100f)
 
-        // Extremely good scenario
         val goodResult = engine.analyzeTranscript(
             (1..200).joinToString(" ") { "excellent" },
             speechDurationMs = 60000, silenceDurationMs = 1000, speechConfidence = 1.0f

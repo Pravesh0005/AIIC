@@ -16,7 +16,7 @@ class SetupInterviewSessionUseCase @Inject constructor(
     private val resumeRepository: ResumeRepository
 ) {
     suspend operator fun invoke(config: InterviewConfig, userId: String): NetworkResult<Pair<InterviewSession, List<InterviewQuestion>>> {
-        // 1. Fetch Resume Context if provided
+        
         var resumeContext = ""
         if (config.resumeId != null) {
             val resumeResult = resumeRepository.getResumeById(config.resumeId)
@@ -26,7 +26,6 @@ class SetupInterviewSessionUseCase @Inject constructor(
             }
         }
 
-        // 2. Create the Session in DB
         val sessionResult = sessionRepository.createSession(config, userId)
         val session = sessionResult.getOrNull()
         if (session == null) {
@@ -34,7 +33,6 @@ class SetupInterviewSessionUseCase @Inject constructor(
             return NetworkResult.Error(message = errorMsg)
         }
 
-        // 3. Generate Initial Questions via AI
         val questionsResult = questionRepository.generateInitialQuestions(config, resumeContext)
         val questions = questionsResult.getOrNull()
         if (questions == null) {
@@ -42,7 +40,6 @@ class SetupInterviewSessionUseCase @Inject constructor(
             return NetworkResult.Error(message = errorMsg)
         }
         
-        // 4. Assign SessionId to questions and save them
         val finalQuestions = questions.mapIndexed { index, q ->
             q.copy(sessionId = session.sessionId, order = index + 1)
         }

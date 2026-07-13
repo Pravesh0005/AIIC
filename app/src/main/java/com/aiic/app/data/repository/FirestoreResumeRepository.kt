@@ -40,7 +40,6 @@ class FirestoreResumeRepository @Inject constructor(
     ): Flow<NetworkResult<UploadProgress>> = callbackFlow {
         val storageRef = storage.reference.child("resumes/$userId/$resumeId.pdf")
         
-        // Copy to local file to verify readability and size
         val context = com.google.firebase.FirebaseApp.getInstance().applicationContext
         val localFile = java.io.File(context.cacheDir, "temp_resume_$resumeId.pdf")
         try {
@@ -86,7 +85,6 @@ class FirestoreResumeRepository @Inject constructor(
 
         currentUploadTask = storageRef.putFile(Uri.fromFile(localFile), metadata)
 
-        // Listen for progress updates
         currentUploadTask?.addOnProgressListener { snapshot ->
             val transferred = snapshot.bytesTransferred
             val total = snapshot.totalByteCount
@@ -94,7 +92,6 @@ class FirestoreResumeRepository @Inject constructor(
             trySend(NetworkResult.Success(UploadProgress(safeTransferred, total)))
         }
 
-        // Await completion in a coroutine
         launch {
             try {
                 android.util.Log.e("AIIC_FORENSIC", "Executing putFile().await()...")
@@ -132,7 +129,6 @@ class FirestoreResumeRepository @Inject constructor(
             
             android.util.Log.d("AIIC_STORAGE", "Starting downloadUrl fetch for resume: ${storageRef.path}")
             
-            // Add retry logic for downloadUrl to handle Google Cloud Storage eventual consistency latency
             var downloadUrl: String? = null
             var retryCount = 0
             while (downloadUrl == null && retryCount < 5) {
@@ -265,7 +261,7 @@ class FirestoreResumeRepository @Inject constructor(
             try {
                 storageRef.delete().await()
             } catch (e: Exception) {
-                // Proceed even if storage delete fails (file might not exist)
+                
             }
             resumesCollection.document(resumeId).delete().await()
             NetworkResult.Success(Unit)

@@ -79,7 +79,7 @@ fun InterviewReportScreen(
                             }
                         },
                         actions = {
-                            // PDF Download Button
+                            
                             IconButton(onClick = {
                                 val pdfFile = generateReportPdf(context, report)
                                 if (pdfFile != null) {
@@ -96,7 +96,7 @@ fun InterviewReportScreen(
                             }) {
                                 Icon(Icons.Rounded.Download, contentDescription = "Download PDF", tint = AIICTheme.colors.accent)
                             }
-                            // Text Share Button
+                            
                             IconButton(onClick = {
                                 val shareIntent = Intent(Intent.ACTION_SEND).apply {
                                     type = "text/plain"
@@ -121,35 +121,31 @@ fun InterviewReportScreen(
                 ) {
                     Spacer(Modifier.height(8.dp))
 
-                    // ── Hero Score Card ──
                     HeroScoreCard(report)
 
                     Spacer(Modifier.height(24.dp))
 
-                    // ── Hiring Verdict ──
                     HiringVerdictCard(report)
 
                     Spacer(Modifier.height(24.dp))
 
-                    // ── Score Rings Grid ──
                     Text("Detailed Scores", style = AIICTheme.typography.titleLarge, color = AIICTheme.colors.textPrimary, fontWeight = FontWeight.Bold)
                     Spacer(Modifier.height(16.dp))
 
-                    // Row 1
                     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
                         AnimatedScoreRing(report.technicalAccuracyScore, label = "Technical", size = 80, strokeWidth = 8f)
                         AnimatedScoreRing(report.communicationScore, label = "Communication", size = 80, strokeWidth = 8f)
                         AnimatedScoreRing(report.confidenceScore, label = "Confidence", size = 80, strokeWidth = 8f)
                     }
                     Spacer(Modifier.height(16.dp))
-                    // Row 2
+                    
                     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
                         AnimatedScoreRing(report.problemSolvingScore, label = "Problem Solving", size = 80, strokeWidth = 8f)
                         AnimatedScoreRing(report.depthScore, label = "Depth", size = 80, strokeWidth = 8f)
                         AnimatedScoreRing(report.structureScore, label = "Structure", size = 80, strokeWidth = 8f)
                     }
                     Spacer(Modifier.height(16.dp))
-                    // Row 3
+                    
                     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
                         AnimatedScoreRing(report.vocabularyScore, label = "Vocabulary", size = 80, strokeWidth = 8f)
                         AnimatedScoreRing(report.professionalismScore, label = "Professionalism", size = 80, strokeWidth = 8f)
@@ -158,7 +154,6 @@ fun InterviewReportScreen(
 
                     Spacer(Modifier.height(24.dp))
 
-                    // ── Radar Chart ──
                     Text("Performance Radar", style = AIICTheme.typography.titleLarge, color = AIICTheme.colors.textPrimary, fontWeight = FontWeight.Bold)
                     Spacer(Modifier.height(8.dp))
                     PremiumCard {
@@ -177,7 +172,6 @@ fun InterviewReportScreen(
 
                     Spacer(Modifier.height(24.dp))
 
-                    // ── Strengths & Weaknesses ──
                     if (report.strengths.isNotEmpty()) {
                         Text("Strengths", style = AIICTheme.typography.titleMedium, color = Color(0xFF00B894), fontWeight = FontWeight.Bold)
                         Spacer(Modifier.height(8.dp))
@@ -196,7 +190,6 @@ fun InterviewReportScreen(
                         Spacer(Modifier.height(16.dp))
                     }
 
-                    // ── Improvement Plan ──
                     if (report.improvementPlan.isNotEmpty()) {
                         Text("Improvement Plan", style = AIICTheme.typography.titleLarge, color = AIICTheme.colors.textPrimary, fontWeight = FontWeight.Bold)
                         Spacer(Modifier.height(8.dp))
@@ -214,7 +207,6 @@ fun InterviewReportScreen(
                         Spacer(Modifier.height(16.dp))
                     }
 
-                    // ── Next Learning Path ──
                     if (report.nextLearningPath.isNotEmpty()) {
                         Text("Learning Path", style = AIICTheme.typography.titleLarge, color = AIICTheme.colors.textPrimary, fontWeight = FontWeight.Bold)
                         Spacer(Modifier.height(8.dp))
@@ -232,7 +224,6 @@ fun InterviewReportScreen(
                         Spacer(Modifier.height(16.dp))
                     }
 
-                    // ── Question-by-Question Results ──
                     if (report.questionResults.isNotEmpty()) {
                         Text("Question Results", style = AIICTheme.typography.titleLarge, color = AIICTheme.colors.textPrimary, fontWeight = FontWeight.Bold)
                         Spacer(Modifier.height(8.dp))
@@ -256,7 +247,6 @@ fun InterviewReportScreen(
                         Spacer(Modifier.height(16.dp))
                     }
 
-                    // ── Voice Analysis Section ──
                     if (report.voiceAnalysis != null) {
                         val voice = report.voiceAnalysis!!
                         Text("Voice Analysis", style = AIICTheme.typography.titleLarge, color = AIICTheme.colors.textPrimary, fontWeight = FontWeight.Bold)
@@ -279,7 +269,6 @@ fun InterviewReportScreen(
                         Spacer(Modifier.height(16.dp))
                     }
 
-                    // ── Body Language Section ──
                     if (report.bodyLanguageReport != null) {
                         val body = report.bodyLanguageReport!!
                         Text("Body Language", style = AIICTheme.typography.titleLarge, color = AIICTheme.colors.textPrimary, fontWeight = FontWeight.Bold)
@@ -306,7 +295,6 @@ fun InterviewReportScreen(
                         Spacer(Modifier.height(16.dp))
                     }
 
-                    // ── Session Info ──
                     PremiumCard {
                         Column(Modifier.padding(16.dp)) {
                             MetricRow("Role", report.targetRole)
@@ -442,8 +430,8 @@ Generated by AI Interview Coach (AIIC)
 private fun generateReportPdf(context: android.content.Context, report: InterviewReport): java.io.File? {
     return try {
         val document = android.graphics.pdf.PdfDocument()
-        val pageWidth = 595 // A4 width in points
-        val pageHeight = 842 // A4 height in points
+        val pageWidth = 595 
+        val pageHeight = 842 
         val margin = 40f
         val maxContentWidth = pageWidth - 2 * margin.toInt()
 
@@ -470,8 +458,7 @@ private fun generateReportPdf(context: android.content.Context, report: Intervie
             isAntiAlias = true
         }
 
-        // Collect all lines to render
-        val lines = mutableListOf<Triple<String, android.graphics.Paint, Float>>() // text, paint, extraSpacingBefore
+        val lines = mutableListOf<Triple<String, android.graphics.Paint, Float>>() 
 
         lines.add(Triple("AIIC - AI Interview Coach Report", titlePaint, 0f))
         lines.add(Triple("", bodyPaint, 10f))
@@ -484,38 +471,36 @@ private fun generateReportPdf(context: android.content.Context, report: Intervie
         }
         lines.add(Triple("", bodyPaint, 10f))
 
-        // Detailed scores
         lines.add(Triple("━━━ Detailed Scores ━━━", headingPaint, 10f))
         lines.add(Triple("Technical: ${report.technicalAccuracyScore.toInt()}%   Communication: ${report.communicationScore.toInt()}%   Confidence: ${report.confidenceScore.toInt()}%", bodyPaint, 6f))
         lines.add(Triple("Problem Solving: ${report.problemSolvingScore.toInt()}%   Depth: ${report.depthScore.toInt()}%   Structure: ${report.structureScore.toInt()}%", bodyPaint, 4f))
         lines.add(Triple("Vocabulary: ${report.vocabularyScore.toInt()}%   Professionalism: ${report.professionalismScore.toInt()}%   Examples: ${report.examplesScore.toInt()}%", bodyPaint, 4f))
         lines.add(Triple("", bodyPaint, 10f))
 
-        // Strengths
         if (report.strengths.isNotEmpty()) {
             lines.add(Triple("━━━ Strengths ━━━", headingPaint, 6f))
             report.strengths.forEach { lines.add(Triple("  ✓ $it", bodyPaint, 3f)) }
             lines.add(Triple("", bodyPaint, 6f))
         }
-        // Weaknesses
+        
         if (report.weaknesses.isNotEmpty()) {
             lines.add(Triple("━━━ Areas to Improve ━━━", headingPaint, 6f))
             report.weaknesses.forEach { lines.add(Triple("  ✗ $it", bodyPaint, 3f)) }
             lines.add(Triple("", bodyPaint, 6f))
         }
-        // Improvement Plan
+        
         if (report.improvementPlan.isNotEmpty()) {
             lines.add(Triple("━━━ Improvement Plan ━━━", headingPaint, 6f))
             report.improvementPlan.forEachIndexed { i, step -> lines.add(Triple("  ${i + 1}. $step", bodyPaint, 3f)) }
             lines.add(Triple("", bodyPaint, 6f))
         }
-        // Learning Path
+        
         if (report.nextLearningPath.isNotEmpty()) {
             lines.add(Triple("━━━ Learning Path ━━━", headingPaint, 6f))
             report.nextLearningPath.forEach { lines.add(Triple("  → $it", bodyPaint, 3f)) }
             lines.add(Triple("", bodyPaint, 6f))
         }
-        // Question Results
+        
         if (report.questionResults.isNotEmpty()) {
             lines.add(Triple("━━━ Question Results ━━━", headingPaint, 6f))
             report.questionResults.forEachIndexed { i, qr ->
@@ -526,14 +511,14 @@ private fun generateReportPdf(context: android.content.Context, report: Intervie
             }
             lines.add(Triple("", bodyPaint, 6f))
         }
-        // Voice Analysis
+        
         if (report.voiceAnalysis != null) {
             val v = report.voiceAnalysis!!
             lines.add(Triple("━━━ Voice Analysis ━━━", headingPaint, 6f))
             lines.add(Triple("WPM: ${v.wordsPerMinute.toInt()}   Total Words: ${v.totalWords}   Filler Words: ${v.fillerWordCount}   Communication: ${v.communicationScore.toInt()}%", bodyPaint, 4f))
             lines.add(Triple("", bodyPaint, 6f))
         }
-        // Body Language
+        
         if (report.bodyLanguageReport != null) {
             val b = report.bodyLanguageReport!!
             lines.add(Triple("━━━ Body Language ━━━", headingPaint, 6f))
@@ -542,14 +527,13 @@ private fun generateReportPdf(context: android.content.Context, report: Intervie
             b.suggestions.forEach { lines.add(Triple("  • $it", labelPaint, 2f)) }
             lines.add(Triple("", bodyPaint, 6f))
         }
-        // Session Info
+        
         lines.add(Triple("━━━ Session Info ━━━", headingPaint, 6f))
         lines.add(Triple("Type: ${report.interviewType.name}   Difficulty: ${report.difficulty.name}   Mode: ${report.interviewMode.name}", bodyPaint, 4f))
         lines.add(Triple("Duration: ${formatDuration(report.totalDurationMs)}   Questions: ${report.questionResults.size}", bodyPaint, 4f))
         lines.add(Triple("", bodyPaint, 16f))
         lines.add(Triple("Generated by AI Interview Coach (AIIC)", labelPaint, 4f))
 
-        // Render pages
         var pageNum = 1
         var y = margin + 20f
         var pageInfo = android.graphics.pdf.PdfDocument.PageInfo.Builder(pageWidth, pageHeight, pageNum).create()
@@ -560,7 +544,6 @@ private fun generateReportPdf(context: android.content.Context, report: Intervie
             y += spacing
             val lineHeight = paint.textSize + 6f
 
-            // Word-wrap long lines
             val words = text.split(" ")
             val wrappedLines = mutableListOf<String>()
             var currentLine = ""
@@ -590,7 +573,6 @@ private fun generateReportPdf(context: android.content.Context, report: Intervie
         }
         document.finishPage(page)
 
-        // Save to file
         val dir = java.io.File(context.cacheDir, "reports")
         dir.mkdirs()
         val file = java.io.File(dir, "AIIC_Report_${report.targetRole.replace(" ", "_")}_${System.currentTimeMillis()}.pdf")

@@ -1,13 +1,8 @@
 package com.aiic.app.domain.ai.prompt
 
-/**
- * Builds comprehensive interview evaluation prompts for Groq AI.
- * Covers all evaluation dimensions: technical accuracy, communication,
- * confidence, problem solving, depth, structure, leadership, vocabulary, professionalism.
- */
 class InterviewEvaluationPromptBuilder {
 
-    private var questions: List<Pair<String, String>> = emptyList() // question to answer pairs
+    private var questions: List<Pair<String, String>> = emptyList() 
     private var targetRole: String = ""
     private var interviewType: String = ""
     private var difficulty: String = ""
@@ -64,7 +59,6 @@ class InterviewEvaluationPromptBuilder {
         sb.appendLine("Every score MUST come from your actual analysis of the answers — NEVER use random or default scores.")
         sb.appendLine()
 
-        // Context
         sb.appendLine("## Interview Context")
         sb.appendLine("- Target Role: $targetRole")
         sb.appendLine("- Interview Type: $interviewType")
@@ -77,21 +71,18 @@ class InterviewEvaluationPromptBuilder {
         }
         sb.appendLine()
 
-        // Voice metrics if available
         if (!voiceMetrics.isNullOrBlank()) {
             sb.appendLine("## Voice Analysis Data")
             sb.appendLine(voiceMetrics)
             sb.appendLine()
         }
 
-        // Body language metrics if available
         if (!bodyLanguageMetrics.isNullOrBlank()) {
             sb.appendLine("## Body Language Data")
             sb.appendLine(bodyLanguageMetrics)
             sb.appendLine()
         }
 
-        // Questions and answers
         sb.appendLine("## Interview Transcript")
         questions.forEachIndexed { index, (question, answer) ->
             sb.appendLine("### Question ${index + 1}")
@@ -100,7 +91,6 @@ class InterviewEvaluationPromptBuilder {
             sb.appendLine()
         }
 
-        // Required output schema
         sb.appendLine("## Required JSON Output")
         sb.appendLine("Respond with ONLY a valid JSON object, no markdown, no explanation:")
         sb.appendLine("""

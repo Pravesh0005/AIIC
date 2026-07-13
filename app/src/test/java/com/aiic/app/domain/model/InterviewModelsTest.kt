@@ -3,13 +3,7 @@ package com.aiic.app.domain.model
 import org.junit.Assert.*
 import org.junit.Test
 
-/**
- * Tests for all Interview domain models — ensures data class defaults,
- * enum coverage, and constructor correctness.
- */
 class InterviewModelsTest {
-
-    // ── Enum Coverage ──
 
     @Test
     fun `InterviewType - all 15 types exist`() {
@@ -65,8 +59,6 @@ class InterviewModelsTest {
     fun `LightingQuality - all qualities exist`() {
         assertEquals(4, LightingQuality.entries.size)
     }
-
-    // ── Data Class Defaults ──
 
     @Test
     fun `InterviewConfig - defaults are correct`() {
@@ -148,8 +140,6 @@ class InterviewModelsTest {
         assertEquals(QuestionCategory.TECHNICAL, qr.category)
         assertEquals(0L, qr.responseTimeMs)
     }
-
-    // ── Data Class Copy ──
 
     @Test
     fun `InterviewSession - copy updates only specified fields`() {

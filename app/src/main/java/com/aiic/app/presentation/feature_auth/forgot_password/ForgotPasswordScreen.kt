@@ -78,7 +78,7 @@ fun ForgotPasswordScreen(
                 .padding(top = 16.dp, bottom = 40.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            // Back button
+            
             Box(modifier = Modifier.fillMaxWidth()) {
                 IconButton(onClick = onNavigateBack) {
                     Icon(
@@ -92,7 +92,7 @@ fun ForgotPasswordScreen(
             Spacer(Modifier.height(40.dp))
 
             if (state.isResetSent) {
-                // Success state
+                
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
@@ -124,7 +124,7 @@ fun ForgotPasswordScreen(
                     )
                 }
             } else {
-                // Form state
+                
                 AnimatedVisibility(visibleItems > 0, enter = fadeIn() + slideInVertically { -20 }) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Text(
