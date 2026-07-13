@@ -94,10 +94,12 @@ fun RegisterScreen(
             .fillMaxSize()
             .background(AIICTheme.colors.background)
     ) {
+        com.aiic.app.common.components.EarthGlowBackground()
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .statusBarsPadding()
+                .navigationBarsPadding()
                 .verticalScroll(rememberScrollState())
                 .padding(horizontal = 24.dp)
                 .padding(top = 16.dp, bottom = 40.dp),

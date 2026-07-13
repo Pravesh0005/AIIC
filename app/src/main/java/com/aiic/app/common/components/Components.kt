@@ -558,3 +558,24 @@ fun StatItem(
         )
     }
 }
+
+
+@androidx.compose.runtime.Composable
+fun EarthGlowBackground(modifier: androidx.compose.ui.Modifier = androidx.compose.ui.Modifier) {
+    androidx.compose.foundation.layout.Box(
+        modifier = modifier.androidx.compose.foundation.layout.fillMaxSize()
+    ) {
+        androidx.compose.foundation.layout.Box(
+            modifier = androidx.compose.ui.Modifier
+                .align(androidx.compose.ui.Alignment.BottomCenter)
+                .androidx.compose.foundation.layout.fillMaxWidth(1.5f)
+                .androidx.compose.foundation.layout.height(300.dp)
+                .androidx.compose.foundation.layout.offset(y = 150.dp)
+                .androidx.compose.foundation.background(
+                    brush = androidx.compose.ui.graphics.Brush.radialGradient(
+                        colors = listOf(com.aiic.app.core.theme.AIICTheme.colors.primary.copy(alpha = 0.25f), androidx.compose.ui.graphics.Color.Transparent)
+                    )
+                )
+        )
+    }
+}

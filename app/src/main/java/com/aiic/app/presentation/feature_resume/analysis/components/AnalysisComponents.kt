@@ -14,10 +14,15 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.AutoAwesome
 import androidx.compose.material.icons.rounded.CheckCircle
 import androidx.compose.material.icons.rounded.Error
 import androidx.compose.material.icons.rounded.Lightbulb
+import androidx.compose.material.icons.rounded.TrendingDown
+import androidx.compose.material.icons.rounded.TrendingUp
+import androidx.compose.material.icons.rounded.VpnKey
 import androidx.compose.material.icons.rounded.Warning
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -137,30 +142,36 @@ fun SkillChip(skill: String) {
             color = AIICTheme.colors.textPrimary
         )
     }
-}
-
 @Composable
 fun StrengthCard(strengths: List<String>) {
-    InsightListCard("Strengths", Icons.Rounded.CheckCircle, AIICTheme.colors.success, strengths)
+    InsightListCard("Strengths", com.aiic.app.R.drawable.ic_exact_strength, AIICTheme.colors.success, strengths)
 }
 
 @Composable
 fun WeaknessCard(weaknesses: List<String>) {
-    InsightListCard("Weaknesses", Icons.Rounded.Warning, AIICTheme.colors.warning, weaknesses)
+    InsightListCard("Weaknesses", com.aiic.app.R.drawable.ic_exact_weakness, AIICTheme.colors.warning, weaknesses)
 }
 
 @Composable
 fun KeywordGapCard(missingKeywords: List<String>) {
-    InsightListCard("Missing Keywords", Icons.Rounded.Error, AIICTheme.colors.error, missingKeywords)
+    InsightListCard("Missing Keywords", com.aiic.app.R.drawable.ic_exact_keyword, AIICTheme.colors.error, missingKeywords)
 }
 
 @Composable
-private fun InsightListCard(title: String, icon: ImageVector, tint: Color, items: List<String>) {
+private fun InsightListCard(title: String, iconRes: Int, tint: Color, items: List<String>) {
     PremiumCard(modifier = Modifier.fillMaxWidth()) {
-        Column(modifier = Modifier.padding(16.dp)) {
+        Column(modifier = Modifier.padding(20.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(icon, contentDescription = null, tint = tint, modifier = Modifier.size(20.dp))
-                Spacer(Modifier.width(8.dp))
+                Box(
+                    modifier = Modifier
+                        .size(36.dp)
+                        .clip(CircleShape)
+                        .background(tint.copy(alpha = 0.15f)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(androidx.compose.ui.res.painterResource(id = iconRes), contentDescription = null, tint = tint, modifier = Modifier.size(20.dp))
+                }
+                Spacer(Modifier.width(12.dp))
                 Text(
                     text = title,
                     style = AIICTheme.typography.titleMedium,
@@ -168,7 +179,7 @@ private fun InsightListCard(title: String, icon: ImageVector, tint: Color, items
                     fontWeight = FontWeight.Bold
                 )
             }
-            Spacer(Modifier.height(12.dp))
+            Spacer(Modifier.height(16.dp))
             if (items.isEmpty()) {
                 Text(
                     text = "None detected.",
@@ -178,11 +189,23 @@ private fun InsightListCard(title: String, icon: ImageVector, tint: Color, items
             } else {
                 items.forEach { item ->
                     Row(
-                        modifier = Modifier.padding(vertical = 4.dp),
+                        modifier = Modifier.padding(vertical = 6.dp, horizontal = 4.dp),
                         verticalAlignment = Alignment.Top
                     ) {
-                        Text("•", color = AIICTheme.colors.textSecondary, modifier = Modifier.padding(end = 8.dp))
-                        Text(text = item, style = AIICTheme.typography.bodyMedium, color = AIICTheme.colors.textPrimary)
+                        Box(
+                            modifier = Modifier
+                                .padding(top = 6.dp)
+                                .size(6.dp)
+                                .clip(CircleShape)
+                                .background(tint)
+                        )
+                        Spacer(Modifier.width(12.dp))
+                        Text(
+                            text = item,
+                            style = AIICTheme.typography.bodyMedium,
+                            color = AIICTheme.colors.textSecondary,
+                            lineHeight = androidx.compose.ui.unit.TextUnit(20f, androidx.compose.ui.unit.TextUnitType.Sp)
+                        )
                     }
                 }
             }
@@ -198,16 +221,34 @@ fun RecommendationCard(recommendation: Recommendation) {
         else -> AIICTheme.colors.primary
     }
     
-    PremiumCard(modifier = Modifier.fillMaxWidth()) {
-        Column(modifier = Modifier.padding(16.dp)) {
+    PremiumCard(
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Column(modifier = Modifier
+            .background(priorityColor.copy(alpha = 0.03f))
+            .padding(20.dp)
+        ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(Icons.Rounded.Lightbulb, contentDescription = null, tint = AIICTheme.colors.primary, modifier = Modifier.size(18.dp))
-                    Spacer(Modifier.width(8.dp))
+                    Box(
+                        modifier = Modifier
+                            .size(32.dp)
+                            .clip(RoundedCornerShape(8.dp))
+                            .background(AIICTheme.colors.surfaceElevated),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            androidx.compose.ui.res.painterResource(id = com.aiic.app.R.drawable.ic_exact_recommendation),
+                            contentDescription = null,
+                            tint = priorityColor,
+                            modifier = Modifier.size(18.dp)
+                        )
+                    }
+                    Spacer(Modifier.width(12.dp))
                     Text(
                         text = recommendation.category,
                         style = AIICTheme.typography.titleSmall,
@@ -217,9 +258,9 @@ fun RecommendationCard(recommendation: Recommendation) {
                 }
                 Box(
                     modifier = Modifier
-                        .clip(CircleShape)
+                        .clip(RoundedCornerShape(12.dp))
                         .background(priorityColor.copy(alpha = 0.15f))
-                        .padding(horizontal = 8.dp, vertical = 2.dp)
+                        .padding(horizontal = 10.dp, vertical = 4.dp)
                 ) {
                     Text(
                         text = recommendation.priority.uppercase(),
@@ -228,11 +269,12 @@ fun RecommendationCard(recommendation: Recommendation) {
                     )
                 }
             }
-            Spacer(Modifier.height(8.dp))
+            Spacer(Modifier.height(12.dp))
             Text(
                 text = recommendation.suggestion,
                 style = AIICTheme.typography.bodyMedium,
-                color = AIICTheme.colors.textSecondary
+                color = AIICTheme.colors.textSecondary,
+                lineHeight = androidx.compose.ui.unit.TextUnit(22f, androidx.compose.ui.unit.TextUnitType.Sp)
             )
         }
     }

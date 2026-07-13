@@ -76,6 +76,7 @@ fun SplashScreen(
             .background(AIICTheme.colors.background),
         contentAlignment = Alignment.Center,
     ) {
+        com.aiic.app.common.components.EarthGlowBackground()
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
